@@ -1,5 +1,5 @@
 import CreateOptions
-import OpenAPIKit30
+import OpenAPIKit
 import Foundation
 
 // TODO: When parsing additionalProperties remove known keys
@@ -464,7 +464,7 @@ final class Templates {
                 output += "/// \(line)\n"
             }
         }
-        if options.contains(.example), let example = metadata.example?.value {
+      if options.contains(.example), let example = metadata.examples?.first?.value {
             let value: String
 
             if let example = example as? String, !example.hasPrefix("\"") {

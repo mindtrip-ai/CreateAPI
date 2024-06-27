@@ -23,7 +23,7 @@ let package = Package(
             dependencies: [
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
                 .product(name: "ConfigurationParser", package: "swift-configuration-parser"),
-                .product(name: "OpenAPIKit30", package: "OpenAPIKit"),
+                .product(name: "OpenAPIKit", package: "OpenAPIKit"),
                 .product(name: "Yams", package: "Yams"),
                 .product(name: "GrammaticalNumber", package: "GrammaticalNumber"),
                 .product(name: "FileWatcher", package: "FileWatcher", condition: .when(platforms: [.macOS])),

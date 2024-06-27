@@ -1,5 +1,5 @@
 import CreateOptions
-import OpenAPIKit30
+import OpenAPIKit
 import Foundation
 import GrammaticalNumber
 
@@ -492,7 +492,7 @@ extension Generator {
 
     // MARK: - Query Parameters
 
-    private func makeQueryParameter(for input: Either<JSONReference<OpenAPI.Parameter>, OpenAPI.Parameter>, context: Context) throws -> Property? {
+    private func makeQueryParameter(for input: Either<OpenAPI.Reference<OpenAPI.Parameter>, OpenAPI.Parameter>, context: Context) throws -> Property? {
         do {
             var context = context
             context.isFormEncoding = true
@@ -505,7 +505,7 @@ extension Generator {
         }
     }
 
-    private func _makeQueryParameter(for input: Either<JSONReference<OpenAPI.Parameter>, OpenAPI.Parameter>, context: Context) throws -> Property? {
+  private func _makeQueryParameter(for input: Either<OpenAPI.Reference<OpenAPI.Parameter>, OpenAPI.Parameter>, context: Context) throws -> Property? {
         let parameter = try input.unwrapped(in: spec)
         guard parameter.context.inQuery else {
             return nil
@@ -569,6 +569,8 @@ extension Generator {
                 return QueryItemType("String")
             case .not:
                 throw GeneratorError("Unsupported query parameter type: \(parameter)")
+            case .null:
+              throw GeneratorError("Unsupported query parameter type: \(parameter)")
             }
         }
 
@@ -592,7 +594,7 @@ extension Generator {
 
     // MARK: - Request Body
 
-    private typealias RequestBody = Either<JSONReference<OpenAPI.Request>, OpenAPI.Request>
+    private typealias RequestBody = Either<OpenAPI.Reference<OpenAPI.Request>, OpenAPI.Request>
 
     private func makeRequestBodyType(for requestBody: RequestBody, method: String, nestedTypeName: TypeName, context: Context) throws -> BodyType {
         var context = context
@@ -608,7 +610,7 @@ extension Generator {
 
     // MARK: - Response Body
 
-    private typealias Response = Either<JSONReference<OpenAPI.Response>, OpenAPI.Response>
+    private typealias Response = Either<OpenAPI.Reference<OpenAPI.Response>, OpenAPI.Response>
 
     private func makeResponse(for task: GenerateOperationTask, context: Context) throws -> BodyType {
         guard let response = task.operation.firstSuccessfulResponse else {
@@ -621,19 +623,18 @@ extension Generator {
         let schema: OpenAPI.Response
         switch response {
         case .a(let reference):
-            switch reference {
-            case .internal(let reference):
-                guard let name = reference.name else {
-                    throw GeneratorError("Response reference name is missing")
-                }
-                if let rename = options.paths.overriddenResponses[name] {
-                    return BodyType(type: TypeName(rename))
-                }
-                guard let key = OpenAPI.ComponentKey(rawValue: name), let value = spec.components.responses[key] else {
-                    throw GeneratorError("Failed to find a response body")
-                }
-                schema = value
-            case .external:
+          if reference.isInternal {
+            guard let name = reference.name else {
+              throw GeneratorError("Response reference name is missing")
+            }
+            if let rename = options.paths.overriddenResponses[name] {
+              return BodyType(type: TypeName(rename))
+            }
+            guard let key = OpenAPI.ComponentKey(rawValue: name), let value = spec.components.responses[key] else {
+              throw GeneratorError("Failed to find a response body")
+            }
+            schema = value
+          } else {
                 throw GeneratorError("External references are not supported")
             }
         case .b(let value):
@@ -697,7 +698,7 @@ extension Generator {
             let schema: JSONSchema
             switch content.schema {
             case .a(let reference):
-                schema = JSONSchema.reference(reference)
+                schema = JSONSchema.reference(reference.jsonReference)
             case .b(let value):
                 switch value {
                 case .string: return BodyType("String")
@@ -762,7 +763,7 @@ extension Generator {
         return AnyDeclaration(name: name, rawValue: raw)
     }
 
-    private func makeHeader(key: String, header: Either<JSONReference<OpenAPI.Header>, OpenAPI.Header>) throws -> String {
+    private func makeHeader(key: String, header: Either<OpenAPI.Reference<OpenAPI.Header>, OpenAPI.Header>) throws -> String {
         let header = try header.unwrapped(in: spec)
         switch header.schemaOrContent {
         case .a(let value):

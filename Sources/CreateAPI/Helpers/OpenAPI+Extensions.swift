@@ -1,7 +1,7 @@
 import Foundation
-import OpenAPIKit30
+import OpenAPIKit
 
-extension Either where A == JSONReference<JSONSchema>, B == JSONSchema {
+extension Either where A == OpenAPI.Reference<JSONSchema>, B == JSONSchema {
     func unwrapped(in spec: OpenAPI.Document) throws -> JSONSchema {
         switch self {
         case .a(let reference):
@@ -12,7 +12,7 @@ extension Either where A == JSONReference<JSONSchema>, B == JSONSchema {
     }
 }
 
-extension Either where A == JSONReference<OpenAPI.Parameter>, B == OpenAPI.Parameter {
+extension Either where A == OpenAPI.Reference<OpenAPI.Parameter>, B == OpenAPI.Parameter {
     func unwrapped(in spec: OpenAPI.Document) throws -> OpenAPI.Parameter {
         switch self {
         case .a(let reference):
@@ -23,7 +23,7 @@ extension Either where A == JSONReference<OpenAPI.Parameter>, B == OpenAPI.Param
     }
 }
 
-extension Either where A == JSONReference<OpenAPI.Request>, B == OpenAPI.Request {
+extension Either where A == OpenAPI.Reference<OpenAPI.Request>, B == OpenAPI.Request {
     func unwrapped(in spec: OpenAPI.Document) throws -> OpenAPI.Request {
         switch self {
         case .a(let reference):
@@ -40,7 +40,7 @@ extension Either where A == JSONReference<OpenAPI.Request>, B == OpenAPI.Request
     }
 }
 
-extension Either where A == JSONReference<OpenAPI.Header>, B == OpenAPI.Header {
+extension Either where A == OpenAPI.Reference<OpenAPI.Header>, B == OpenAPI.Header {
     func unwrapped(in spec: OpenAPI.Document) throws -> OpenAPI.Header {
         switch self {
         case .a(let reference):
@@ -63,7 +63,7 @@ extension OpenAPI.Parameter {
 }
 
 extension OpenAPI.Operation {
-    var firstSuccessfulResponse: Either<JSONReference<OpenAPI.Response>, OpenAPI.Response>? {
+    var firstSuccessfulResponse: Either<OpenAPI.Reference<OpenAPI.Response>, OpenAPI.Response>? {
         guard responses.count > 1 else {
             return responses.first { $0.key == .default || $0.key.isSuccess }?.value
         }

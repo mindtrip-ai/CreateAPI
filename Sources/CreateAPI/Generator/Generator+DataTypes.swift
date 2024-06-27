@@ -1,5 +1,5 @@
 import Foundation
-import OpenAPIKit30
+import OpenAPIKit
 
 extension Generator {
     
