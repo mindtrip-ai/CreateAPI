@@ -1,7 +1,7 @@
 import ArgumentParser
 import struct ConfigurationParser.OptionOverride
 import CreateOptions
-import OpenAPIKit30
+import OpenAPIKit
 import Foundation
 import Yams
 

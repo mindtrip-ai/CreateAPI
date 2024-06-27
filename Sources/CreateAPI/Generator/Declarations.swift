@@ -1,5 +1,5 @@
 import Foundation
-import OpenAPIKit30
+import OpenAPIKit
 
 // - note: Currently doesn't contain namespaces or parents names. These are
 // mananged separately.
@@ -252,13 +252,13 @@ struct DeclarationMetadata {
     var description: String?
     var externalDocsDescription: String?
     var externalDocsURL: URL?
-    var example: AnyCodable?
+    var examples: [AnyCodable]?
     var isDeprecated: Bool
 
     init(_ schema: JSONSchemaContext?) {
         self.title = schema?.title
         self.description = schema?.description
-        self.example = schema?.example
+        self.examples = schema?.examples
         self.externalDocsDescription = schema?.externalDocs?.description
         self.externalDocsURL = schema?.externalDocs?.url
         self.isDeprecated = schema?.deprecated ?? false
@@ -267,7 +267,7 @@ struct DeclarationMetadata {
     init(_ operation: OpenAPI.Operation) {
         self.title = operation.summary
         self.description = operation.description
-        self.example = nil
+        self.examples = nil
         self.externalDocsDescription = operation.externalDocs?.description
         self.externalDocsURL = operation.externalDocs?.url
         self.isDeprecated = operation.deprecated

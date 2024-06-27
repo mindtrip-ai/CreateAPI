@@ -1,4 +1,4 @@
-import OpenAPIKit30
+import OpenAPIKit
 import Foundation
 import GrammaticalNumber
 
@@ -199,6 +199,8 @@ extension Generator {
             return try makeAnyOf(name: name, schemas: schemas, info: info, context: context)
         case .not:
             throw GeneratorError("`not` is not supported: \(name)")
+        case .null:
+          throw GeneratorError("`null` is not supported: \(name)")
         case .reference(let info, _):
             guard let ref = info.name, !ref.isEmpty else {
                 throw GeneratorError("Reference name is missing")
