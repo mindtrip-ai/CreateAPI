@@ -290,6 +290,16 @@ final class Templates {
         """
     }
 
+    func initFromDecoderEnumOfStrings() -> String {
+        return """
+        \(access)init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let rawValue = try container.decode(String.self)
+            self = Self(rawValue: rawValue) ?? .unknown
+        }
+        """
+    }
+
     func initFromDecoderOneOf(properties: [Property]) -> String {
         var statements = ""
         for property in properties {
