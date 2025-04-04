@@ -15,10 +15,16 @@ extension Generator {
 
     private func render(_ decl: EnumOfStringsDeclaration) -> String {
         let comments = templates.comments(for: decl.metadata, name: decl.name.rawValue)
-        let cases = decl.cases.map {
+        var cases = decl.cases.map {
             templates.case(name: $0.name, value: $0.key)
-        }.joined(separator: "\n")
-        return comments + templates.enumOfStrings(name: decl.name, contents: cases)
+        }
+        var additionalStatements: [String] = []
+        if cases.count > 1 {
+            cases += [templates.case(name: "unknown", value: "unknown")]
+            additionalStatements.append(templates.initFromDecoderEnumOfStrings())
+        }
+        let contents = (cases + ["\n"] + additionalStatements).joined(separator: "\n")
+        return comments + templates.enumOfStrings(name: decl.name, contents: contents)
     }
 
     private func render(_ decl: EntityDeclaration) throws -> String {
