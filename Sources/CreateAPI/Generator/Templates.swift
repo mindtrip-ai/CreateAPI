@@ -81,6 +81,35 @@ final class Templates {
         """
     }
 
+    func enumOneOfUnknownAssociatedValue(name: TypeName, protocols: Protocols) -> String {
+        var protocols = protocols
+        protocols.insert("UnknownOneOfCase")
+        return """
+        \(access)struct \(name): \(protocols.sorted().joined(separator: ", ")) {
+          \(access)enum `Type`: String, Codable, CaseIterable {
+            case unknown
+          }
+          \(access)var type: `Type` = .unknown
+          \(access)var discriminatorValue: String
+          \(access)init(discriminatorValue: String) {
+            self.discriminatorValue = discriminatorValue
+          }
+        }
+        """
+    }
+
+    func enumOneOfIsUnknownCase(name: TypeName) -> String {
+        return """
+        \(access)var isUnknownCase: Bool {
+          if case .unknown = self {
+            true
+          } else {
+            false
+          }
+        }
+        """
+    }
+
     func `case`(property: Property) -> String {
         "case \(property.name)(\(property.type))"
     }
@@ -329,7 +358,7 @@ final class Templates {
         """
     }
 
-    func initFromDecoderOneOfWithDiscriminator(properties: [Property], discriminator: Discriminator) -> String {
+    func initFromDecoderOneOfWithDiscriminator(properties: [Property], discriminator: Discriminator, hasUnknownCase: Bool) -> String {
         var expectedValues: [String] = []
         var statements = ""
         for property in properties {
@@ -344,15 +373,19 @@ final class Templates {
         }
 
         let valuesList = expectedValues.joined(separator: ", ")
-        statements += #"""
-
-        default:
-            throw DecodingError.dataCorruptedError(
-                in: container,
-                debugDescription: "Discriminator value '\(discriminatorValue)' does not match any expected values (\#(valuesList))."
-            )
+        if hasUnknownCase {
+            statements += #"""
+            default: self = .unknown(.init(discriminatorValue: discriminatorValue))
+            """#
+        } else {
+            statements += #"""
+            default:
+                throw DecodingError.dataCorruptedError(
+                    in: container,
+                    debugDescription: "Discriminator value '\(discriminatorValue)' does not match any expected values (\#(valuesList))."
+                )
+            """#
         }
-        """#
 
         return """
         \(access)init(from decoder: Decoder) throws {
@@ -366,13 +399,17 @@ final class Templates {
 
             switch discriminatorValue {
         \(statements.indented)
+            }
         }
         """
     }
 
-    func encodeOneOf(properties: [Property]) -> String {
-        let statements: [String] = properties.map {
+    func encodeOneOf(properties: [Property], hasUnknownCase: Bool) -> String {
+        var statements: [String] = properties.map {
             "case .\($0.name)(let value): try container.encode(value)"
+        }
+        if hasUnknownCase {
+            statements.append("case .unknown(let value): try container.encode(value)")
         }
 
         return """
@@ -741,5 +778,35 @@ struct StringCodingKey: CodingKey, ExpressibleByStringLiteral {
     init(stringLiteral value: String) {
         self.string = value
     }
+}
+"""
+
+let oneOfEnum = """
+import Foundation
+
+public protocol OneOfEnum {
+  var isUnknownCase: Bool { get }
+}
+
+public protocol UnknownOneOfCase {
+  var discriminatorValue: String { get }
+}
+
+extension OneOfEnum {
+  public func fatalUnknownAccess(_ message: @autoclosure () -> String = String(), file: StaticString = #file, line: UInt = #line) -> Never {
+    fatalError(message(), file: file, line: line)
+  }
+}
+
+extension UnknownOneOfCase {
+  public func fatalUnknownAccess(_ message: @autoclosure () -> String = String(), file: StaticString = #file, line: UInt = #line) -> Never {
+    fatalError(message(), file: file, line: line)
+  }
+}
+
+extension Collection where Element: OneOfEnum {
+  public var excludingUnknown: [Element] {
+    filter { !$0.isUnknownCase }
+  }
 }
 """
