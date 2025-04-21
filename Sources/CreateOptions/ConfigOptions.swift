@@ -532,6 +532,8 @@ public struct ConfigOptions: ParsableConfiguration {
         /// </details>
         @Option public var exclude: Set<EntityExclude> = []
 
+        @Option public var excludeUnknownCase: Set<EntityExclude> = []
+
         /// When set to a non-empty value, only entities matching the given names will be generated.
         /// This cannot be used in conjunction with [`exclude`](#entitiesexclude).
         @Option public var include: Set<String> = []

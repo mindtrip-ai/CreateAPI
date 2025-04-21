@@ -27,10 +27,18 @@ extension Generator {
         return comments + templates.enumOfStrings(name: decl.name, contents: contents)
     }
 
+    private func shouldGenerateUnknownCase(for decl: EntityDeclaration) -> Bool {
+        !options.entities.excludeUnknownCase.contains {
+            $0.name == decl.name.rawValue
+        }
+    }
+
     private func render(_ decl: EntityDeclaration) throws -> String {
         var properties = decl.properties
         addNamespacesForConflictsWithNestedTypes(properties: &properties, decl: decl)
         addNamespacesForConflictsWithBuiltinTypes(properties: &properties, decl: decl)
+
+        var hasUnknownCase = shouldGenerateUnknownCase(for: decl)
 
         let type = try resolveGeneratedType(for: decl)
         let isReadOnly = !options.entities.mutableProperties.contains(type.isStruct ? .structs : .classes)
@@ -45,6 +53,13 @@ extension Generator {
             }
         case .oneOf:
             contents.append(properties.map(templates.case).joined(separator: "\n"))
+            if hasUnknownCase {
+                let typeName = makeTypeName("Unknown\(decl.name)")
+                let propertyName = "unknown(\(typeName))"
+                contents.append(templates.case(name: propertyName, value: propertyName))
+                contents.append(templates.enumOneOfUnknownAssociatedValue(name: typeName, protocols: decl.protocols))
+                contents.append(templates.enumOneOfIsUnknownCase(name: typeName))
+            }
             contents += try decl.nested.map(render)
         }
 
@@ -99,13 +114,15 @@ extension Generator {
             case .oneOf:
                 if decl.protocols.isDecodable {
                     if let discriminator = decl.discriminator {
-                        contents.append(templates.initFromDecoderOneOfWithDiscriminator(properties: properties, discriminator: discriminator))
+                      contents.append(templates.initFromDecoderOneOfWithDiscriminator(properties: properties,
+                                                                                      discriminator: discriminator,
+                                                                                      hasUnknownCase: hasUnknownCase))
                     } else {
                         contents.append(templates.initFromDecoderOneOf(properties: properties))
                     }
                 }
                 if decl.protocols.isEncodable {
-                    contents.append(templates.encodeOneOf(properties: properties))
+                    contents.append(templates.encodeOneOf(properties: properties, hasUnknownCase: hasUnknownCase))
                 }
             }
         }
@@ -119,7 +136,11 @@ extension Generator {
         let entity: String
         switch type {
         case .enumOneOf:
-            entity = templates.enumOneOf(name: decl.name, contents: contents, protocols: decl.protocols)
+          var protocols = decl.protocols
+          if hasUnknownCase {
+            protocols.insert("OneOfEnum")
+          }
+          entity = templates.enumOneOf(name: decl.name, contents: contents, protocols: protocols)
         case .struct:
             entity = templates.struct(name: decl.name, contents: contents, protocols: decl.protocols)
         case .class(let isFinal):

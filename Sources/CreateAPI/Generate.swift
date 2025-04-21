@@ -140,6 +140,9 @@ struct Generate: ParsableCommand {
                 options.entities.exclude = Set(options.entities.exclude.map {
                     EntityExclude(name: template.substitute($0.name), property: $0.property)
                 })
+                options.entities.excludeUnknownCase = Set(options.entities.excludeUnknownCase.map  {
+                    EntityExclude(name: template.substitute($0.name), property: $0.property)
+                })
             }
 
             for message in options.warnings {
