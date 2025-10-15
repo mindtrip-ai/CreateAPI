@@ -86,7 +86,7 @@ final class Templates {
         protocols.insert("UnknownOneOfCase")
         return """
         \(access)struct \(name): \(protocols.sorted().joined(separator: ", ")) {
-          \(access)enum `Type`: String, Codable, CaseIterable {
+          \(access)enum `Type`: String, Codable, CaseIterable, Sendable {
             case unknown
           }
           \(access)var type: `Type` = .unknown
@@ -125,7 +125,7 @@ final class Templates {
 
     func enumOfStrings(name: TypeName, contents: String) -> String {
         return """
-        \(access)enum \(name): String, Codable, CaseIterable {
+        \(access)enum \(name): String, Codable, CaseIterable, Sendable {
         \(contents.indented)
         }
         """
