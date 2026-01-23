@@ -269,7 +269,7 @@ final class Templates {
             "\($0.name): \($0.type)\($0.isOptional ? "?" : "")"
         }.joined(separator: ", ")
         let callArguments = properties.map {
-            "\($0.name): \($0.name)"
+            "\($0.name.accessor): \($0.name)"
         }.joined(separator: ", ")
         return """
         \(access)static func makeRequiringAllProperties(\(arguments)) -> Self {
