@@ -256,6 +256,28 @@ final class Templates {
         """
     }
 
+    /// Generates a static factory method where all parameters are required (no `= nil` defaults).
+    func factoryMethod(properties: [Property]) -> String {
+        guard !properties.isEmpty else {
+            return """
+            \(access)static func makeRequiringAllProperties() -> Self {
+                Self()
+            }
+            """
+        }
+        let arguments = properties.map {
+            "\($0.name): \($0.type)\($0.isOptional ? "?" : "")"
+        }.joined(separator: ", ")
+        let callArguments = properties.map {
+            "\($0.name): \($0.name)"
+        }.joined(separator: ", ")
+        return """
+        \(access)static func makeRequiringAllProperties(\(arguments)) -> Self {
+            Self(\(callArguments))
+        }
+        """
+    }
+
     // MARK: Decodable
 
     func decode(properties: [Property], isUsingCodingKeys: Bool) -> String {

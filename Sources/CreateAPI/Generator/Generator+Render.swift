@@ -51,6 +51,9 @@ extension Generator {
             if options.entities.includeInitializer {
                 contents.append(templates.initializer(properties: properties))
             }
+            if options.entities.generateFactoryRequiringAllProperties.contains(decl.name.rawValue) {
+                contents.append(templates.factoryMethod(properties: properties))
+            }
         case .oneOf:
             contents.append(properties.map(templates.case).joined(separator: "\n"))
             if hasUnknownCase {

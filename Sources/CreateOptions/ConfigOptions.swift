@@ -459,6 +459,35 @@ public struct ConfigOptions: ParsableConfiguration {
         /// If set to `true`, uses the `default` value from the schema for the generated property for booleans
         @Option public var includeDefaultValues: Bool = true
 
+        /// A list of entity names for which a static `make()` factory method should be generated
+        /// where **all** parameters are required (no `= nil` defaults for optional properties).
+        ///
+        /// The standard initializer with defaults is still generated; this adds an additional factory method.
+        ///
+        /// <details>
+        /// <summary>Examples</summary>
+        ///
+        /// ```yaml
+        /// entities:
+        ///   generateFactoryRequiringAllProperties:
+        ///   - User
+        ///   - Order
+        /// ```
+        ///
+        /// This generates:
+        /// ```swift
+        /// // Standard initializer (unchanged)
+        /// public init(name: String, age: Int? = nil) { ... }
+        ///
+        /// // Additional factory method with all parameters required
+        /// public static func make(name: String, age: Int?) -> Self {
+        ///     Self(name: name, age: age)
+        /// }
+        /// ```
+        ///
+        /// </details>
+        @Option public var generateFactoryRequiringAllProperties: Set<String> = []
+
         /// Controls the behaviour when generating entities from nested `allOf` schemas.
         ///
         /// <details>
