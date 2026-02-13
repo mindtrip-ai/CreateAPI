@@ -12,7 +12,6 @@ final class Generator {
     let templates: Templates
 
     // State collected during generation
-    var isAnyJSONUsed = false
     var isHTTPHeadersDependencyNeeded = false
     var isEmptyObjectNeeded = false
     var isQueryEncoderNeeded = false
@@ -49,10 +48,6 @@ final class Generator {
     }
 
     // MARK: State
-
-    func setNeedsAnyJson() {
-        lock.sync { isAnyJSONUsed = true }
-    }
 
     func setNeedsHTTPHeadersDependency() {
         lock.sync { isHTTPHeadersDependencyNeeded = true }

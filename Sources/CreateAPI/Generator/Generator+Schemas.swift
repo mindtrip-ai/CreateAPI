@@ -112,9 +112,7 @@ extension Generator {
     private func makeExtensions() -> [GeneratedFile] {
         var extensions: [GeneratedFile] = []
 
-        if isAnyJSONUsed {
-            extensions.append(GeneratedFile(name: "AnyJSON", contents: templates.anyJSON))
-        }
+        extensions.append(GeneratedFile(name: "AnyJSON", contents: templates.anyJSON))
         extensions.append(GeneratedFile(name: "StringCodingKey", contents: stringCodingKey))
         extensions.append(GeneratedFile(name: "OneOfEnum", contents: oneOfEnum))
 
@@ -209,7 +207,6 @@ extension Generator {
             let type = try getReferenceType(info, context: context)
             return TypealiasDeclaration(name: name, type: type)
         case .fragment:
-            setNeedsAnyJson()
             return TypealiasDeclaration(name: name, type: .anyJSON)
         }
     }
@@ -388,7 +385,6 @@ extension Generator {
             if !details.properties.isEmpty {
                 return nil
             }
-            setNeedsAnyJson()
             return AdditionalProperties(type: .dictionary(value: .anyJSON), info: info)
         case .b(let schema):
             let nestedTypeName = makeNestedElementTypeName(for: key, context: context)
