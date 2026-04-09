@@ -10,20 +10,20 @@ public struct RepoSearchResultItem: Codable {
     public var name: String
     public var fullName: String
     /// Simple User
-    public var owner: SimpleUser?
+    public var owner: SimpleUser
     public var isPrivate: Bool
     public var htmlURL: URL
-    public var description: String?
+    public var description: String
     public var isFork: Bool
     public var url: URL
     public var createdAt: Date
     public var updatedAt: Date
     public var pushedAt: Date
-    public var homepage: URL?
+    public var homepage: URL
     public var size: Int
     public var stargazersCount: Int
     public var watchersCount: Int
-    public var language: String?
+    public var language: String
     public var forksCount: Int
     public var openIssuesCount: Int
     public var masterBranch: String?
@@ -73,7 +73,7 @@ public struct RepoSearchResultItem: Codable {
     public var openIssues: Int
     public var watchers: Int
     public var topics: [String]?
-    public var mirrorURL: URL?
+    public var mirrorURL: URL
     public var hasIssues: Bool
     public var hasProjects: Bool
     public var hasPages: Bool
@@ -85,7 +85,7 @@ public struct RepoSearchResultItem: Codable {
     /// The repository visibility: public, private, or internal.
     public var visibility: String?
     /// License Simple
-    public var license: LicenseSimple?
+    public var license: LicenseSimple
     public var permissions: Permissions?
     /// Search Result Text Matches
     public var textMatches: [SearchResultTextMatch]?
@@ -132,7 +132,7 @@ public struct RepoSearchResultItem: Codable {
         }
     }
 
-    public init(id: Int, nodeID: String, name: String, fullName: String, owner: SimpleUser? = nil, isPrivate: Bool, htmlURL: URL, description: String? = nil, isFork: Bool, url: URL, createdAt: Date, updatedAt: Date, pushedAt: Date, homepage: URL? = nil, size: Int, stargazersCount: Int, watchersCount: Int, language: String? = nil, forksCount: Int, openIssuesCount: Int, masterBranch: String? = nil, defaultBranch: String, score: Double, forksURL: URL, keysURL: String, collaboratorsURL: String, teamsURL: URL, hooksURL: URL, issueEventsURL: String, eventsURL: URL, assigneesURL: String, branchesURL: String, tagsURL: URL, blobsURL: String, gitTagsURL: String, gitRefsURL: String, treesURL: String, statusesURL: String, languagesURL: URL, stargazersURL: URL, contributorsURL: URL, subscribersURL: URL, subscriptionURL: URL, commitsURL: String, gitCommitsURL: String, commentsURL: String, issueCommentURL: String, contentsURL: String, compareURL: String, mergesURL: URL, archiveURL: String, downloadsURL: URL, issuesURL: String, pullsURL: String, milestonesURL: String, notificationsURL: String, labelsURL: String, releasesURL: String, deploymentsURL: URL, gitURL: String, sshURL: String, cloneURL: String, svnURL: URL, forks: Int, openIssues: Int, watchers: Int, topics: [String]? = nil, mirrorURL: URL? = nil, hasIssues: Bool, hasProjects: Bool, hasPages: Bool, hasWiki: Bool, hasDownloads: Bool, isArchived: Bool, isDisabled: Bool, visibility: String? = nil, license: LicenseSimple? = nil, permissions: Permissions? = nil, textMatches: [SearchResultTextMatch]? = nil, tempCloneToken: String? = nil, allowMergeCommit: Bool? = nil, allowSquashMerge: Bool? = nil, allowRebaseMerge: Bool? = nil, allowAutoMerge: Bool? = nil, deleteBranchOnMerge: Bool? = nil, allowForking: Bool? = nil, isTemplate: Bool? = nil) {
+    public init(id: Int, nodeID: String, name: String, fullName: String, owner: SimpleUser, isPrivate: Bool, htmlURL: URL, description: String, isFork: Bool, url: URL, createdAt: Date, updatedAt: Date, pushedAt: Date, homepage: URL, size: Int, stargazersCount: Int, watchersCount: Int, language: String, forksCount: Int, openIssuesCount: Int, masterBranch: String? = nil, defaultBranch: String, score: Double, forksURL: URL, keysURL: String, collaboratorsURL: String, teamsURL: URL, hooksURL: URL, issueEventsURL: String, eventsURL: URL, assigneesURL: String, branchesURL: String, tagsURL: URL, blobsURL: String, gitTagsURL: String, gitRefsURL: String, treesURL: String, statusesURL: String, languagesURL: URL, stargazersURL: URL, contributorsURL: URL, subscribersURL: URL, subscriptionURL: URL, commitsURL: String, gitCommitsURL: String, commentsURL: String, issueCommentURL: String, contentsURL: String, compareURL: String, mergesURL: URL, archiveURL: String, downloadsURL: URL, issuesURL: String, pullsURL: String, milestonesURL: String, notificationsURL: String, labelsURL: String, releasesURL: String, deploymentsURL: URL, gitURL: String, sshURL: String, cloneURL: String, svnURL: URL, forks: Int, openIssues: Int, watchers: Int, topics: [String]? = nil, mirrorURL: URL, hasIssues: Bool, hasProjects: Bool, hasPages: Bool, hasWiki: Bool, hasDownloads: Bool, isArchived: Bool, isDisabled: Bool, visibility: String? = nil, license: LicenseSimple, permissions: Permissions? = nil, textMatches: [SearchResultTextMatch]? = nil, tempCloneToken: String? = nil, allowMergeCommit: Bool? = nil, allowSquashMerge: Bool? = nil, allowRebaseMerge: Bool? = nil, allowAutoMerge: Bool? = nil, deleteBranchOnMerge: Bool? = nil, allowForking: Bool? = nil, isTemplate: Bool? = nil) {
         self.id = id
         self.nodeID = nodeID
         self.name = name
@@ -228,20 +228,20 @@ public struct RepoSearchResultItem: Codable {
         self.nodeID = try values.decode(String.self, forKey: "node_id")
         self.name = try values.decode(String.self, forKey: "name")
         self.fullName = try values.decode(String.self, forKey: "full_name")
-        self.owner = try values.decodeIfPresent(SimpleUser.self, forKey: "owner")
+        self.owner = try values.decode(SimpleUser.self, forKey: "owner")
         self.isPrivate = try values.decode(Bool.self, forKey: "private")
         self.htmlURL = try values.decode(URL.self, forKey: "html_url")
-        self.description = try values.decodeIfPresent(String.self, forKey: "description")
+        self.description = try values.decode(String.self, forKey: "description")
         self.isFork = try values.decode(Bool.self, forKey: "fork")
         self.url = try values.decode(URL.self, forKey: "url")
         self.createdAt = try values.decode(Date.self, forKey: "created_at")
         self.updatedAt = try values.decode(Date.self, forKey: "updated_at")
         self.pushedAt = try values.decode(Date.self, forKey: "pushed_at")
-        self.homepage = try values.decodeIfPresent(URL.self, forKey: "homepage")
+        self.homepage = try values.decode(URL.self, forKey: "homepage")
         self.size = try values.decode(Int.self, forKey: "size")
         self.stargazersCount = try values.decode(Int.self, forKey: "stargazers_count")
         self.watchersCount = try values.decode(Int.self, forKey: "watchers_count")
-        self.language = try values.decodeIfPresent(String.self, forKey: "language")
+        self.language = try values.decode(String.self, forKey: "language")
         self.forksCount = try values.decode(Int.self, forKey: "forks_count")
         self.openIssuesCount = try values.decode(Int.self, forKey: "open_issues_count")
         self.masterBranch = try values.decodeIfPresent(String.self, forKey: "master_branch")
@@ -291,7 +291,7 @@ public struct RepoSearchResultItem: Codable {
         self.openIssues = try values.decode(Int.self, forKey: "open_issues")
         self.watchers = try values.decode(Int.self, forKey: "watchers")
         self.topics = try values.decodeIfPresent([String].self, forKey: "topics")
-        self.mirrorURL = try values.decodeIfPresent(URL.self, forKey: "mirror_url")
+        self.mirrorURL = try values.decode(URL.self, forKey: "mirror_url")
         self.hasIssues = try values.decode(Bool.self, forKey: "has_issues")
         self.hasProjects = try values.decode(Bool.self, forKey: "has_projects")
         self.hasPages = try values.decode(Bool.self, forKey: "has_pages")
@@ -300,7 +300,7 @@ public struct RepoSearchResultItem: Codable {
         self.isArchived = try values.decode(Bool.self, forKey: "archived")
         self.isDisabled = try values.decode(Bool.self, forKey: "disabled")
         self.visibility = try values.decodeIfPresent(String.self, forKey: "visibility")
-        self.license = try values.decodeIfPresent(LicenseSimple.self, forKey: "license")
+        self.license = try values.decode(LicenseSimple.self, forKey: "license")
         self.permissions = try values.decodeIfPresent(Permissions.self, forKey: "permissions")
         self.textMatches = try values.decodeIfPresent([SearchResultTextMatch].self, forKey: "text_matches")
         self.tempCloneToken = try values.decodeIfPresent(String.self, forKey: "temp_clone_token")
@@ -319,20 +319,20 @@ public struct RepoSearchResultItem: Codable {
         try values.encode(nodeID, forKey: "node_id")
         try values.encode(name, forKey: "name")
         try values.encode(fullName, forKey: "full_name")
-        try values.encodeIfPresent(owner, forKey: "owner")
+        try values.encode(owner, forKey: "owner")
         try values.encode(isPrivate, forKey: "private")
         try values.encode(htmlURL, forKey: "html_url")
-        try values.encodeIfPresent(description, forKey: "description")
+        try values.encode(description, forKey: "description")
         try values.encode(isFork, forKey: "fork")
         try values.encode(url, forKey: "url")
         try values.encode(createdAt, forKey: "created_at")
         try values.encode(updatedAt, forKey: "updated_at")
         try values.encode(pushedAt, forKey: "pushed_at")
-        try values.encodeIfPresent(homepage, forKey: "homepage")
+        try values.encode(homepage, forKey: "homepage")
         try values.encode(size, forKey: "size")
         try values.encode(stargazersCount, forKey: "stargazers_count")
         try values.encode(watchersCount, forKey: "watchers_count")
-        try values.encodeIfPresent(language, forKey: "language")
+        try values.encode(language, forKey: "language")
         try values.encode(forksCount, forKey: "forks_count")
         try values.encode(openIssuesCount, forKey: "open_issues_count")
         try values.encodeIfPresent(masterBranch, forKey: "master_branch")
@@ -382,7 +382,7 @@ public struct RepoSearchResultItem: Codable {
         try values.encode(openIssues, forKey: "open_issues")
         try values.encode(watchers, forKey: "watchers")
         try values.encodeIfPresent(topics, forKey: "topics")
-        try values.encodeIfPresent(mirrorURL, forKey: "mirror_url")
+        try values.encode(mirrorURL, forKey: "mirror_url")
         try values.encode(hasIssues, forKey: "has_issues")
         try values.encode(hasProjects, forKey: "has_projects")
         try values.encode(hasPages, forKey: "has_pages")
@@ -391,7 +391,7 @@ public struct RepoSearchResultItem: Codable {
         try values.encode(isArchived, forKey: "archived")
         try values.encode(isDisabled, forKey: "disabled")
         try values.encodeIfPresent(visibility, forKey: "visibility")
-        try values.encodeIfPresent(license, forKey: "license")
+        try values.encode(license, forKey: "license")
         try values.encodeIfPresent(permissions, forKey: "permissions")
         try values.encodeIfPresent(textMatches, forKey: "text_matches")
         try values.encodeIfPresent(tempCloneToken, forKey: "temp_clone_token")

@@ -17,10 +17,31 @@ public struct ValidationError: Codable {
         public var index: Int?
         public var value: Value?
 
-        public enum Value: Codable {
+        public enum Value: Codable, OneOfEnum {
             case string(String)
             case int(Int)
             case strings([String])
+
+            case unknown(UnknownValue)
+
+            public struct UnknownValue: Codable, UnknownOneOfCase {
+              public enum `Type`: String, Codable, CaseIterable, Sendable {
+                case unknown
+              }
+              public var type: `Type` = .unknown
+              public var discriminatorValue: String
+              public init(discriminatorValue: String) {
+                self.discriminatorValue = discriminatorValue
+              }
+            }
+
+            public var isUnknownCase: Bool {
+              if case .unknown = self {
+                true
+              } else {
+                false
+              }
+            }
 
             public init(from decoder: Decoder) throws {
                 let container = try decoder.singleValueContainer()
@@ -44,6 +65,7 @@ public struct ValidationError: Codable {
                 case .string(let value): try container.encode(value)
                 case .int(let value): try container.encode(value)
                 case .strings(let value): try container.encode(value)
+                case .unknown(let value): try container.encode(value)
                 }
             }
         }

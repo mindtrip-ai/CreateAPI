@@ -38,11 +38,19 @@ extension Paths.Users.WithUsername {
             return encoder.items
         }
 
-        public enum SubjectType: String, Codable, CaseIterable {
+        public enum SubjectType: String, Codable, CaseIterable, Sendable {
             case organization
             case repository
             case issue
             case pullRequest = "pull_request"
+            case unknown
+
+
+            public init(from decoder: Decoder) throws {
+                let container = try decoder.singleValueContainer()
+                let rawValue = try container.decode(String.self)
+                self = Self(rawValue: rawValue) ?? .unknown
+            }
         }
     }
 }

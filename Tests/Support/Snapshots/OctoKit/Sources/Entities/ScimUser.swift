@@ -17,11 +17,11 @@ public struct ScimUser: Codable {
     /// The ID of the User.
     ///
     /// Example: "a7b0f98395"
-    public var externalID: String?
+    public var externalID: String
     /// Configured by the admin. Could be an email, login, or username
     ///
     /// Example: "someone@example.com"
-    public var userName: String?
+    public var userName: String
     /// The name of the user, suitable for display to end-users
     ///
     /// Example: "Jon Doe"
@@ -78,11 +78,11 @@ public struct ScimUser: Codable {
     ///   "givenName" : "Jane"
     /// }
     public struct Name: Codable {
-        public var givenName: String?
-        public var familyName: String?
+        public var givenName: String
+        public var familyName: String
         public var formatted: String?
 
-        public init(givenName: String? = nil, familyName: String? = nil, formatted: String? = nil) {
+        public init(givenName: String, familyName: String, formatted: String? = nil) {
             self.givenName = givenName
             self.familyName = familyName
             self.formatted = formatted
@@ -90,15 +90,15 @@ public struct ScimUser: Codable {
 
         public init(from decoder: Decoder) throws {
             let values = try decoder.container(keyedBy: StringCodingKey.self)
-            self.givenName = try values.decodeIfPresent(String.self, forKey: "givenName")
-            self.familyName = try values.decodeIfPresent(String.self, forKey: "familyName")
+            self.givenName = try values.decode(String.self, forKey: "givenName")
+            self.familyName = try values.decode(String.self, forKey: "familyName")
             self.formatted = try values.decodeIfPresent(String.self, forKey: "formatted")
         }
 
         public func encode(to encoder: Encoder) throws {
             var values = encoder.container(keyedBy: StringCodingKey.self)
-            try values.encodeIfPresent(givenName, forKey: "givenName")
-            try values.encodeIfPresent(familyName, forKey: "familyName")
+            try values.encode(givenName, forKey: "givenName")
+            try values.encode(familyName, forKey: "familyName")
             try values.encodeIfPresent(formatted, forKey: "formatted")
         }
     }
@@ -164,16 +164,45 @@ public struct ScimUser: Codable {
         public var path: String?
         public var value: Value?
 
-        public enum Op: String, Codable, CaseIterable {
+        public enum Op: String, Codable, CaseIterable, Sendable {
             case add
             case remove
             case replace
+            case unknown
+
+
+            public init(from decoder: Decoder) throws {
+                let container = try decoder.singleValueContainer()
+                let rawValue = try container.decode(String.self)
+                self = Self(rawValue: rawValue) ?? .unknown
+            }
         }
 
-        public enum Value: Codable {
+        public enum Value: Codable, OneOfEnum {
             case string(String)
             case object([String: AnyJSON])
             case anyJSONs([AnyJSON])
+
+            case unknown(UnknownValue)
+
+            public struct UnknownValue: Codable, UnknownOneOfCase {
+              public enum `Type`: String, Codable, CaseIterable, Sendable {
+                case unknown
+              }
+              public var type: `Type` = .unknown
+              public var discriminatorValue: String
+              public init(discriminatorValue: String) {
+                self.discriminatorValue = discriminatorValue
+              }
+            }
+
+            public var isUnknownCase: Bool {
+              if case .unknown = self {
+                true
+              } else {
+                false
+              }
+            }
 
             public init(from decoder: Decoder) throws {
                 let container = try decoder.singleValueContainer()
@@ -197,6 +226,7 @@ public struct ScimUser: Codable {
                 case .string(let value): try container.encode(value)
                 case .object(let value): try container.encode(value)
                 case .anyJSONs(let value): try container.encode(value)
+                case .unknown(let value): try container.encode(value)
                 }
             }
         }
@@ -244,7 +274,7 @@ public struct ScimUser: Codable {
         }
     }
 
-    public init(schemas: [String], id: String, externalID: String? = nil, userName: String? = nil, displayName: String? = nil, name: Name, emails: [Email], isActive: Bool, meta: Meta, organizationID: Int? = nil, operations: [Operation]? = nil, groups: [Group]? = nil) {
+    public init(schemas: [String], id: String, externalID: String, userName: String, displayName: String? = nil, name: Name, emails: [Email], isActive: Bool, meta: Meta, organizationID: Int? = nil, operations: [Operation]? = nil, groups: [Group]? = nil) {
         self.schemas = schemas
         self.id = id
         self.externalID = externalID
@@ -263,8 +293,8 @@ public struct ScimUser: Codable {
         let values = try decoder.container(keyedBy: StringCodingKey.self)
         self.schemas = try values.decode([String].self, forKey: "schemas")
         self.id = try values.decode(String.self, forKey: "id")
-        self.externalID = try values.decodeIfPresent(String.self, forKey: "externalId")
-        self.userName = try values.decodeIfPresent(String.self, forKey: "userName")
+        self.externalID = try values.decode(String.self, forKey: "externalId")
+        self.userName = try values.decode(String.self, forKey: "userName")
         self.displayName = try values.decodeIfPresent(String.self, forKey: "displayName")
         self.name = try values.decode(Name.self, forKey: "name")
         self.emails = try values.decode([Email].self, forKey: "emails")
@@ -279,8 +309,8 @@ public struct ScimUser: Codable {
         var values = encoder.container(keyedBy: StringCodingKey.self)
         try values.encode(schemas, forKey: "schemas")
         try values.encode(id, forKey: "id")
-        try values.encodeIfPresent(externalID, forKey: "externalId")
-        try values.encodeIfPresent(userName, forKey: "userName")
+        try values.encode(externalID, forKey: "externalId")
+        try values.encode(userName, forKey: "userName")
         try values.encodeIfPresent(displayName, forKey: "displayName")
         try values.encode(name, forKey: "name")
         try values.encode(emails, forKey: "emails")

@@ -28,11 +28,19 @@ public struct CommitComparison: Codable {
     public var files: [DiffEntry]?
 
     /// Example: "ahead"
-    public enum Status: String, Codable, CaseIterable {
+    public enum Status: String, Codable, CaseIterable, Sendable {
         case diverged
         case ahead
         case behind
         case identical
+        case unknown
+
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let rawValue = try container.decode(String.self)
+            self = Self(rawValue: rawValue) ?? .unknown
+        }
     }
 
     public init(url: URL, htmlURL: URL, permalinkURL: URL, diffURL: URL, patchURL: URL, baseCommit: Commit, mergeBaseCommit: Commit, status: Status, aheadBy: Int, behindBy: Int, totalCommits: Int, commits: [Commit], files: [DiffEntry]? = nil) {

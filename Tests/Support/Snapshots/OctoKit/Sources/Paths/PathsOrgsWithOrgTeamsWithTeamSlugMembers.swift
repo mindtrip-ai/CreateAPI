@@ -35,10 +35,18 @@ extension Paths.Orgs.WithOrg.Teams.WithTeamSlug {
             public var perPage: Int?
             public var page: Int?
 
-            public enum Role: String, Codable, CaseIterable {
+            public enum Role: String, Codable, CaseIterable, Sendable {
                 case member
                 case maintainer
                 case all
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             public init(role: Role? = nil, perPage: Int? = nil, page: Int? = nil) {

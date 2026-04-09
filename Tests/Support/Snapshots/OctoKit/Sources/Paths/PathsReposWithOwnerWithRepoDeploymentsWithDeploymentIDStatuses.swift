@@ -67,7 +67,7 @@ extension Paths.Repos.WithOwner.WithRepo.Deployments.WithDeploymentID {
             public var isAutoInactive: Bool?
 
             /// The state of the status. Can be one of `error`, `failure`, `inactive`, `in_progress`, `queued`, `pending`, or `success`. When you set a transient deployment to `inactive`, the deployment will be shown as `destroyed` in GitHub.
-            public enum State: String, Codable, CaseIterable {
+            public enum State: String, Codable, CaseIterable, Sendable {
                 case error
                 case failure
                 case inactive
@@ -75,13 +75,29 @@ extension Paths.Repos.WithOwner.WithRepo.Deployments.WithDeploymentID {
                 case queued
                 case pending
                 case success
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             /// Name for the target deployment environment, which can be changed when setting a deploy status. For example, `production`, `staging`, or `qa`.
-            public enum Environment: String, Codable, CaseIterable {
+            public enum Environment: String, Codable, CaseIterable, Sendable {
                 case production
                 case staging
                 case qa
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             public init(state: State, targetURL: String? = nil, logURL: String? = nil, description: String? = nil, environment: Environment? = nil, environmentURL: String? = nil, isAutoInactive: Bool? = nil) {

@@ -37,22 +37,46 @@ extension Paths.Repos.WithOwner.WithRepo {
             public var perPage: Int?
             public var page: Int?
 
-            public enum State: String, Codable, CaseIterable {
+            public enum State: String, Codable, CaseIterable, Sendable {
                 case `open`
                 case closed
                 case all
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
-            public enum Sort: String, Codable, CaseIterable {
+            public enum Sort: String, Codable, CaseIterable, Sendable {
                 case created
                 case updated
                 case popularity
                 case longRunning = "long-running"
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
-            public enum Direction: String, Codable, CaseIterable {
+            public enum Direction: String, Codable, CaseIterable, Sendable {
                 case asc
                 case desc
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             public init(state: State? = nil, head: String? = nil, base: String? = nil, sort: Sort? = nil, direction: Direction? = nil, perPage: Int? = nil, page: Int? = nil) {

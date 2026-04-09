@@ -23,7 +23,7 @@ public struct WorkflowRun: Codable {
     /// Example: "MDEwOkNoZWNrU3VpdGU0Mg=="
     public var checkSuiteNodeID: String?
     /// Example: "master"
-    public var headBranch: String?
+    public var headBranch: String
     /// The SHA of the head commit that points to the version of the worflow being run.
     ///
     /// Example: "009b8a3a9ccbb128af87f9b1c0f4c62e8a304f6d"
@@ -37,9 +37,9 @@ public struct WorkflowRun: Codable {
     /// Example: "push"
     public var event: String
     /// Example: "completed"
-    public var status: String?
+    public var status: String
     /// Example: "neutral"
-    public var conclusion: String?
+    public var conclusion: String
     /// The ID of the parent workflow.
     public var workflowID: Int
     /// The URL to the workflow run.
@@ -48,7 +48,7 @@ public struct WorkflowRun: Codable {
     public var url: String
     /// Example: "https://github.com/github/hello-world/suites/4"
     public var htmlURL: String
-    public var pullRequests: [PullRequestMinimal]?
+    public var pullRequests: [PullRequestMinimal]
     public var createdAt: Date
     public var updatedAt: Date
     /// The start time of the latest run. Resets on re-run.
@@ -86,14 +86,14 @@ public struct WorkflowRun: Codable {
     /// Example: "https://api.github.com/repos/github/hello-world/actions/workflows/main.yaml"
     public var workflowURL: String
     /// Simple Commit
-    public var headCommit: SimpleCommit?
+    public var headCommit: SimpleCommit
     /// Minimal Repository
     public var repository: MinimalRepository
     /// Minimal Repository
     public var headRepository: MinimalRepository
     public var headRepositoryID: Int?
 
-    public init(id: Int, name: String? = nil, nodeID: String, checkSuiteID: Int? = nil, checkSuiteNodeID: String? = nil, headBranch: String? = nil, headSha: String, runNumber: Int, runAttempt: Int? = nil, event: String, status: String? = nil, conclusion: String? = nil, workflowID: Int, url: String, htmlURL: String, pullRequests: [PullRequestMinimal]? = nil, createdAt: Date, updatedAt: Date, runStartedAt: Date? = nil, jobsURL: String, logsURL: String, checkSuiteURL: String, artifactsURL: String, cancelURL: String, rerunURL: String, previousAttemptURL: String? = nil, workflowURL: String, headCommit: SimpleCommit? = nil, repository: MinimalRepository, headRepository: MinimalRepository, headRepositoryID: Int? = nil) {
+    public init(id: Int, name: String? = nil, nodeID: String, checkSuiteID: Int? = nil, checkSuiteNodeID: String? = nil, headBranch: String, headSha: String, runNumber: Int, runAttempt: Int? = nil, event: String, status: String, conclusion: String, workflowID: Int, url: String, htmlURL: String, pullRequests: [PullRequestMinimal], createdAt: Date, updatedAt: Date, runStartedAt: Date? = nil, jobsURL: String, logsURL: String, checkSuiteURL: String, artifactsURL: String, cancelURL: String, rerunURL: String, previousAttemptURL: String? = nil, workflowURL: String, headCommit: SimpleCommit, repository: MinimalRepository, headRepository: MinimalRepository, headRepositoryID: Int? = nil) {
         self.id = id
         self.name = name
         self.nodeID = nodeID
@@ -134,17 +134,17 @@ public struct WorkflowRun: Codable {
         self.nodeID = try values.decode(String.self, forKey: "node_id")
         self.checkSuiteID = try values.decodeIfPresent(Int.self, forKey: "check_suite_id")
         self.checkSuiteNodeID = try values.decodeIfPresent(String.self, forKey: "check_suite_node_id")
-        self.headBranch = try values.decodeIfPresent(String.self, forKey: "head_branch")
+        self.headBranch = try values.decode(String.self, forKey: "head_branch")
         self.headSha = try values.decode(String.self, forKey: "head_sha")
         self.runNumber = try values.decode(Int.self, forKey: "run_number")
         self.runAttempt = try values.decodeIfPresent(Int.self, forKey: "run_attempt")
         self.event = try values.decode(String.self, forKey: "event")
-        self.status = try values.decodeIfPresent(String.self, forKey: "status")
-        self.conclusion = try values.decodeIfPresent(String.self, forKey: "conclusion")
+        self.status = try values.decode(String.self, forKey: "status")
+        self.conclusion = try values.decode(String.self, forKey: "conclusion")
         self.workflowID = try values.decode(Int.self, forKey: "workflow_id")
         self.url = try values.decode(String.self, forKey: "url")
         self.htmlURL = try values.decode(String.self, forKey: "html_url")
-        self.pullRequests = try values.decodeIfPresent([PullRequestMinimal].self, forKey: "pull_requests")
+        self.pullRequests = try values.decode([PullRequestMinimal].self, forKey: "pull_requests")
         self.createdAt = try values.decode(Date.self, forKey: "created_at")
         self.updatedAt = try values.decode(Date.self, forKey: "updated_at")
         self.runStartedAt = try values.decodeIfPresent(Date.self, forKey: "run_started_at")
@@ -156,7 +156,7 @@ public struct WorkflowRun: Codable {
         self.rerunURL = try values.decode(String.self, forKey: "rerun_url")
         self.previousAttemptURL = try values.decodeIfPresent(String.self, forKey: "previous_attempt_url")
         self.workflowURL = try values.decode(String.self, forKey: "workflow_url")
-        self.headCommit = try values.decodeIfPresent(SimpleCommit.self, forKey: "head_commit")
+        self.headCommit = try values.decode(SimpleCommit.self, forKey: "head_commit")
         self.repository = try values.decode(MinimalRepository.self, forKey: "repository")
         self.headRepository = try values.decode(MinimalRepository.self, forKey: "head_repository")
         self.headRepositoryID = try values.decodeIfPresent(Int.self, forKey: "head_repository_id")
@@ -169,17 +169,17 @@ public struct WorkflowRun: Codable {
         try values.encode(nodeID, forKey: "node_id")
         try values.encodeIfPresent(checkSuiteID, forKey: "check_suite_id")
         try values.encodeIfPresent(checkSuiteNodeID, forKey: "check_suite_node_id")
-        try values.encodeIfPresent(headBranch, forKey: "head_branch")
+        try values.encode(headBranch, forKey: "head_branch")
         try values.encode(headSha, forKey: "head_sha")
         try values.encode(runNumber, forKey: "run_number")
         try values.encodeIfPresent(runAttempt, forKey: "run_attempt")
         try values.encode(event, forKey: "event")
-        try values.encodeIfPresent(status, forKey: "status")
-        try values.encodeIfPresent(conclusion, forKey: "conclusion")
+        try values.encode(status, forKey: "status")
+        try values.encode(conclusion, forKey: "conclusion")
         try values.encode(workflowID, forKey: "workflow_id")
         try values.encode(url, forKey: "url")
         try values.encode(htmlURL, forKey: "html_url")
-        try values.encodeIfPresent(pullRequests, forKey: "pull_requests")
+        try values.encode(pullRequests, forKey: "pull_requests")
         try values.encode(createdAt, forKey: "created_at")
         try values.encode(updatedAt, forKey: "updated_at")
         try values.encodeIfPresent(runStartedAt, forKey: "run_started_at")
@@ -191,7 +191,7 @@ public struct WorkflowRun: Codable {
         try values.encode(rerunURL, forKey: "rerun_url")
         try values.encodeIfPresent(previousAttemptURL, forKey: "previous_attempt_url")
         try values.encode(workflowURL, forKey: "workflow_url")
-        try values.encodeIfPresent(headCommit, forKey: "head_commit")
+        try values.encode(headCommit, forKey: "head_commit")
         try values.encode(repository, forKey: "repository")
         try values.encode(headRepository, forKey: "head_repository")
         try values.encodeIfPresent(headRepositoryID, forKey: "head_repository_id")

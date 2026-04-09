@@ -4,8 +4,16 @@
 import Foundation
 import NaiveDate
 
-public enum OuterEnum: String, Codable, CaseIterable {
+public enum OuterEnum: String, Codable, CaseIterable, Sendable {
     case placed
     case approved
     case delivered
+    case unknown
+
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let rawValue = try container.decode(String.self)
+        self = Self(rawValue: rawValue) ?? .unknown
+    }
 }

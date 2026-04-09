@@ -14,7 +14,7 @@ public struct RepositorySubscription: Codable {
     public var isSubscribed: Bool
     /// Determines if all notifications should be blocked from this repository.
     public var isIgnored: Bool
-    public var reason: String?
+    public var reason: String
     /// Example: "2012-10-06T21:34:12Z"
     public var createdAt: Date
     /// Example: "https://api.github.com/repos/octocat/example/subscription"
@@ -22,7 +22,7 @@ public struct RepositorySubscription: Codable {
     /// Example: "https://api.github.com/repos/octocat/example"
     public var repositoryURL: URL
 
-    public init(isSubscribed: Bool, isIgnored: Bool, reason: String? = nil, createdAt: Date, url: URL, repositoryURL: URL) {
+    public init(isSubscribed: Bool, isIgnored: Bool, reason: String, createdAt: Date, url: URL, repositoryURL: URL) {
         self.isSubscribed = isSubscribed
         self.isIgnored = isIgnored
         self.reason = reason
@@ -35,7 +35,7 @@ public struct RepositorySubscription: Codable {
         let values = try decoder.container(keyedBy: StringCodingKey.self)
         self.isSubscribed = try values.decode(Bool.self, forKey: "subscribed")
         self.isIgnored = try values.decode(Bool.self, forKey: "ignored")
-        self.reason = try values.decodeIfPresent(String.self, forKey: "reason")
+        self.reason = try values.decode(String.self, forKey: "reason")
         self.createdAt = try values.decode(Date.self, forKey: "created_at")
         self.url = try values.decode(URL.self, forKey: "url")
         self.repositoryURL = try values.decode(URL.self, forKey: "repository_url")
@@ -45,7 +45,7 @@ public struct RepositorySubscription: Codable {
         var values = encoder.container(keyedBy: StringCodingKey.self)
         try values.encode(isSubscribed, forKey: "subscribed")
         try values.encode(isIgnored, forKey: "ignored")
-        try values.encodeIfPresent(reason, forKey: "reason")
+        try values.encode(reason, forKey: "reason")
         try values.encode(createdAt, forKey: "created_at")
         try values.encode(url, forKey: "url")
         try values.encode(repositoryURL, forKey: "repository_url")

@@ -10,7 +10,7 @@ public struct Reaction: Codable {
     /// Example: "MDg6UmVhY3Rpb24x"
     public var nodeID: String
     /// Simple User
-    public var user: SimpleUser?
+    public var user: SimpleUser
     /// The reaction to use
     ///
     /// Example: "heart"
@@ -21,7 +21,7 @@ public struct Reaction: Codable {
     /// The reaction to use
     ///
     /// Example: "heart"
-    public enum Content: String, Codable, CaseIterable {
+    public enum Content: String, Codable, CaseIterable, Sendable {
         case plus1 = "+1"
         case minus1 = "-1"
         case laugh
@@ -30,9 +30,17 @@ public struct Reaction: Codable {
         case hooray
         case rocket
         case eyes
+        case unknown
+
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let rawValue = try container.decode(String.self)
+            self = Self(rawValue: rawValue) ?? .unknown
+        }
     }
 
-    public init(id: Int, nodeID: String, user: SimpleUser? = nil, content: Content, createdAt: Date) {
+    public init(id: Int, nodeID: String, user: SimpleUser, content: Content, createdAt: Date) {
         self.id = id
         self.nodeID = nodeID
         self.user = user
@@ -44,7 +52,7 @@ public struct Reaction: Codable {
         let values = try decoder.container(keyedBy: StringCodingKey.self)
         self.id = try values.decode(Int.self, forKey: "id")
         self.nodeID = try values.decode(String.self, forKey: "node_id")
-        self.user = try values.decodeIfPresent(SimpleUser.self, forKey: "user")
+        self.user = try values.decode(SimpleUser.self, forKey: "user")
         self.content = try values.decode(Content.self, forKey: "content")
         self.createdAt = try values.decode(Date.self, forKey: "created_at")
     }
@@ -53,7 +61,7 @@ public struct Reaction: Codable {
         var values = encoder.container(keyedBy: StringCodingKey.self)
         try values.encode(id, forKey: "id")
         try values.encode(nodeID, forKey: "node_id")
-        try values.encodeIfPresent(user, forKey: "user")
+        try values.encode(user, forKey: "user")
         try values.encode(content, forKey: "content")
         try values.encode(createdAt, forKey: "created_at")
     }

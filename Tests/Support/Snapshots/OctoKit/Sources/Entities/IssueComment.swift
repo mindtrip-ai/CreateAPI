@@ -23,7 +23,7 @@ public struct IssueComment: Codable {
     public var bodyHTML: String?
     public var htmlURL: URL
     /// Simple User
-    public var user: SimpleUser?
+    public var user: SimpleUser
     /// Example: "2011-04-14T16:00:49Z"
     public var createdAt: Date
     /// Example: "2011-04-14T16:00:49Z"
@@ -42,7 +42,7 @@ public struct IssueComment: Codable {
     /// Reaction Rollup
     public var reactions: ReactionRollup?
 
-    public init(id: Int, nodeID: String, url: URL, body: String? = nil, bodyText: String? = nil, bodyHTML: String? = nil, htmlURL: URL, user: SimpleUser? = nil, createdAt: Date, updatedAt: Date, issueURL: URL, authorAssociation: AuthorAssociation, performedViaGithubApp: Integration? = nil, reactions: ReactionRollup? = nil) {
+    public init(id: Int, nodeID: String, url: URL, body: String? = nil, bodyText: String? = nil, bodyHTML: String? = nil, htmlURL: URL, user: SimpleUser, createdAt: Date, updatedAt: Date, issueURL: URL, authorAssociation: AuthorAssociation, performedViaGithubApp: Integration? = nil, reactions: ReactionRollup? = nil) {
         self.id = id
         self.nodeID = nodeID
         self.url = url
@@ -68,7 +68,7 @@ public struct IssueComment: Codable {
         self.bodyText = try values.decodeIfPresent(String.self, forKey: "body_text")
         self.bodyHTML = try values.decodeIfPresent(String.self, forKey: "body_html")
         self.htmlURL = try values.decode(URL.self, forKey: "html_url")
-        self.user = try values.decodeIfPresent(SimpleUser.self, forKey: "user")
+        self.user = try values.decode(SimpleUser.self, forKey: "user")
         self.createdAt = try values.decode(Date.self, forKey: "created_at")
         self.updatedAt = try values.decode(Date.self, forKey: "updated_at")
         self.issueURL = try values.decode(URL.self, forKey: "issue_url")
@@ -86,7 +86,7 @@ public struct IssueComment: Codable {
         try values.encodeIfPresent(bodyText, forKey: "body_text")
         try values.encodeIfPresent(bodyHTML, forKey: "body_html")
         try values.encode(htmlURL, forKey: "html_url")
-        try values.encodeIfPresent(user, forKey: "user")
+        try values.encode(user, forKey: "user")
         try values.encode(createdAt, forKey: "created_at")
         try values.encode(updatedAt, forKey: "updated_at")
         try values.encode(issueURL, forKey: "issue_url")

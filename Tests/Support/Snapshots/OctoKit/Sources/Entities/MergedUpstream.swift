@@ -10,10 +10,18 @@ public struct MergedUpstream: Codable {
     public var mergeType: MergeType?
     public var baseBranch: String?
 
-    public enum MergeType: String, Codable, CaseIterable {
+    public enum MergeType: String, Codable, CaseIterable, Sendable {
         case merge
         case fastForward = "fast-forward"
         case `none`
+        case unknown
+
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let rawValue = try container.decode(String.self)
+            self = Self(rawValue: rawValue) ?? .unknown
+        }
     }
 
     public init(message: String? = nil, mergeType: MergeType? = nil, baseBranch: String? = nil) {

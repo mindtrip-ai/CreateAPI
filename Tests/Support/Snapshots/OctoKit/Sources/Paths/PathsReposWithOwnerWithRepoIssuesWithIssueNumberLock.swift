@@ -39,11 +39,19 @@ extension Paths.Repos.WithOwner.WithRepo.Issues.WithIssueNumber {
             /// \* `too heated`  
             /// \* `resolved`  
             /// \* `spam`
-            public enum LockReason: String, Codable, CaseIterable {
+            public enum LockReason: String, Codable, CaseIterable, Sendable {
                 case offTopic = "off-topic"
                 case tooHeated = "too heated"
                 case resolved
                 case spam
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             public init(lockReason: LockReason? = nil) {

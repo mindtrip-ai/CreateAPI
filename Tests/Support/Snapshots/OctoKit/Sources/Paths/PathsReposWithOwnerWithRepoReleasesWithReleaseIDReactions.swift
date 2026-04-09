@@ -29,13 +29,21 @@ extension Paths.Repos.WithOwner.WithRepo.Releases.WithReleaseID {
             public var content: Content
 
             /// The [reaction type](https://docs.github.com/rest/reference/reactions#reaction-types) to add to the release.
-            public enum Content: String, Codable, CaseIterable {
+            public enum Content: String, Codable, CaseIterable, Sendable {
                 case plus1 = "+1"
                 case laugh
                 case heart
                 case hooray
                 case rocket
                 case eyes
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             public init(content: Content) {

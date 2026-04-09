@@ -81,9 +81,17 @@ public struct EnvironmentApprovals: Codable {
     /// Whether deployment to the environment(s) was approved or rejected
     ///
     /// Example: "approved"
-    public enum State: String, Codable, CaseIterable {
+    public enum State: String, Codable, CaseIterable, Sendable {
         case approved
         case rejected
+        case unknown
+
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let rawValue = try container.decode(String.self)
+            self = Self(rawValue: rawValue) ?? .unknown
+        }
     }
 
     public init(environments: [Environment], state: State, user: SimpleUser, comment: String) {

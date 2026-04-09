@@ -9,9 +9,9 @@ public struct RepositoryCollaboratorPermission: Codable {
     /// Example: "admin"
     public var roleName: String
     /// Collaborator
-    public var user: Collaborator?
+    public var user: Collaborator
 
-    public init(permission: String, roleName: String, user: Collaborator? = nil) {
+    public init(permission: String, roleName: String, user: Collaborator) {
         self.permission = permission
         self.roleName = roleName
         self.user = user
@@ -21,13 +21,13 @@ public struct RepositoryCollaboratorPermission: Codable {
         let values = try decoder.container(keyedBy: StringCodingKey.self)
         self.permission = try values.decode(String.self, forKey: "permission")
         self.roleName = try values.decode(String.self, forKey: "role_name")
-        self.user = try values.decodeIfPresent(Collaborator.self, forKey: "user")
+        self.user = try values.decode(Collaborator.self, forKey: "user")
     }
 
     public func encode(to encoder: Encoder) throws {
         var values = encoder.container(keyedBy: StringCodingKey.self)
         try values.encode(permission, forKey: "permission")
         try values.encode(roleName, forKey: "role_name")
-        try values.encodeIfPresent(user, forKey: "user")
+        try values.encode(user, forKey: "user")
     }
 }

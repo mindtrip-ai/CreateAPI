@@ -7,8 +7,16 @@ import NaiveDate
 /// The type of GitHub user that can comment, open issues, or create pull requests while the interaction limit is in effect. Can be one of: `existing_users`, `contributors_only`, `collaborators_only`.
 ///
 /// Example: "collaborators_only"
-public enum InteractionGroup: String, Codable, CaseIterable {
+public enum InteractionGroup: String, Codable, CaseIterable, Sendable {
     case existingUsers = "existing_users"
     case contributorsOnly = "contributors_only"
     case collaboratorsOnly = "collaborators_only"
+    case unknown
+
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let rawValue = try container.decode(String.self)
+        self = Self(rawValue: rawValue) ?? .unknown
+    }
 }

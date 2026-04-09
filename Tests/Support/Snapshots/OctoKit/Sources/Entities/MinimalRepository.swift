@@ -19,7 +19,7 @@ public struct MinimalRepository: Codable {
     /// Example: "https://github.com/octocat/Hello-World"
     public var htmlURL: URL
     /// Example: "This your first repo!"
-    public var description: String?
+    public var description: String
     public var isFork: Bool
     /// Example: "https://api.github.com/repos/octocat/Hello-World"
     public var url: URL
@@ -210,7 +210,7 @@ public struct MinimalRepository: Codable {
         }
     }
 
-    public init(id: Int, nodeID: String, name: String, fullName: String, owner: SimpleUser, isPrivate: Bool, htmlURL: URL, description: String? = nil, isFork: Bool, url: URL, archiveURL: String, assigneesURL: String, blobsURL: String, branchesURL: String, collaboratorsURL: String, commentsURL: String, commitsURL: String, compareURL: String, contentsURL: String, contributorsURL: URL, deploymentsURL: URL, downloadsURL: URL, eventsURL: URL, forksURL: URL, gitCommitsURL: String, gitRefsURL: String, gitTagsURL: String, gitURL: String? = nil, issueCommentURL: String, issueEventsURL: String, issuesURL: String, keysURL: String, labelsURL: String, languagesURL: URL, mergesURL: URL, milestonesURL: String, notificationsURL: String, pullsURL: String, releasesURL: String, sshURL: String? = nil, stargazersURL: URL, statusesURL: String, subscribersURL: URL, subscriptionURL: URL, tagsURL: URL, teamsURL: URL, treesURL: String, cloneURL: String? = nil, mirrorURL: String? = nil, hooksURL: URL, svnURL: String? = nil, homepage: String? = nil, language: String? = nil, forksCount: Int? = nil, stargazersCount: Int? = nil, watchersCount: Int? = nil, size: Int? = nil, defaultBranch: String? = nil, openIssuesCount: Int? = nil, isTemplate: Bool? = nil, topics: [String]? = nil, hasIssues: Bool? = nil, hasProjects: Bool? = nil, hasWiki: Bool? = nil, hasPages: Bool? = nil, hasDownloads: Bool? = nil, isArchived: Bool? = nil, isDisabled: Bool? = nil, visibility: String? = nil, pushedAt: Date? = nil, createdAt: Date? = nil, updatedAt: Date? = nil, permissions: Permissions? = nil, roleName: String? = nil, templateRepository: Repository? = nil, tempCloneToken: String? = nil, deleteBranchOnMerge: Bool? = nil, subscribersCount: Int? = nil, networkCount: Int? = nil, codeOfConduct: CodeOfConduct? = nil, license: License? = nil, forks: Int? = nil, openIssues: Int? = nil, watchers: Int? = nil, allowForking: Bool? = nil) {
+    public init(id: Int, nodeID: String, name: String, fullName: String, owner: SimpleUser, isPrivate: Bool, htmlURL: URL, description: String, isFork: Bool, url: URL, archiveURL: String, assigneesURL: String, blobsURL: String, branchesURL: String, collaboratorsURL: String, commentsURL: String, commitsURL: String, compareURL: String, contentsURL: String, contributorsURL: URL, deploymentsURL: URL, downloadsURL: URL, eventsURL: URL, forksURL: URL, gitCommitsURL: String, gitRefsURL: String, gitTagsURL: String, gitURL: String? = nil, issueCommentURL: String, issueEventsURL: String, issuesURL: String, keysURL: String, labelsURL: String, languagesURL: URL, mergesURL: URL, milestonesURL: String, notificationsURL: String, pullsURL: String, releasesURL: String, sshURL: String? = nil, stargazersURL: URL, statusesURL: String, subscribersURL: URL, subscriptionURL: URL, tagsURL: URL, teamsURL: URL, treesURL: String, cloneURL: String? = nil, mirrorURL: String? = nil, hooksURL: URL, svnURL: String? = nil, homepage: String? = nil, language: String? = nil, forksCount: Int? = nil, stargazersCount: Int? = nil, watchersCount: Int? = nil, size: Int? = nil, defaultBranch: String? = nil, openIssuesCount: Int? = nil, isTemplate: Bool? = nil, topics: [String]? = nil, hasIssues: Bool? = nil, hasProjects: Bool? = nil, hasWiki: Bool? = nil, hasPages: Bool? = nil, hasDownloads: Bool? = nil, isArchived: Bool? = nil, isDisabled: Bool? = nil, visibility: String? = nil, pushedAt: Date? = nil, createdAt: Date? = nil, updatedAt: Date? = nil, permissions: Permissions? = nil, roleName: String? = nil, templateRepository: Repository? = nil, tempCloneToken: String? = nil, deleteBranchOnMerge: Bool? = nil, subscribersCount: Int? = nil, networkCount: Int? = nil, codeOfConduct: CodeOfConduct? = nil, license: License? = nil, forks: Int? = nil, openIssues: Int? = nil, watchers: Int? = nil, allowForking: Bool? = nil) {
         self.id = id
         self.nodeID = nodeID
         self.name = name
@@ -307,7 +307,7 @@ public struct MinimalRepository: Codable {
         self.owner = try values.decode(SimpleUser.self, forKey: "owner")
         self.isPrivate = try values.decode(Bool.self, forKey: "private")
         self.htmlURL = try values.decode(URL.self, forKey: "html_url")
-        self.description = try values.decodeIfPresent(String.self, forKey: "description")
+        self.description = try values.decode(String.self, forKey: "description")
         self.isFork = try values.decode(Bool.self, forKey: "fork")
         self.url = try values.decode(URL.self, forKey: "url")
         self.archiveURL = try values.decode(String.self, forKey: "archive_url")
@@ -396,7 +396,7 @@ public struct MinimalRepository: Codable {
         try values.encode(owner, forKey: "owner")
         try values.encode(isPrivate, forKey: "private")
         try values.encode(htmlURL, forKey: "html_url")
-        try values.encodeIfPresent(description, forKey: "description")
+        try values.encode(description, forKey: "description")
         try values.encode(isFork, forKey: "fork")
         try values.encode(url, forKey: "url")
         try values.encode(archiveURL, forKey: "archive_url")

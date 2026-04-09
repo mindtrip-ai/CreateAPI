@@ -63,9 +63,9 @@ public struct CodeOfConduct: Codable {
     /// [version]: http://contributor-covenant.org/version/1/4/
     /// "
     public var body: String?
-    public var htmlURL: URL?
+    public var htmlURL: URL
 
-    public init(key: String, name: String, url: URL, body: String? = nil, htmlURL: URL? = nil) {
+    public init(key: String, name: String, url: URL, body: String? = nil, htmlURL: URL) {
         self.key = key
         self.name = name
         self.url = url
@@ -79,7 +79,7 @@ public struct CodeOfConduct: Codable {
         self.name = try values.decode(String.self, forKey: "name")
         self.url = try values.decode(URL.self, forKey: "url")
         self.body = try values.decodeIfPresent(String.self, forKey: "body")
-        self.htmlURL = try values.decodeIfPresent(URL.self, forKey: "html_url")
+        self.htmlURL = try values.decode(URL.self, forKey: "html_url")
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -88,6 +88,6 @@ public struct CodeOfConduct: Codable {
         try values.encode(name, forKey: "name")
         try values.encode(url, forKey: "url")
         try values.encodeIfPresent(body, forKey: "body")
-        try values.encodeIfPresent(htmlURL, forKey: "html_url")
+        try values.encode(htmlURL, forKey: "html_url")
     }
 }

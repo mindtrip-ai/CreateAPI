@@ -55,11 +55,32 @@ extension Paths.Repos.WithOwner.WithRepo.Contents {
             Request(path: path, method: "GET", query: makeGetQuery(ref), id: "repos/get-content")
         }
 
-        public enum GetResponse: Decodable {
+        public enum GetResponse: Decodable, OneOfEnum {
             case contentDirectoryItems([ContentDirectoryItem])
             case contentFile(OctoKit.ContentFile)
             case contentSymlink(OctoKit.ContentSymlink)
             case contentSubmodule(OctoKit.ContentSubmodule)
+
+            case unknown(UnknownGetResponse)
+
+            public struct UnknownGetResponse: Decodable, UnknownOneOfCase {
+              public enum `Type`: String, Codable, CaseIterable, Sendable {
+                case unknown
+              }
+              public var type: `Type` = .unknown
+              public var discriminatorValue: String
+              public init(discriminatorValue: String) {
+                self.discriminatorValue = discriminatorValue
+              }
+            }
+
+            public var isUnknownCase: Bool {
+              if case .unknown = self {
+                true
+              } else {
+                false
+              }
+            }
 
             public init(from decoder: Decoder) throws {
                 let container = try decoder.singleValueContainer()

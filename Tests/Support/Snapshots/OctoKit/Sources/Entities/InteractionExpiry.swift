@@ -7,10 +7,18 @@ import NaiveDate
 /// The duration of the interaction restriction. Can be one of: `one_day`, `three_days`, `one_week`, `one_month`, `six_months`. Default: `one_day`.
 ///
 /// Example: "one_month"
-public enum InteractionExpiry: String, Codable, CaseIterable {
+public enum InteractionExpiry: String, Codable, CaseIterable, Sendable {
     case oneDay = "one_day"
     case threeDays = "three_days"
     case oneWeek = "one_week"
     case oneMonth = "one_month"
     case sixMonths = "six_months"
+    case unknown
+
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let rawValue = try container.decode(String.self)
+        self = Self(rawValue: rawValue) ?? .unknown
+    }
 }

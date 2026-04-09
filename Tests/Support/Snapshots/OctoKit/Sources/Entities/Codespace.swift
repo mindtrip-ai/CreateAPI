@@ -14,7 +14,7 @@ public struct Codespace: Codable {
     /// UUID identifying this codespace's environment.
     ///
     /// Example: "26a7c758-7299-4a73-b978-5a92a7ae98a0"
-    public var environmentID: String?
+    public var environmentID: String
     /// Simple User
     public var owner: SimpleUser
     /// Simple User
@@ -24,11 +24,11 @@ public struct Codespace: Codable {
     /// Codespace machine
     ///
     /// A description of the machine powering a codespace.
-    public var machine: CodespaceMachine?
+    public var machine: CodespaceMachine
     /// Whether the codespace was created from a prebuild.
     ///
     /// Example: false
-    public var isPrebuild: Bool?
+    public var isPrebuild: Bool
     /// Example: "2011-01-26T19:01:12Z"
     public var createdAt: Date
     /// Example: "2011-01-26T19:01:12Z"
@@ -52,7 +52,7 @@ public struct Codespace: Codable {
     /// The number of minutes of inactivity after which this codespace will be automatically stopped.
     ///
     /// Example: 60
-    public var idleTimeoutMinutes: Int?
+    public var idleTimeoutMinutes: Int
     /// URL to access this codespace on the web.
     public var webURL: URL
     /// API URL to access available alternate machine types for this codespace.
@@ -62,14 +62,14 @@ public struct Codespace: Codable {
     /// API URL to stop this codespace.
     public var stopURL: URL
     /// API URL for the Pull Request associated with this codespace, if any.
-    public var pullsURL: URL?
+    public var pullsURL: URL
     public var recentFolders: [String]
     public var runtimeConstraints: RuntimeConstraints?
 
     /// State of this codespace.
     ///
     /// Example: "Available"
-    public enum State: String, Codable, CaseIterable {
+    public enum State: String, Codable, CaseIterable, Sendable {
         case `none` = "None"
         case created = "Created"
         case queued = "Queued"
@@ -87,6 +87,14 @@ public struct Codespace: Codable {
         case exporting = "Exporting"
         case updating = "Updating"
         case rebuilding = "Rebuilding"
+        case unknown
+
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let rawValue = try container.decode(String.self)
+            self = Self(rawValue: rawValue) ?? .unknown
+        }
     }
 
     /// Details about the codespace's git repository.
@@ -134,11 +142,19 @@ public struct Codespace: Codable {
     /// The Azure region where this codespace is located.
     ///
     /// Example: "WestUs2"
-    public enum Location: String, Codable, CaseIterable {
+    public enum Location: String, Codable, CaseIterable, Sendable {
         case eastUs = "EastUs"
         case southEastAsia = "SouthEastAsia"
         case westEurope = "WestEurope"
         case westUs2 = "WestUs2"
+        case unknown
+
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let rawValue = try container.decode(String.self)
+            self = Self(rawValue: rawValue) ?? .unknown
+        }
     }
 
     public struct RuntimeConstraints: Codable {
@@ -160,7 +176,7 @@ public struct Codespace: Codable {
         }
     }
 
-    public init(id: Int, name: String, environmentID: String? = nil, owner: SimpleUser, billableOwner: SimpleUser, repository: MinimalRepository, machine: CodespaceMachine? = nil, isPrebuild: Bool? = nil, createdAt: Date, updatedAt: Date, lastUsedAt: Date, state: State, url: URL, gitStatus: GitStatus, location: Location, idleTimeoutMinutes: Int? = nil, webURL: URL, machinesURL: URL, startURL: URL, stopURL: URL, pullsURL: URL? = nil, recentFolders: [String], runtimeConstraints: RuntimeConstraints? = nil) {
+    public init(id: Int, name: String, environmentID: String, owner: SimpleUser, billableOwner: SimpleUser, repository: MinimalRepository, machine: CodespaceMachine, isPrebuild: Bool, createdAt: Date, updatedAt: Date, lastUsedAt: Date, state: State, url: URL, gitStatus: GitStatus, location: Location, idleTimeoutMinutes: Int, webURL: URL, machinesURL: URL, startURL: URL, stopURL: URL, pullsURL: URL, recentFolders: [String], runtimeConstraints: RuntimeConstraints? = nil) {
         self.id = id
         self.name = name
         self.environmentID = environmentID
@@ -190,12 +206,12 @@ public struct Codespace: Codable {
         let values = try decoder.container(keyedBy: StringCodingKey.self)
         self.id = try values.decode(Int.self, forKey: "id")
         self.name = try values.decode(String.self, forKey: "name")
-        self.environmentID = try values.decodeIfPresent(String.self, forKey: "environment_id")
+        self.environmentID = try values.decode(String.self, forKey: "environment_id")
         self.owner = try values.decode(SimpleUser.self, forKey: "owner")
         self.billableOwner = try values.decode(SimpleUser.self, forKey: "billable_owner")
         self.repository = try values.decode(MinimalRepository.self, forKey: "repository")
-        self.machine = try values.decodeIfPresent(CodespaceMachine.self, forKey: "machine")
-        self.isPrebuild = try values.decodeIfPresent(Bool.self, forKey: "prebuild")
+        self.machine = try values.decode(CodespaceMachine.self, forKey: "machine")
+        self.isPrebuild = try values.decode(Bool.self, forKey: "prebuild")
         self.createdAt = try values.decode(Date.self, forKey: "created_at")
         self.updatedAt = try values.decode(Date.self, forKey: "updated_at")
         self.lastUsedAt = try values.decode(Date.self, forKey: "last_used_at")
@@ -203,12 +219,12 @@ public struct Codespace: Codable {
         self.url = try values.decode(URL.self, forKey: "url")
         self.gitStatus = try values.decode(GitStatus.self, forKey: "git_status")
         self.location = try values.decode(Location.self, forKey: "location")
-        self.idleTimeoutMinutes = try values.decodeIfPresent(Int.self, forKey: "idle_timeout_minutes")
+        self.idleTimeoutMinutes = try values.decode(Int.self, forKey: "idle_timeout_minutes")
         self.webURL = try values.decode(URL.self, forKey: "web_url")
         self.machinesURL = try values.decode(URL.self, forKey: "machines_url")
         self.startURL = try values.decode(URL.self, forKey: "start_url")
         self.stopURL = try values.decode(URL.self, forKey: "stop_url")
-        self.pullsURL = try values.decodeIfPresent(URL.self, forKey: "pulls_url")
+        self.pullsURL = try values.decode(URL.self, forKey: "pulls_url")
         self.recentFolders = try values.decode([String].self, forKey: "recent_folders")
         self.runtimeConstraints = try values.decodeIfPresent(RuntimeConstraints.self, forKey: "runtime_constraints")
     }
@@ -217,12 +233,12 @@ public struct Codespace: Codable {
         var values = encoder.container(keyedBy: StringCodingKey.self)
         try values.encode(id, forKey: "id")
         try values.encode(name, forKey: "name")
-        try values.encodeIfPresent(environmentID, forKey: "environment_id")
+        try values.encode(environmentID, forKey: "environment_id")
         try values.encode(owner, forKey: "owner")
         try values.encode(billableOwner, forKey: "billable_owner")
         try values.encode(repository, forKey: "repository")
-        try values.encodeIfPresent(machine, forKey: "machine")
-        try values.encodeIfPresent(isPrebuild, forKey: "prebuild")
+        try values.encode(machine, forKey: "machine")
+        try values.encode(isPrebuild, forKey: "prebuild")
         try values.encode(createdAt, forKey: "created_at")
         try values.encode(updatedAt, forKey: "updated_at")
         try values.encode(lastUsedAt, forKey: "last_used_at")
@@ -230,12 +246,12 @@ public struct Codespace: Codable {
         try values.encode(url, forKey: "url")
         try values.encode(gitStatus, forKey: "git_status")
         try values.encode(location, forKey: "location")
-        try values.encodeIfPresent(idleTimeoutMinutes, forKey: "idle_timeout_minutes")
+        try values.encode(idleTimeoutMinutes, forKey: "idle_timeout_minutes")
         try values.encode(webURL, forKey: "web_url")
         try values.encode(machinesURL, forKey: "machines_url")
         try values.encode(startURL, forKey: "start_url")
         try values.encode(stopURL, forKey: "stop_url")
-        try values.encodeIfPresent(pullsURL, forKey: "pulls_url")
+        try values.encode(pullsURL, forKey: "pulls_url")
         try values.encode(recentFolders, forKey: "recent_folders")
         try values.encodeIfPresent(runtimeConstraints, forKey: "runtime_constraints")
     }

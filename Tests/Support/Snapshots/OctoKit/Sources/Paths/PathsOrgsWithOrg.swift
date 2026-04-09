@@ -113,11 +113,19 @@ extension Paths.Orgs {
             /// \* `write` - can pull and push, but not administer this repository.  
             /// \* `admin` - can pull, push, and administer this repository.  
             /// \* `none` - no permissions granted by default.
-            public enum DefaultRepositoryPermission: String, Codable, CaseIterable {
+            public enum DefaultRepositoryPermission: String, Codable, CaseIterable, Sendable {
                 case read
                 case write
                 case admin
                 case `none`
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             /// Specifies which types of repositories non-admin organization members can create. Can be one of:  
@@ -125,10 +133,18 @@ extension Paths.Orgs {
             /// \* `private` - members can create private repositories. This option is only available to repositories that are part of an organization on GitHub Enterprise Cloud.  
             /// \* `none` - only admin members can create repositories.  
             /// **Note:** This parameter is deprecated and will be removed in the future. Its return value ignores internal repositories. Using this parameter overrides values set in `members_can_create_repositories`. See the parameter deprecation notice in the operation description for details.
-            public enum MembersAllowedRepositoryCreationType: String, Codable, CaseIterable {
+            public enum MembersAllowedRepositoryCreationType: String, Codable, CaseIterable, Sendable {
                 case all
                 case `private`
                 case `none`
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             public init(billingEmail: String? = nil, company: String? = nil, email: String? = nil, twitterUsername: String? = nil, location: String? = nil, name: String? = nil, description: String? = nil, hasOrganizationProjects: Bool? = nil, hasRepositoryProjects: Bool? = nil, defaultRepositoryPermission: DefaultRepositoryPermission? = nil, membersCanCreateRepositories: Bool? = nil, membersCanCreateInternalRepositories: Bool? = nil, membersCanCreatePrivateRepositories: Bool? = nil, membersCanCreatePublicRepositories: Bool? = nil, membersAllowedRepositoryCreationType: MembersAllowedRepositoryCreationType? = nil, membersCanCreatePages: Bool? = nil, membersCanCreatePublicPages: Bool? = nil, membersCanCreatePrivatePages: Bool? = nil, membersCanForkPrivateRepositories: Bool? = nil, blog: String? = nil) {

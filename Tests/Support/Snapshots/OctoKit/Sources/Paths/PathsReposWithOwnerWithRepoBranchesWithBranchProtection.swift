@@ -41,13 +41,13 @@ extension Paths.Repos.WithOwner.WithRepo.Branches.WithBranch {
 
         public struct PutRequest: Encodable {
             /// Require status checks to pass before merging. Set to `null` to disable.
-            public var requiredStatusChecks: RequiredStatusChecks?
+            public var requiredStatusChecks: RequiredStatusChecks
             /// Enforce all configured restrictions for administrators. Set to `true` to enforce required status checks for repository administrators. Set to `null` to disable.
-            public var enforceAdmins: Bool?
+            public var enforceAdmins: Bool
             /// Require at least one approving review on a pull request, before merging. Set to `null` to disable.
-            public var requiredPullRequestReviews: RequiredPullRequestReviews?
+            public var requiredPullRequestReviews: RequiredPullRequestReviews
             /// Restrict who can push to the protected branch. User, app, and team `restrictions` are only available for organization-owned repositories. Set to `null` to disable.
-            public var restrictions: Restrictions?
+            public var restrictions: Restrictions
             /// Enforces a linear commit Git history, which prevents anyone from pushing merge commits to a branch. Set to `true` to enforce a linear commit history. Set to `false` to disable a linear commit Git history. Your repository must allow squash merging or rebase merging before you can enable a linear commit history. Default: `false`. For more information, see "[Requiring a linear commit history](https://help.github.com/github/administering-a-repository/requiring-a-linear-commit-history)" in the GitHub Help documentation.
             public var isRequiredLinearHistory: Bool?
             /// Permits force pushes to the protected branch by anyone with write access to the repository. Set to `true` to allow force pushes. Set to `false` or `null` to block force pushes. Default: `false`. For more information, see "[Enabling force pushes to a protected branch](https://help.github.com/en/github/administering-a-repository/enabling-force-pushes-to-a-protected-branch)" in the GitHub Help documentation."
@@ -169,7 +169,7 @@ extension Paths.Repos.WithOwner.WithRepo.Branches.WithBranch {
                 }
             }
 
-            public init(requiredStatusChecks: RequiredStatusChecks? = nil, enforceAdmins: Bool? = nil, requiredPullRequestReviews: RequiredPullRequestReviews? = nil, restrictions: Restrictions? = nil, isRequiredLinearHistory: Bool? = nil, allowForcePushes: Bool? = nil, allowDeletions: Bool? = nil, isRequiredConversationResolution: Bool? = nil) {
+            public init(requiredStatusChecks: RequiredStatusChecks, enforceAdmins: Bool, requiredPullRequestReviews: RequiredPullRequestReviews, restrictions: Restrictions, isRequiredLinearHistory: Bool? = nil, allowForcePushes: Bool? = nil, allowDeletions: Bool? = nil, isRequiredConversationResolution: Bool? = nil) {
                 self.requiredStatusChecks = requiredStatusChecks
                 self.enforceAdmins = enforceAdmins
                 self.requiredPullRequestReviews = requiredPullRequestReviews
@@ -182,10 +182,10 @@ extension Paths.Repos.WithOwner.WithRepo.Branches.WithBranch {
 
             public func encode(to encoder: Encoder) throws {
                 var values = encoder.container(keyedBy: StringCodingKey.self)
-                try values.encodeIfPresent(requiredStatusChecks, forKey: "required_status_checks")
-                try values.encodeIfPresent(enforceAdmins, forKey: "enforce_admins")
-                try values.encodeIfPresent(requiredPullRequestReviews, forKey: "required_pull_request_reviews")
-                try values.encodeIfPresent(restrictions, forKey: "restrictions")
+                try values.encode(requiredStatusChecks, forKey: "required_status_checks")
+                try values.encode(enforceAdmins, forKey: "enforce_admins")
+                try values.encode(requiredPullRequestReviews, forKey: "required_pull_request_reviews")
+                try values.encode(restrictions, forKey: "restrictions")
                 try values.encodeIfPresent(isRequiredLinearHistory, forKey: "required_linear_history")
                 try values.encodeIfPresent(allowForcePushes, forKey: "allow_force_pushes")
                 try values.encodeIfPresent(allowDeletions, forKey: "allow_deletions")

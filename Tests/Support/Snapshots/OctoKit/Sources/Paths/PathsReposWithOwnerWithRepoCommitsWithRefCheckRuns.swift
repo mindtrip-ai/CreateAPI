@@ -54,15 +54,31 @@ extension Paths.Repos.WithOwner.WithRepo.Commits.WithRef {
             public var page: Int?
             public var appID: Int?
 
-            public enum Status: String, Codable, CaseIterable {
+            public enum Status: String, Codable, CaseIterable, Sendable {
                 case queued
                 case inProgress = "in_progress"
                 case completed
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
-            public enum Filter: String, Codable, CaseIterable {
+            public enum Filter: String, Codable, CaseIterable, Sendable {
                 case latest
                 case all
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             public init(checkName: String? = nil, status: Status? = nil, filter: Filter? = nil, perPage: Int? = nil, page: Int? = nil, appID: Int? = nil) {

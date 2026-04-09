@@ -22,16 +22,16 @@ public struct CodeScanningAlertItems: Codable {
     /// The time that the alert was no longer detected and was considered fixed in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`.
     public var fixedAt: Date?
     /// Simple User
-    public var dismissedBy: SimpleUser?
+    public var dismissedBy: SimpleUser
     /// The time that the alert was dismissed in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`.
-    public var dismissedAt: Date?
+    public var dismissedAt: Date
     /// **Required when the state is dismissed.** The reason for dismissing or closing the alert. Can be one of: `false positive`, `won't fix`, and `used in tests`.
-    public var dismissedReason: CodeScanningAlertDismissedReason?
+    public var dismissedReason: CodeScanningAlertDismissedReason
     public var rule: CodeScanningAlertRuleSummary
     public var tool: CodeScanningAnalysisTool
     public var mostRecentInstance: CodeScanningAlertInstance
 
-    public init(number: Int, createdAt: Date, updatedAt: Date? = nil, url: URL, htmlURL: URL, instancesURL: URL, state: CodeScanningAlertState, fixedAt: Date? = nil, dismissedBy: SimpleUser? = nil, dismissedAt: Date? = nil, dismissedReason: CodeScanningAlertDismissedReason? = nil, rule: CodeScanningAlertRuleSummary, tool: CodeScanningAnalysisTool, mostRecentInstance: CodeScanningAlertInstance) {
+    public init(number: Int, createdAt: Date, updatedAt: Date? = nil, url: URL, htmlURL: URL, instancesURL: URL, state: CodeScanningAlertState, fixedAt: Date? = nil, dismissedBy: SimpleUser, dismissedAt: Date, dismissedReason: CodeScanningAlertDismissedReason, rule: CodeScanningAlertRuleSummary, tool: CodeScanningAnalysisTool, mostRecentInstance: CodeScanningAlertInstance) {
         self.number = number
         self.createdAt = createdAt
         self.updatedAt = updatedAt
@@ -58,9 +58,9 @@ public struct CodeScanningAlertItems: Codable {
         self.instancesURL = try values.decode(URL.self, forKey: "instances_url")
         self.state = try values.decode(CodeScanningAlertState.self, forKey: "state")
         self.fixedAt = try values.decodeIfPresent(Date.self, forKey: "fixed_at")
-        self.dismissedBy = try values.decodeIfPresent(SimpleUser.self, forKey: "dismissed_by")
-        self.dismissedAt = try values.decodeIfPresent(Date.self, forKey: "dismissed_at")
-        self.dismissedReason = try values.decodeIfPresent(CodeScanningAlertDismissedReason.self, forKey: "dismissed_reason")
+        self.dismissedBy = try values.decode(SimpleUser.self, forKey: "dismissed_by")
+        self.dismissedAt = try values.decode(Date.self, forKey: "dismissed_at")
+        self.dismissedReason = try values.decode(CodeScanningAlertDismissedReason.self, forKey: "dismissed_reason")
         self.rule = try values.decode(CodeScanningAlertRuleSummary.self, forKey: "rule")
         self.tool = try values.decode(CodeScanningAnalysisTool.self, forKey: "tool")
         self.mostRecentInstance = try values.decode(CodeScanningAlertInstance.self, forKey: "most_recent_instance")
@@ -76,9 +76,9 @@ public struct CodeScanningAlertItems: Codable {
         try values.encode(instancesURL, forKey: "instances_url")
         try values.encode(state, forKey: "state")
         try values.encodeIfPresent(fixedAt, forKey: "fixed_at")
-        try values.encodeIfPresent(dismissedBy, forKey: "dismissed_by")
-        try values.encodeIfPresent(dismissedAt, forKey: "dismissed_at")
-        try values.encodeIfPresent(dismissedReason, forKey: "dismissed_reason")
+        try values.encode(dismissedBy, forKey: "dismissed_by")
+        try values.encode(dismissedAt, forKey: "dismissed_at")
+        try values.encode(dismissedReason, forKey: "dismissed_reason")
         try values.encode(rule, forKey: "rule")
         try values.encode(tool, forKey: "tool")
         try values.encode(mostRecentInstance, forKey: "most_recent_instance")

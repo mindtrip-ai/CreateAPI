@@ -29,9 +29,17 @@ extension Paths.Repos.WithOwner.WithRepo.Import {
             public var useLfs: UseLfs
 
             /// Can be one of `opt_in` (large files will be stored using Git LFS) or `opt_out` (large files will be removed during the import).
-            public enum UseLfs: String, Codable, CaseIterable {
+            public enum UseLfs: String, Codable, CaseIterable, Sendable {
                 case optIn = "opt_in"
                 case optOut = "opt_out"
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             public init(useLfs: UseLfs) {

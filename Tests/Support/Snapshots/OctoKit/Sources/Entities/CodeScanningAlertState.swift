@@ -5,9 +5,17 @@ import Foundation
 import NaiveDate
 
 /// State of a code scanning alert.
-public enum CodeScanningAlertState: String, Codable, CaseIterable {
+public enum CodeScanningAlertState: String, Codable, CaseIterable, Sendable {
     case `open`
     case closed
     case dismissed
     case fixed
+    case unknown
+
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let rawValue = try container.decode(String.self)
+        self = Self(rawValue: rawValue) ?? .unknown
+    }
 }

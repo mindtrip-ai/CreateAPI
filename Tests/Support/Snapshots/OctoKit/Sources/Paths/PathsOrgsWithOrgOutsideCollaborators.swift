@@ -33,9 +33,17 @@ extension Paths.Orgs.WithOrg {
             public var perPage: Int?
             public var page: Int?
 
-            public enum Filter: String, Codable, CaseIterable {
+            public enum Filter: String, Codable, CaseIterable, Sendable {
                 case _2faDisabled = "2fa_disabled"
                 case all
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             public init(filter: Filter? = nil, perPage: Int? = nil, page: Int? = nil) {

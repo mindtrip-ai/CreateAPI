@@ -10,30 +10,30 @@ public struct CheckSuite: Codable {
     /// Example: "MDEwOkNoZWNrU3VpdGU1"
     public var nodeID: String
     /// Example: "master"
-    public var headBranch: String?
+    public var headBranch: String
     /// The SHA of the head commit that is being checked.
     ///
     /// Example: "009b8a3a9ccbb128af87f9b1c0f4c62e8a304f6d"
     public var headSha: String
     /// Example: "completed"
-    public var status: Status?
+    public var status: Status
     /// Example: "neutral"
-    public var conclusion: Conclusion?
+    public var conclusion: Conclusion
     /// Example: "https://api.github.com/repos/github/hello-world/check-suites/5"
-    public var url: String?
+    public var url: String
     /// Example: "146e867f55c26428e5f9fade55a9bbf5e95a7912"
-    public var before: String?
+    public var before: String
     /// Example: "d6fde92930d4715a2b49857d24b940956b26d2d3"
-    public var after: String?
-    public var pullRequests: [PullRequestMinimal]?
+    public var after: String
+    public var pullRequests: [PullRequestMinimal]
     /// GitHub app
     ///
     /// GitHub apps are a new way to extend GitHub. They can be installed directly on organizations and user accounts and granted access to specific repositories. They come with granular permissions and built-in webhooks. GitHub apps are first class actors within GitHub.
-    public var app: Integration?
+    public var app: Integration
     /// Minimal Repository
     public var repository: MinimalRepository
-    public var createdAt: Date?
-    public var updatedAt: Date?
+    public var createdAt: Date
+    public var updatedAt: Date
     /// Simple Commit
     public var headCommit: SimpleCommit
     public var latestCheckRunsCount: Int
@@ -42,14 +42,22 @@ public struct CheckSuite: Codable {
     public var isRunsRerequestable: Bool?
 
     /// Example: "completed"
-    public enum Status: String, Codable, CaseIterable {
+    public enum Status: String, Codable, CaseIterable, Sendable {
         case queued
         case inProgress = "in_progress"
         case completed
+        case unknown
+
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let rawValue = try container.decode(String.self)
+            self = Self(rawValue: rawValue) ?? .unknown
+        }
     }
 
     /// Example: "neutral"
-    public enum Conclusion: String, Codable, CaseIterable {
+    public enum Conclusion: String, Codable, CaseIterable, Sendable {
         case success
         case failure
         case neutral
@@ -57,9 +65,17 @@ public struct CheckSuite: Codable {
         case skipped
         case timedOut = "timed_out"
         case actionRequired = "action_required"
+        case unknown
+
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let rawValue = try container.decode(String.self)
+            self = Self(rawValue: rawValue) ?? .unknown
+        }
     }
 
-    public init(id: Int, nodeID: String, headBranch: String? = nil, headSha: String, status: Status? = nil, conclusion: Conclusion? = nil, url: String? = nil, before: String? = nil, after: String? = nil, pullRequests: [PullRequestMinimal]? = nil, app: Integration? = nil, repository: MinimalRepository, createdAt: Date? = nil, updatedAt: Date? = nil, headCommit: SimpleCommit, latestCheckRunsCount: Int, checkRunsURL: String, isRerequestable: Bool? = nil, isRunsRerequestable: Bool? = nil) {
+    public init(id: Int, nodeID: String, headBranch: String, headSha: String, status: Status, conclusion: Conclusion, url: String, before: String, after: String, pullRequests: [PullRequestMinimal], app: Integration, repository: MinimalRepository, createdAt: Date, updatedAt: Date, headCommit: SimpleCommit, latestCheckRunsCount: Int, checkRunsURL: String, isRerequestable: Bool? = nil, isRunsRerequestable: Bool? = nil) {
         self.id = id
         self.nodeID = nodeID
         self.headBranch = headBranch
@@ -85,18 +101,18 @@ public struct CheckSuite: Codable {
         let values = try decoder.container(keyedBy: StringCodingKey.self)
         self.id = try values.decode(Int.self, forKey: "id")
         self.nodeID = try values.decode(String.self, forKey: "node_id")
-        self.headBranch = try values.decodeIfPresent(String.self, forKey: "head_branch")
+        self.headBranch = try values.decode(String.self, forKey: "head_branch")
         self.headSha = try values.decode(String.self, forKey: "head_sha")
-        self.status = try values.decodeIfPresent(Status.self, forKey: "status")
-        self.conclusion = try values.decodeIfPresent(Conclusion.self, forKey: "conclusion")
-        self.url = try values.decodeIfPresent(String.self, forKey: "url")
-        self.before = try values.decodeIfPresent(String.self, forKey: "before")
-        self.after = try values.decodeIfPresent(String.self, forKey: "after")
-        self.pullRequests = try values.decodeIfPresent([PullRequestMinimal].self, forKey: "pull_requests")
-        self.app = try values.decodeIfPresent(Integration.self, forKey: "app")
+        self.status = try values.decode(Status.self, forKey: "status")
+        self.conclusion = try values.decode(Conclusion.self, forKey: "conclusion")
+        self.url = try values.decode(String.self, forKey: "url")
+        self.before = try values.decode(String.self, forKey: "before")
+        self.after = try values.decode(String.self, forKey: "after")
+        self.pullRequests = try values.decode([PullRequestMinimal].self, forKey: "pull_requests")
+        self.app = try values.decode(Integration.self, forKey: "app")
         self.repository = try values.decode(MinimalRepository.self, forKey: "repository")
-        self.createdAt = try values.decodeIfPresent(Date.self, forKey: "created_at")
-        self.updatedAt = try values.decodeIfPresent(Date.self, forKey: "updated_at")
+        self.createdAt = try values.decode(Date.self, forKey: "created_at")
+        self.updatedAt = try values.decode(Date.self, forKey: "updated_at")
         self.headCommit = try values.decode(SimpleCommit.self, forKey: "head_commit")
         self.latestCheckRunsCount = try values.decode(Int.self, forKey: "latest_check_runs_count")
         self.checkRunsURL = try values.decode(String.self, forKey: "check_runs_url")
@@ -108,18 +124,18 @@ public struct CheckSuite: Codable {
         var values = encoder.container(keyedBy: StringCodingKey.self)
         try values.encode(id, forKey: "id")
         try values.encode(nodeID, forKey: "node_id")
-        try values.encodeIfPresent(headBranch, forKey: "head_branch")
+        try values.encode(headBranch, forKey: "head_branch")
         try values.encode(headSha, forKey: "head_sha")
-        try values.encodeIfPresent(status, forKey: "status")
-        try values.encodeIfPresent(conclusion, forKey: "conclusion")
-        try values.encodeIfPresent(url, forKey: "url")
-        try values.encodeIfPresent(before, forKey: "before")
-        try values.encodeIfPresent(after, forKey: "after")
-        try values.encodeIfPresent(pullRequests, forKey: "pull_requests")
-        try values.encodeIfPresent(app, forKey: "app")
+        try values.encode(status, forKey: "status")
+        try values.encode(conclusion, forKey: "conclusion")
+        try values.encode(url, forKey: "url")
+        try values.encode(before, forKey: "before")
+        try values.encode(after, forKey: "after")
+        try values.encode(pullRequests, forKey: "pull_requests")
+        try values.encode(app, forKey: "app")
         try values.encode(repository, forKey: "repository")
-        try values.encodeIfPresent(createdAt, forKey: "created_at")
-        try values.encodeIfPresent(updatedAt, forKey: "updated_at")
+        try values.encode(createdAt, forKey: "created_at")
+        try values.encode(updatedAt, forKey: "updated_at")
         try values.encode(headCommit, forKey: "head_commit")
         try values.encode(latestCheckRunsCount, forKey: "latest_check_runs_count")
         try values.encode(checkRunsURL, forKey: "check_runs_url")

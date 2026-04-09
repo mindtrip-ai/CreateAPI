@@ -9,8 +9,8 @@ public struct SimpleCommit: Codable {
     public var treeID: String
     public var message: String
     public var timestamp: Date
-    public var author: Author?
-    public var committer: Committer?
+    public var author: Author
+    public var committer: Committer
 
     public struct Author: Codable {
         public var name: String
@@ -56,7 +56,7 @@ public struct SimpleCommit: Codable {
         }
     }
 
-    public init(id: String, treeID: String, message: String, timestamp: Date, author: Author? = nil, committer: Committer? = nil) {
+    public init(id: String, treeID: String, message: String, timestamp: Date, author: Author, committer: Committer) {
         self.id = id
         self.treeID = treeID
         self.message = message
@@ -71,8 +71,8 @@ public struct SimpleCommit: Codable {
         self.treeID = try values.decode(String.self, forKey: "tree_id")
         self.message = try values.decode(String.self, forKey: "message")
         self.timestamp = try values.decode(Date.self, forKey: "timestamp")
-        self.author = try values.decodeIfPresent(Author.self, forKey: "author")
-        self.committer = try values.decodeIfPresent(Committer.self, forKey: "committer")
+        self.author = try values.decode(Author.self, forKey: "author")
+        self.committer = try values.decode(Committer.self, forKey: "committer")
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -81,7 +81,7 @@ public struct SimpleCommit: Codable {
         try values.encode(treeID, forKey: "tree_id")
         try values.encode(message, forKey: "message")
         try values.encode(timestamp, forKey: "timestamp")
-        try values.encodeIfPresent(author, forKey: "author")
-        try values.encodeIfPresent(committer, forKey: "committer")
+        try values.encode(author, forKey: "author")
+        try values.encode(committer, forKey: "committer")
     }
 }

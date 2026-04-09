@@ -37,10 +37,18 @@ extension Paths.Repos.WithOwner.WithRepo {
             public var perPage: Int?
             public var page: Int?
 
-            public enum Affiliation: String, Codable, CaseIterable {
+            public enum Affiliation: String, Codable, CaseIterable, Sendable {
                 case outside
                 case direct
                 case all
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             public init(affiliation: Affiliation? = nil, perPage: Int? = nil, page: Int? = nil) {

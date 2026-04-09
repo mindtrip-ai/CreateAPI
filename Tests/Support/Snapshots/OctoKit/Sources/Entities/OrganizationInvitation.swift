@@ -6,8 +6,8 @@ import NaiveDate
 
 public struct OrganizationInvitation: Codable {
     public var id: Int
-    public var login: String?
-    public var email: String?
+    public var login: String
+    public var email: String
     public var role: String
     public var createdAt: String
     public var failedAt: String?
@@ -20,7 +20,7 @@ public struct OrganizationInvitation: Codable {
     /// Example: "https://api.github.com/organizations/16/invitations/1/teams"
     public var invitationTeamsURL: String
 
-    public init(id: Int, login: String? = nil, email: String? = nil, role: String, createdAt: String, failedAt: String? = nil, failedReason: String? = nil, inviter: SimpleUser, teamCount: Int, nodeID: String, invitationTeamsURL: String) {
+    public init(id: Int, login: String, email: String, role: String, createdAt: String, failedAt: String? = nil, failedReason: String? = nil, inviter: SimpleUser, teamCount: Int, nodeID: String, invitationTeamsURL: String) {
         self.id = id
         self.login = login
         self.email = email
@@ -37,8 +37,8 @@ public struct OrganizationInvitation: Codable {
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: StringCodingKey.self)
         self.id = try values.decode(Int.self, forKey: "id")
-        self.login = try values.decodeIfPresent(String.self, forKey: "login")
-        self.email = try values.decodeIfPresent(String.self, forKey: "email")
+        self.login = try values.decode(String.self, forKey: "login")
+        self.email = try values.decode(String.self, forKey: "email")
         self.role = try values.decode(String.self, forKey: "role")
         self.createdAt = try values.decode(String.self, forKey: "created_at")
         self.failedAt = try values.decodeIfPresent(String.self, forKey: "failed_at")
@@ -52,8 +52,8 @@ public struct OrganizationInvitation: Codable {
     public func encode(to encoder: Encoder) throws {
         var values = encoder.container(keyedBy: StringCodingKey.self)
         try values.encode(id, forKey: "id")
-        try values.encodeIfPresent(login, forKey: "login")
-        try values.encodeIfPresent(email, forKey: "email")
+        try values.encode(login, forKey: "login")
+        try values.encode(email, forKey: "email")
         try values.encode(role, forKey: "role")
         try values.encode(createdAt, forKey: "created_at")
         try values.encodeIfPresent(failedAt, forKey: "failed_at")

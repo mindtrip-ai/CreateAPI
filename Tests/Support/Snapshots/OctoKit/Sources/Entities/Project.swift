@@ -25,14 +25,14 @@ public struct Project: Codable {
     /// Body of the project
     ///
     /// Example: "This project represents the sprint of the first week in January"
-    public var body: String?
+    public var body: String
     public var number: Int
     /// State of the project; either 'open' or 'closed'
     ///
     /// Example: "open"
     public var state: String
     /// Simple User
-    public var creator: SimpleUser?
+    public var creator: SimpleUser
     /// Example: "2011-04-10T20:09:31Z"
     public var createdAt: Date
     /// Example: "2014-03-03T18:58:10Z"
@@ -43,14 +43,22 @@ public struct Project: Codable {
     public var isPrivate: Bool?
 
     /// The baseline permission that all organization members have on this project. Only present if owner is an organization.
-    public enum OrganizationPermission: String, Codable, CaseIterable {
+    public enum OrganizationPermission: String, Codable, CaseIterable, Sendable {
         case read
         case write
         case admin
         case `none`
+        case unknown
+
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let rawValue = try container.decode(String.self)
+            self = Self(rawValue: rawValue) ?? .unknown
+        }
     }
 
-    public init(ownerURL: URL, url: URL, htmlURL: URL, columnsURL: URL, id: Int, nodeID: String, name: String, body: String? = nil, number: Int, state: String, creator: SimpleUser? = nil, createdAt: Date, updatedAt: Date, organizationPermission: OrganizationPermission? = nil, isPrivate: Bool? = nil) {
+    public init(ownerURL: URL, url: URL, htmlURL: URL, columnsURL: URL, id: Int, nodeID: String, name: String, body: String, number: Int, state: String, creator: SimpleUser, createdAt: Date, updatedAt: Date, organizationPermission: OrganizationPermission? = nil, isPrivate: Bool? = nil) {
         self.ownerURL = ownerURL
         self.url = url
         self.htmlURL = htmlURL
@@ -77,10 +85,10 @@ public struct Project: Codable {
         self.id = try values.decode(Int.self, forKey: "id")
         self.nodeID = try values.decode(String.self, forKey: "node_id")
         self.name = try values.decode(String.self, forKey: "name")
-        self.body = try values.decodeIfPresent(String.self, forKey: "body")
+        self.body = try values.decode(String.self, forKey: "body")
         self.number = try values.decode(Int.self, forKey: "number")
         self.state = try values.decode(String.self, forKey: "state")
-        self.creator = try values.decodeIfPresent(SimpleUser.self, forKey: "creator")
+        self.creator = try values.decode(SimpleUser.self, forKey: "creator")
         self.createdAt = try values.decode(Date.self, forKey: "created_at")
         self.updatedAt = try values.decode(Date.self, forKey: "updated_at")
         self.organizationPermission = try values.decodeIfPresent(OrganizationPermission.self, forKey: "organization_permission")
@@ -96,10 +104,10 @@ public struct Project: Codable {
         try values.encode(id, forKey: "id")
         try values.encode(nodeID, forKey: "node_id")
         try values.encode(name, forKey: "name")
-        try values.encodeIfPresent(body, forKey: "body")
+        try values.encode(body, forKey: "body")
         try values.encode(number, forKey: "number")
         try values.encode(state, forKey: "state")
-        try values.encodeIfPresent(creator, forKey: "creator")
+        try values.encode(creator, forKey: "creator")
         try values.encode(createdAt, forKey: "created_at")
         try values.encode(updatedAt, forKey: "updated_at")
         try values.encodeIfPresent(organizationPermission, forKey: "organization_permission")

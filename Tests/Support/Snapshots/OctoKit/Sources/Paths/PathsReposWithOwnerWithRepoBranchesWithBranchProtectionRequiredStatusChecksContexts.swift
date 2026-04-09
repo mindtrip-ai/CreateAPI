@@ -33,9 +33,30 @@ extension Paths.Repos.WithOwner.WithRepo.Branches.WithBranch.Protection.Required
             Request(path: path, method: "POST", body: body, id: "repos/add-status-check-contexts")
         }
 
-        public enum PostRequest: Encodable {
+        public enum PostRequest: Encodable, OneOfEnum {
             case object(Object)
             case strings([String])
+
+            case unknown(UnknownPostRequest)
+
+            public struct UnknownPostRequest: Encodable, UnknownOneOfCase {
+              public enum `Type`: String, Codable, CaseIterable, Sendable {
+                case unknown
+              }
+              public var type: `Type` = .unknown
+              public var discriminatorValue: String
+              public init(discriminatorValue: String) {
+                self.discriminatorValue = discriminatorValue
+              }
+            }
+
+            public var isUnknownCase: Bool {
+              if case .unknown = self {
+                true
+              } else {
+                false
+              }
+            }
 
             /// Example:
             ///
@@ -63,6 +84,7 @@ extension Paths.Repos.WithOwner.WithRepo.Branches.WithBranch.Protection.Required
                 switch self {
                 case .object(let value): try container.encode(value)
                 case .strings(let value): try container.encode(value)
+                case .unknown(let value): try container.encode(value)
                 }
             }
         }
@@ -76,9 +98,30 @@ extension Paths.Repos.WithOwner.WithRepo.Branches.WithBranch.Protection.Required
             Request(path: path, method: "PUT", body: body, id: "repos/set-status-check-contexts")
         }
 
-        public enum PutRequest: Encodable {
+        public enum PutRequest: Encodable, OneOfEnum {
             case object(Object)
             case strings([String])
+
+            case unknown(UnknownPutRequest)
+
+            public struct UnknownPutRequest: Encodable, UnknownOneOfCase {
+              public enum `Type`: String, Codable, CaseIterable, Sendable {
+                case unknown
+              }
+              public var type: `Type` = .unknown
+              public var discriminatorValue: String
+              public init(discriminatorValue: String) {
+                self.discriminatorValue = discriminatorValue
+              }
+            }
+
+            public var isUnknownCase: Bool {
+              if case .unknown = self {
+                true
+              } else {
+                false
+              }
+            }
 
             /// Example:
             ///
@@ -106,6 +149,7 @@ extension Paths.Repos.WithOwner.WithRepo.Branches.WithBranch.Protection.Required
                 switch self {
                 case .object(let value): try container.encode(value)
                 case .strings(let value): try container.encode(value)
+                case .unknown(let value): try container.encode(value)
                 }
             }
         }
@@ -119,9 +163,30 @@ extension Paths.Repos.WithOwner.WithRepo.Branches.WithBranch.Protection.Required
             Request(path: path, method: "DELETE", body: body, id: "repos/remove-status-check-contexts")
         }
 
-        public enum DeleteRequest: Encodable {
+        public enum DeleteRequest: Encodable, OneOfEnum {
             case object(Object)
             case strings([String])
+
+            case unknown(UnknownDeleteRequest)
+
+            public struct UnknownDeleteRequest: Encodable, UnknownOneOfCase {
+              public enum `Type`: String, Codable, CaseIterable, Sendable {
+                case unknown
+              }
+              public var type: `Type` = .unknown
+              public var discriminatorValue: String
+              public init(discriminatorValue: String) {
+                self.discriminatorValue = discriminatorValue
+              }
+            }
+
+            public var isUnknownCase: Bool {
+              if case .unknown = self {
+                true
+              } else {
+                false
+              }
+            }
 
             /// Example:
             ///
@@ -149,6 +214,7 @@ extension Paths.Repos.WithOwner.WithRepo.Branches.WithBranch.Protection.Required
                 switch self {
                 case .object(let value): try container.encode(value)
                 case .strings(let value): try container.encode(value)
+                case .unknown(let value): try container.encode(value)
                 }
             }
         }

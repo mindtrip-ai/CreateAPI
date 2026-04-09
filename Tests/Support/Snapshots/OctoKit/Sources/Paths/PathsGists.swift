@@ -94,14 +94,43 @@ extension Paths {
                 }
             }
 
-            public enum Public: Encodable {
+            public enum Public: Encodable, OneOfEnum {
                 case bool(Bool)
                 case object(Object)
 
+                case unknown(UnknownPublic)
+
+                public struct UnknownPublic: Encodable, UnknownOneOfCase {
+                  public enum `Type`: String, Codable, CaseIterable, Sendable {
+                    case unknown
+                  }
+                  public var type: `Type` = .unknown
+                  public var discriminatorValue: String
+                  public init(discriminatorValue: String) {
+                    self.discriminatorValue = discriminatorValue
+                  }
+                }
+
+                public var isUnknownCase: Bool {
+                  if case .unknown = self {
+                    true
+                  } else {
+                    false
+                  }
+                }
+
                 /// Example: true
-                public enum Object: String, Codable, CaseIterable {
+                public enum Object: String, Codable, CaseIterable, Sendable {
                     case `true`
                     case `false`
+                    case unknown
+
+
+                    public init(from decoder: Decoder) throws {
+                        let container = try decoder.singleValueContainer()
+                        let rawValue = try container.decode(String.self)
+                        self = Self(rawValue: rawValue) ?? .unknown
+                    }
                 }
 
                 public func encode(to encoder: Encoder) throws {
@@ -109,6 +138,7 @@ extension Paths {
                     switch self {
                     case .bool(let value): try container.encode(value)
                     case .object(let value): try container.encode(value)
+                    case .unknown(let value): try container.encode(value)
                     }
                 }
             }

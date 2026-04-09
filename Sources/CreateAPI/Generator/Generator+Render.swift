@@ -19,7 +19,8 @@ extension Generator {
             templates.case(name: $0.name, value: $0.key)
         }
         var additionalStatements: [String] = []
-        if cases.count > 1 {
+        let hasUnknownCase = decl.cases.contains { $0.name == "unknown" }
+        if cases.count > 1 && !hasUnknownCase {
             cases += [templates.case(name: "unknown", value: "unknown")]
             additionalStatements.append(templates.initFromDecoderEnumOfStrings())
         }

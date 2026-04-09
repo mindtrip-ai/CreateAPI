@@ -9,31 +9,31 @@ public struct PageBuild: Codable {
     public var status: String
     public var error: Error
     /// Simple User
-    public var pusher: SimpleUser?
+    public var pusher: SimpleUser
     public var commit: String
     public var duration: Int
     public var createdAt: Date
     public var updatedAt: Date
 
     public struct Error: Codable {
-        public var message: String?
+        public var message: String
 
-        public init(message: String? = nil) {
+        public init(message: String) {
             self.message = message
         }
 
         public init(from decoder: Decoder) throws {
             let values = try decoder.container(keyedBy: StringCodingKey.self)
-            self.message = try values.decodeIfPresent(String.self, forKey: "message")
+            self.message = try values.decode(String.self, forKey: "message")
         }
 
         public func encode(to encoder: Encoder) throws {
             var values = encoder.container(keyedBy: StringCodingKey.self)
-            try values.encodeIfPresent(message, forKey: "message")
+            try values.encode(message, forKey: "message")
         }
     }
 
-    public init(url: URL, status: String, error: Error, pusher: SimpleUser? = nil, commit: String, duration: Int, createdAt: Date, updatedAt: Date) {
+    public init(url: URL, status: String, error: Error, pusher: SimpleUser, commit: String, duration: Int, createdAt: Date, updatedAt: Date) {
         self.url = url
         self.status = status
         self.error = error
@@ -49,7 +49,7 @@ public struct PageBuild: Codable {
         self.url = try values.decode(URL.self, forKey: "url")
         self.status = try values.decode(String.self, forKey: "status")
         self.error = try values.decode(Error.self, forKey: "error")
-        self.pusher = try values.decodeIfPresent(SimpleUser.self, forKey: "pusher")
+        self.pusher = try values.decode(SimpleUser.self, forKey: "pusher")
         self.commit = try values.decode(String.self, forKey: "commit")
         self.duration = try values.decode(Int.self, forKey: "duration")
         self.createdAt = try values.decode(Date.self, forKey: "created_at")
@@ -61,7 +61,7 @@ public struct PageBuild: Codable {
         try values.encode(url, forKey: "url")
         try values.encode(status, forKey: "status")
         try values.encode(error, forKey: "error")
-        try values.encodeIfPresent(pusher, forKey: "pusher")
+        try values.encode(pusher, forKey: "pusher")
         try values.encode(commit, forKey: "commit")
         try values.encode(duration, forKey: "duration")
         try values.encode(createdAt, forKey: "created_at")

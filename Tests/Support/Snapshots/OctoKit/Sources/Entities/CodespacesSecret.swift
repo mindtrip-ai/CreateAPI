@@ -18,10 +18,18 @@ public struct CodespacesSecret: Codable {
     public var selectedRepositoriesURL: URL
 
     /// Visibility of a secret
-    public enum Visibility: String, Codable, CaseIterable {
+    public enum Visibility: String, Codable, CaseIterable, Sendable {
         case all
         case `private`
         case selected
+        case unknown
+
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let rawValue = try container.decode(String.self)
+            self = Self(rawValue: rawValue) ?? .unknown
+        }
     }
 
     public init(name: String, createdAt: Date, updatedAt: Date, visibility: Visibility, selectedRepositoriesURL: URL) {

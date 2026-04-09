@@ -10,7 +10,7 @@ public struct Team: Codable {
     public var nodeID: String
     public var name: String
     public var slug: String
-    public var description: String?
+    public var description: String
     public var privacy: String?
     public var permission: String
     public var permissions: Permissions?
@@ -22,7 +22,7 @@ public struct Team: Codable {
     /// Team Simple
     ///
     /// Groups of organization members that gives permissions on specified repositories.
-    public var parent: TeamSimple?
+    public var parent: TeamSimple
 
     public struct Permissions: Codable {
         public var isPull: Bool
@@ -58,7 +58,7 @@ public struct Team: Codable {
         }
     }
 
-    public init(id: Int, nodeID: String, name: String, slug: String, description: String? = nil, privacy: String? = nil, permission: String, permissions: Permissions? = nil, url: URL, htmlURL: URL, membersURL: String, repositoriesURL: URL, parent: TeamSimple? = nil) {
+    public init(id: Int, nodeID: String, name: String, slug: String, description: String, privacy: String? = nil, permission: String, permissions: Permissions? = nil, url: URL, htmlURL: URL, membersURL: String, repositoriesURL: URL, parent: TeamSimple) {
         self.id = id
         self.nodeID = nodeID
         self.name = name
@@ -80,7 +80,7 @@ public struct Team: Codable {
         self.nodeID = try values.decode(String.self, forKey: "node_id")
         self.name = try values.decode(String.self, forKey: "name")
         self.slug = try values.decode(String.self, forKey: "slug")
-        self.description = try values.decodeIfPresent(String.self, forKey: "description")
+        self.description = try values.decode(String.self, forKey: "description")
         self.privacy = try values.decodeIfPresent(String.self, forKey: "privacy")
         self.permission = try values.decode(String.self, forKey: "permission")
         self.permissions = try values.decodeIfPresent(Permissions.self, forKey: "permissions")
@@ -88,7 +88,7 @@ public struct Team: Codable {
         self.htmlURL = try values.decode(URL.self, forKey: "html_url")
         self.membersURL = try values.decode(String.self, forKey: "members_url")
         self.repositoriesURL = try values.decode(URL.self, forKey: "repositories_url")
-        self.parent = try values.decodeIfPresent(TeamSimple.self, forKey: "parent")
+        self.parent = try values.decode(TeamSimple.self, forKey: "parent")
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -97,7 +97,7 @@ public struct Team: Codable {
         try values.encode(nodeID, forKey: "node_id")
         try values.encode(name, forKey: "name")
         try values.encode(slug, forKey: "slug")
-        try values.encodeIfPresent(description, forKey: "description")
+        try values.encode(description, forKey: "description")
         try values.encodeIfPresent(privacy, forKey: "privacy")
         try values.encode(permission, forKey: "permission")
         try values.encodeIfPresent(permissions, forKey: "permissions")
@@ -105,6 +105,6 @@ public struct Team: Codable {
         try values.encode(htmlURL, forKey: "html_url")
         try values.encode(membersURL, forKey: "members_url")
         try values.encode(repositoriesURL, forKey: "repositories_url")
-        try values.encodeIfPresent(parent, forKey: "parent")
+        try values.encode(parent, forKey: "parent")
     }
 }

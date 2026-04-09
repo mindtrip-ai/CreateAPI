@@ -80,10 +80,10 @@ public struct GistSimple: Codable {
         public var isPublic: Bool
         public var createdAt: Date
         public var updatedAt: Date
-        public var description: String?
+        public var description: String
         public var comments: Int
         /// Simple User
-        public var user: SimpleUser?
+        public var user: SimpleUser
         public var commentsURL: URL
         /// Simple User
         public var owner: SimpleUser?
@@ -125,7 +125,7 @@ public struct GistSimple: Codable {
             }
         }
 
-        public init(url: URL, forksURL: URL, commitsURL: URL, id: String, nodeID: String, gitPullURL: URL, gitPushURL: URL, htmlURL: URL, files: [String: File], isPublic: Bool, createdAt: Date, updatedAt: Date, description: String? = nil, comments: Int, user: SimpleUser? = nil, commentsURL: URL, owner: SimpleUser? = nil, isTruncated: Bool? = nil, forks: [AnyJSON]? = nil, history: [AnyJSON]? = nil) {
+        public init(url: URL, forksURL: URL, commitsURL: URL, id: String, nodeID: String, gitPullURL: URL, gitPushURL: URL, htmlURL: URL, files: [String: File], isPublic: Bool, createdAt: Date, updatedAt: Date, description: String, comments: Int, user: SimpleUser, commentsURL: URL, owner: SimpleUser? = nil, isTruncated: Bool? = nil, forks: [AnyJSON]? = nil, history: [AnyJSON]? = nil) {
             self.url = url
             self.forksURL = forksURL
             self.commitsURL = commitsURL
@@ -162,9 +162,9 @@ public struct GistSimple: Codable {
             self.isPublic = try values.decode(Bool.self, forKey: "public")
             self.createdAt = try values.decode(Date.self, forKey: "created_at")
             self.updatedAt = try values.decode(Date.self, forKey: "updated_at")
-            self.description = try values.decodeIfPresent(String.self, forKey: "description")
+            self.description = try values.decode(String.self, forKey: "description")
             self.comments = try values.decode(Int.self, forKey: "comments")
-            self.user = try values.decodeIfPresent(SimpleUser.self, forKey: "user")
+            self.user = try values.decode(SimpleUser.self, forKey: "user")
             self.commentsURL = try values.decode(URL.self, forKey: "comments_url")
             self.owner = try values.decodeIfPresent(SimpleUser.self, forKey: "owner")
             self.isTruncated = try values.decodeIfPresent(Bool.self, forKey: "truncated")
@@ -186,9 +186,9 @@ public struct GistSimple: Codable {
             try values.encode(isPublic, forKey: "public")
             try values.encode(createdAt, forKey: "created_at")
             try values.encode(updatedAt, forKey: "updated_at")
-            try values.encodeIfPresent(description, forKey: "description")
+            try values.encode(description, forKey: "description")
             try values.encode(comments, forKey: "comments")
-            try values.encodeIfPresent(user, forKey: "user")
+            try values.encode(user, forKey: "user")
             try values.encode(commentsURL, forKey: "comments_url")
             try values.encodeIfPresent(owner, forKey: "owner")
             try values.encodeIfPresent(isTruncated, forKey: "truncated")

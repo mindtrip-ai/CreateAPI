@@ -23,19 +23,35 @@ public struct CodeScanningAlertRule: Codable {
     public var help: String?
 
     /// The severity of the alert.
-    public enum Severity: String, Codable, CaseIterable {
+    public enum Severity: String, Codable, CaseIterable, Sendable {
         case `none`
         case note
         case warning
         case error
+        case unknown
+
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let rawValue = try container.decode(String.self)
+            self = Self(rawValue: rawValue) ?? .unknown
+        }
     }
 
     /// The security severity of the alert.
-    public enum SecuritySeverityLevel: String, Codable, CaseIterable {
+    public enum SecuritySeverityLevel: String, Codable, CaseIterable, Sendable {
         case low
         case medium
         case high
         case critical
+        case unknown
+
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let rawValue = try container.decode(String.self)
+            self = Self(rawValue: rawValue) ?? .unknown
+        }
     }
 
     public init(id: String? = nil, name: String? = nil, severity: Severity? = nil, securitySeverityLevel: SecuritySeverityLevel? = nil, description: String? = nil, fullDescription: String? = nil, tags: [String]? = nil, help: String? = nil) {

@@ -29,7 +29,7 @@ public struct DiffEntry: Codable {
     public var previousFilename: String?
 
     /// Example: "added"
-    public enum Status: String, Codable, CaseIterable {
+    public enum Status: String, Codable, CaseIterable, Sendable {
         case added
         case removed
         case modified
@@ -37,6 +37,14 @@ public struct DiffEntry: Codable {
         case copied
         case changed
         case unchanged
+        case unknown
+
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let rawValue = try container.decode(String.self)
+            self = Self(rawValue: rawValue) ?? .unknown
+        }
     }
 
     public init(sha: String, filename: String, status: Status, additions: Int, deletions: Int, changes: Int, blobURL: URL, rawURL: URL, contentsURL: URL, patch: String? = nil, previousFilename: String? = nil) {

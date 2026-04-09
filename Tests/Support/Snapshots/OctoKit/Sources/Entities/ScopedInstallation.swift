@@ -21,7 +21,7 @@ public struct ScopedInstallation: Codable {
     /// Describe whether all repositories have been selected or there's a selection involved
     public var repositorySelection: RepositorySelection
     /// Example: "config.yaml"
-    public var singleFileName: String?
+    public var singleFileName: String
     /// Example: true
     public var hasMultipleSingleFiles: Bool?
     /// Example: ["config.yml", ".github/issue_TEMPLATE.md"]
@@ -32,12 +32,20 @@ public struct ScopedInstallation: Codable {
     public var account: SimpleUser
 
     /// Describe whether all repositories have been selected or there's a selection involved
-    public enum RepositorySelection: String, Codable, CaseIterable {
+    public enum RepositorySelection: String, Codable, CaseIterable, Sendable {
         case all
         case selected
+        case unknown
+
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let rawValue = try container.decode(String.self)
+            self = Self(rawValue: rawValue) ?? .unknown
+        }
     }
 
-    public init(permissions: AppPermissions, repositorySelection: RepositorySelection, singleFileName: String? = nil, hasMultipleSingleFiles: Bool? = nil, singleFilePaths: [String]? = nil, repositoriesURL: URL, account: SimpleUser) {
+    public init(permissions: AppPermissions, repositorySelection: RepositorySelection, singleFileName: String, hasMultipleSingleFiles: Bool? = nil, singleFilePaths: [String]? = nil, repositoriesURL: URL, account: SimpleUser) {
         self.permissions = permissions
         self.repositorySelection = repositorySelection
         self.singleFileName = singleFileName
@@ -51,7 +59,7 @@ public struct ScopedInstallation: Codable {
         let values = try decoder.container(keyedBy: StringCodingKey.self)
         self.permissions = try values.decode(AppPermissions.self, forKey: "permissions")
         self.repositorySelection = try values.decode(RepositorySelection.self, forKey: "repository_selection")
-        self.singleFileName = try values.decodeIfPresent(String.self, forKey: "single_file_name")
+        self.singleFileName = try values.decode(String.self, forKey: "single_file_name")
         self.hasMultipleSingleFiles = try values.decodeIfPresent(Bool.self, forKey: "has_multiple_single_files")
         self.singleFilePaths = try values.decodeIfPresent([String].self, forKey: "single_file_paths")
         self.repositoriesURL = try values.decode(URL.self, forKey: "repositories_url")
@@ -62,7 +70,7 @@ public struct ScopedInstallation: Codable {
         var values = encoder.container(keyedBy: StringCodingKey.self)
         try values.encode(permissions, forKey: "permissions")
         try values.encode(repositorySelection, forKey: "repository_selection")
-        try values.encodeIfPresent(singleFileName, forKey: "single_file_name")
+        try values.encode(singleFileName, forKey: "single_file_name")
         try values.encodeIfPresent(hasMultipleSingleFiles, forKey: "has_multiple_single_files")
         try values.encodeIfPresent(singleFilePaths, forKey: "single_file_paths")
         try values.encode(repositoriesURL, forKey: "repositories_url")

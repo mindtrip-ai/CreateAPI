@@ -61,10 +61,18 @@ extension Paths.Repos.WithOwner.WithRepo.Pulls.WithPullNumber {
             public var comments: [Commants]?
 
             /// The review action you want to perform. The review actions include: `APPROVE`, `REQUEST_CHANGES`, or `COMMENT`. By leaving this blank, you set the review action state to `PENDING`, which means you will need to [submit the pull request review](https://docs.github.com/rest/reference/pulls#submit-a-review-for-a-pull-request) when you are ready.
-            public enum Event: String, Codable, CaseIterable {
+            public enum Event: String, Codable, CaseIterable, Sendable {
                 case approve = "APPROVE"
                 case requestChanges = "REQUEST_CHANGES"
                 case comment = "COMMENT"
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             public struct Commants: Encodable {

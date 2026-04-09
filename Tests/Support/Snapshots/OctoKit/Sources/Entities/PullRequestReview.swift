@@ -13,7 +13,7 @@ public struct PullRequestReview: Codable {
     /// Example: "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3ODA="
     public var nodeID: String
     /// Simple User
-    public var user: SimpleUser?
+    public var user: SimpleUser
     /// The text of the review.
     ///
     /// Example: "This looks great."
@@ -97,7 +97,7 @@ public struct PullRequestReview: Codable {
         }
     }
 
-    public init(id: Int, nodeID: String, user: SimpleUser? = nil, body: String, state: String, htmlURL: URL, pullRequestURL: URL, links: Links, submittedAt: Date? = nil, commitID: String, bodyHTML: String? = nil, bodyText: String? = nil, authorAssociation: AuthorAssociation) {
+    public init(id: Int, nodeID: String, user: SimpleUser, body: String, state: String, htmlURL: URL, pullRequestURL: URL, links: Links, submittedAt: Date? = nil, commitID: String, bodyHTML: String? = nil, bodyText: String? = nil, authorAssociation: AuthorAssociation) {
         self.id = id
         self.nodeID = nodeID
         self.user = user
@@ -117,7 +117,7 @@ public struct PullRequestReview: Codable {
         let values = try decoder.container(keyedBy: StringCodingKey.self)
         self.id = try values.decode(Int.self, forKey: "id")
         self.nodeID = try values.decode(String.self, forKey: "node_id")
-        self.user = try values.decodeIfPresent(SimpleUser.self, forKey: "user")
+        self.user = try values.decode(SimpleUser.self, forKey: "user")
         self.body = try values.decode(String.self, forKey: "body")
         self.state = try values.decode(String.self, forKey: "state")
         self.htmlURL = try values.decode(URL.self, forKey: "html_url")
@@ -134,7 +134,7 @@ public struct PullRequestReview: Codable {
         var values = encoder.container(keyedBy: StringCodingKey.self)
         try values.encode(id, forKey: "id")
         try values.encode(nodeID, forKey: "node_id")
-        try values.encodeIfPresent(user, forKey: "user")
+        try values.encode(user, forKey: "user")
         try values.encode(body, forKey: "body")
         try values.encode(state, forKey: "state")
         try values.encode(htmlURL, forKey: "html_url")

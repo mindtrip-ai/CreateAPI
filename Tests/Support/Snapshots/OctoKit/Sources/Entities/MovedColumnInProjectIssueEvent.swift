@@ -11,13 +11,13 @@ public struct MovedColumnInProjectIssueEvent: Codable {
     /// Simple User
     public var actor: SimpleUser
     public var event: String
-    public var commitID: String?
-    public var commitURL: String?
+    public var commitID: String
+    public var commitURL: String
     public var createdAt: String
     /// GitHub app
     ///
     /// GitHub apps are a new way to extend GitHub. They can be installed directly on organizations and user accounts and granted access to specific repositories. They come with granular permissions and built-in webhooks. GitHub apps are first class actors within GitHub.
-    public var performedViaGithubApp: Integration?
+    public var performedViaGithubApp: Integration
     public var projectCard: ProjectCard?
 
     public struct ProjectCard: Codable {
@@ -58,7 +58,7 @@ public struct MovedColumnInProjectIssueEvent: Codable {
         }
     }
 
-    public init(id: Int, nodeID: String, url: String, actor: SimpleUser, event: String, commitID: String? = nil, commitURL: String? = nil, createdAt: String, performedViaGithubApp: Integration? = nil, projectCard: ProjectCard? = nil) {
+    public init(id: Int, nodeID: String, url: String, actor: SimpleUser, event: String, commitID: String, commitURL: String, createdAt: String, performedViaGithubApp: Integration, projectCard: ProjectCard? = nil) {
         self.id = id
         self.nodeID = nodeID
         self.url = url
@@ -78,10 +78,10 @@ public struct MovedColumnInProjectIssueEvent: Codable {
         self.url = try values.decode(String.self, forKey: "url")
         self.actor = try values.decode(SimpleUser.self, forKey: "actor")
         self.event = try values.decode(String.self, forKey: "event")
-        self.commitID = try values.decodeIfPresent(String.self, forKey: "commit_id")
-        self.commitURL = try values.decodeIfPresent(String.self, forKey: "commit_url")
+        self.commitID = try values.decode(String.self, forKey: "commit_id")
+        self.commitURL = try values.decode(String.self, forKey: "commit_url")
         self.createdAt = try values.decode(String.self, forKey: "created_at")
-        self.performedViaGithubApp = try values.decodeIfPresent(Integration.self, forKey: "performed_via_github_app")
+        self.performedViaGithubApp = try values.decode(Integration.self, forKey: "performed_via_github_app")
         self.projectCard = try values.decodeIfPresent(ProjectCard.self, forKey: "project_card")
     }
 
@@ -92,10 +92,10 @@ public struct MovedColumnInProjectIssueEvent: Codable {
         try values.encode(url, forKey: "url")
         try values.encode(actor, forKey: "actor")
         try values.encode(event, forKey: "event")
-        try values.encodeIfPresent(commitID, forKey: "commit_id")
-        try values.encodeIfPresent(commitURL, forKey: "commit_url")
+        try values.encode(commitID, forKey: "commit_id")
+        try values.encode(commitURL, forKey: "commit_url")
         try values.encode(createdAt, forKey: "created_at")
-        try values.encodeIfPresent(performedViaGithubApp, forKey: "performed_via_github_app")
+        try values.encode(performedViaGithubApp, forKey: "performed_via_github_app")
         try values.encodeIfPresent(projectCard, forKey: "project_card")
     }
 }

@@ -24,13 +24,13 @@ public struct MarketplaceListingPlan: Codable {
     public var priceModel: String
     /// Example: true
     public var hasFreeTrial: Bool
-    public var unitName: String?
+    public var unitName: String
     /// Example: "published"
     public var state: String
     /// Example: ["Up to 25 private repositories", "11 concurrent builds"]
     public var bullets: [String]
 
-    public init(url: URL, accountsURL: URL, id: Int, number: Int, name: String, description: String, monthlyPriceInCents: Int, yearlyPriceInCents: Int, priceModel: String, hasFreeTrial: Bool, unitName: String? = nil, state: String, bullets: [String]) {
+    public init(url: URL, accountsURL: URL, id: Int, number: Int, name: String, description: String, monthlyPriceInCents: Int, yearlyPriceInCents: Int, priceModel: String, hasFreeTrial: Bool, unitName: String, state: String, bullets: [String]) {
         self.url = url
         self.accountsURL = accountsURL
         self.id = id
@@ -58,7 +58,7 @@ public struct MarketplaceListingPlan: Codable {
         self.yearlyPriceInCents = try values.decode(Int.self, forKey: "yearly_price_in_cents")
         self.priceModel = try values.decode(String.self, forKey: "price_model")
         self.hasFreeTrial = try values.decode(Bool.self, forKey: "has_free_trial")
-        self.unitName = try values.decodeIfPresent(String.self, forKey: "unit_name")
+        self.unitName = try values.decode(String.self, forKey: "unit_name")
         self.state = try values.decode(String.self, forKey: "state")
         self.bullets = try values.decode([String].self, forKey: "bullets")
     }
@@ -75,7 +75,7 @@ public struct MarketplaceListingPlan: Codable {
         try values.encode(yearlyPriceInCents, forKey: "yearly_price_in_cents")
         try values.encode(priceModel, forKey: "price_model")
         try values.encode(hasFreeTrial, forKey: "has_free_trial")
-        try values.encodeIfPresent(unitName, forKey: "unit_name")
+        try values.encode(unitName, forKey: "unit_name")
         try values.encode(state, forKey: "state")
         try values.encode(bullets, forKey: "bullets")
     }

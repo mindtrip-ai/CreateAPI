@@ -37,12 +37,12 @@ public struct PullRequestSimple: Codable {
     /// Example: "new-feature"
     public var title: String
     /// Simple User
-    public var user: SimpleUser?
+    public var user: SimpleUser
     /// Example: "Please pull these awesome changes"
-    public var body: String?
+    public var body: String
     public var labels: [Label]
     /// A collection of related issues and pull requests.
-    public var milestone: Milestone?
+    public var milestone: Milestone
     /// Example: "too heated"
     public var activeLockReason: String?
     /// Example: "2011-01-26T19:01:12Z"
@@ -50,13 +50,13 @@ public struct PullRequestSimple: Codable {
     /// Example: "2011-01-26T19:01:12Z"
     public var updatedAt: Date
     /// Example: "2011-01-26T19:01:12Z"
-    public var closedAt: Date?
+    public var closedAt: Date
     /// Example: "2011-01-26T19:01:12Z"
-    public var mergedAt: Date?
+    public var mergedAt: Date
     /// Example: "e5bd3914e2e596debea16f433f57875b5b90bcd6"
-    public var mergeCommitSha: String?
+    public var mergeCommitSha: String
     /// Simple User
-    public var assignee: SimpleUser?
+    public var assignee: SimpleUser
     public var assignees: [SimpleUser]?
     public var requestedReviewers: [SimpleUser]?
     public var requestedTeams: [Team]?
@@ -70,7 +70,7 @@ public struct PullRequestSimple: Codable {
     /// Example: "OWNER"
     public var authorAssociation: AuthorAssociation
     /// The status of auto merging a pull request.
-    public var autoMerge: AutoMerge?
+    public var autoMerge: AutoMerge
     /// Indicates whether or not the pull request is a draft.
     ///
     /// Example: false
@@ -127,9 +127,9 @@ public struct PullRequestSimple: Codable {
         public var repo: Repository
         public var sha: String
         /// Simple User
-        public var user: SimpleUser?
+        public var user: SimpleUser
 
-        public init(label: String, ref: String, repo: Repository, sha: String, user: SimpleUser? = nil) {
+        public init(label: String, ref: String, repo: Repository, sha: String, user: SimpleUser) {
             self.label = label
             self.ref = ref
             self.repo = repo
@@ -143,7 +143,7 @@ public struct PullRequestSimple: Codable {
             self.ref = try values.decode(String.self, forKey: "ref")
             self.repo = try values.decode(Repository.self, forKey: "repo")
             self.sha = try values.decode(String.self, forKey: "sha")
-            self.user = try values.decodeIfPresent(SimpleUser.self, forKey: "user")
+            self.user = try values.decode(SimpleUser.self, forKey: "user")
         }
 
         public func encode(to encoder: Encoder) throws {
@@ -152,7 +152,7 @@ public struct PullRequestSimple: Codable {
             try values.encode(ref, forKey: "ref")
             try values.encode(repo, forKey: "repo")
             try values.encode(sha, forKey: "sha")
-            try values.encodeIfPresent(user, forKey: "user")
+            try values.encode(user, forKey: "user")
         }
     }
 
@@ -165,9 +165,9 @@ public struct PullRequestSimple: Codable {
         public var repo: Repository
         public var sha: String
         /// Simple User
-        public var user: SimpleUser?
+        public var user: SimpleUser
 
-        public init(label: String, ref: String, repo: Repository, sha: String, user: SimpleUser? = nil) {
+        public init(label: String, ref: String, repo: Repository, sha: String, user: SimpleUser) {
             self.label = label
             self.ref = ref
             self.repo = repo
@@ -181,7 +181,7 @@ public struct PullRequestSimple: Codable {
             self.ref = try values.decode(String.self, forKey: "ref")
             self.repo = try values.decode(Repository.self, forKey: "repo")
             self.sha = try values.decode(String.self, forKey: "sha")
-            self.user = try values.decodeIfPresent(SimpleUser.self, forKey: "user")
+            self.user = try values.decode(SimpleUser.self, forKey: "user")
         }
 
         public func encode(to encoder: Encoder) throws {
@@ -190,7 +190,7 @@ public struct PullRequestSimple: Codable {
             try values.encode(ref, forKey: "ref")
             try values.encode(repo, forKey: "repo")
             try values.encode(sha, forKey: "sha")
-            try values.encodeIfPresent(user, forKey: "user")
+            try values.encode(user, forKey: "user")
         }
     }
 
@@ -264,7 +264,7 @@ public struct PullRequestSimple: Codable {
         }
     }
 
-    public init(url: URL, id: Int, nodeID: String, htmlURL: URL, diffURL: URL, patchURL: URL, issueURL: URL, commitsURL: URL, reviewCommentsURL: URL, reviewCommentURL: String, commentsURL: URL, statusesURL: URL, number: Int, state: String, isLocked: Bool, title: String, user: SimpleUser? = nil, body: String? = nil, labels: [Label], milestone: Milestone? = nil, activeLockReason: String? = nil, createdAt: Date, updatedAt: Date, closedAt: Date? = nil, mergedAt: Date? = nil, mergeCommitSha: String? = nil, assignee: SimpleUser? = nil, assignees: [SimpleUser]? = nil, requestedReviewers: [SimpleUser]? = nil, requestedTeams: [Team]? = nil, head: Head, base: Base, links: Links, authorAssociation: AuthorAssociation, autoMerge: AutoMerge? = nil, isDraft: Bool? = nil) {
+    public init(url: URL, id: Int, nodeID: String, htmlURL: URL, diffURL: URL, patchURL: URL, issueURL: URL, commitsURL: URL, reviewCommentsURL: URL, reviewCommentURL: String, commentsURL: URL, statusesURL: URL, number: Int, state: String, isLocked: Bool, title: String, user: SimpleUser, body: String, labels: [Label], milestone: Milestone, activeLockReason: String? = nil, createdAt: Date, updatedAt: Date, closedAt: Date, mergedAt: Date, mergeCommitSha: String, assignee: SimpleUser, assignees: [SimpleUser]? = nil, requestedReviewers: [SimpleUser]? = nil, requestedTeams: [Team]? = nil, head: Head, base: Base, links: Links, authorAssociation: AuthorAssociation, autoMerge: AutoMerge, isDraft: Bool? = nil) {
         self.url = url
         self.id = id
         self.nodeID = nodeID
@@ -321,17 +321,17 @@ public struct PullRequestSimple: Codable {
         self.state = try values.decode(String.self, forKey: "state")
         self.isLocked = try values.decode(Bool.self, forKey: "locked")
         self.title = try values.decode(String.self, forKey: "title")
-        self.user = try values.decodeIfPresent(SimpleUser.self, forKey: "user")
-        self.body = try values.decodeIfPresent(String.self, forKey: "body")
+        self.user = try values.decode(SimpleUser.self, forKey: "user")
+        self.body = try values.decode(String.self, forKey: "body")
         self.labels = try values.decode([Label].self, forKey: "labels")
-        self.milestone = try values.decodeIfPresent(Milestone.self, forKey: "milestone")
+        self.milestone = try values.decode(Milestone.self, forKey: "milestone")
         self.activeLockReason = try values.decodeIfPresent(String.self, forKey: "active_lock_reason")
         self.createdAt = try values.decode(Date.self, forKey: "created_at")
         self.updatedAt = try values.decode(Date.self, forKey: "updated_at")
-        self.closedAt = try values.decodeIfPresent(Date.self, forKey: "closed_at")
-        self.mergedAt = try values.decodeIfPresent(Date.self, forKey: "merged_at")
-        self.mergeCommitSha = try values.decodeIfPresent(String.self, forKey: "merge_commit_sha")
-        self.assignee = try values.decodeIfPresent(SimpleUser.self, forKey: "assignee")
+        self.closedAt = try values.decode(Date.self, forKey: "closed_at")
+        self.mergedAt = try values.decode(Date.self, forKey: "merged_at")
+        self.mergeCommitSha = try values.decode(String.self, forKey: "merge_commit_sha")
+        self.assignee = try values.decode(SimpleUser.self, forKey: "assignee")
         self.assignees = try values.decodeIfPresent([SimpleUser].self, forKey: "assignees")
         self.requestedReviewers = try values.decodeIfPresent([SimpleUser].self, forKey: "requested_reviewers")
         self.requestedTeams = try values.decodeIfPresent([Team].self, forKey: "requested_teams")
@@ -339,7 +339,7 @@ public struct PullRequestSimple: Codable {
         self.base = try values.decode(Base.self, forKey: "base")
         self.links = try values.decode(Links.self, forKey: "_links")
         self.authorAssociation = try values.decode(AuthorAssociation.self, forKey: "author_association")
-        self.autoMerge = try values.decodeIfPresent(AutoMerge.self, forKey: "auto_merge")
+        self.autoMerge = try values.decode(AutoMerge.self, forKey: "auto_merge")
         self.isDraft = try values.decodeIfPresent(Bool.self, forKey: "draft")
     }
 
@@ -361,17 +361,17 @@ public struct PullRequestSimple: Codable {
         try values.encode(state, forKey: "state")
         try values.encode(isLocked, forKey: "locked")
         try values.encode(title, forKey: "title")
-        try values.encodeIfPresent(user, forKey: "user")
-        try values.encodeIfPresent(body, forKey: "body")
+        try values.encode(user, forKey: "user")
+        try values.encode(body, forKey: "body")
         try values.encode(labels, forKey: "labels")
-        try values.encodeIfPresent(milestone, forKey: "milestone")
+        try values.encode(milestone, forKey: "milestone")
         try values.encodeIfPresent(activeLockReason, forKey: "active_lock_reason")
         try values.encode(createdAt, forKey: "created_at")
         try values.encode(updatedAt, forKey: "updated_at")
-        try values.encodeIfPresent(closedAt, forKey: "closed_at")
-        try values.encodeIfPresent(mergedAt, forKey: "merged_at")
-        try values.encodeIfPresent(mergeCommitSha, forKey: "merge_commit_sha")
-        try values.encodeIfPresent(assignee, forKey: "assignee")
+        try values.encode(closedAt, forKey: "closed_at")
+        try values.encode(mergedAt, forKey: "merged_at")
+        try values.encode(mergeCommitSha, forKey: "merge_commit_sha")
+        try values.encode(assignee, forKey: "assignee")
         try values.encodeIfPresent(assignees, forKey: "assignees")
         try values.encodeIfPresent(requestedReviewers, forKey: "requested_reviewers")
         try values.encodeIfPresent(requestedTeams, forKey: "requested_teams")
@@ -379,7 +379,7 @@ public struct PullRequestSimple: Codable {
         try values.encode(base, forKey: "base")
         try values.encode(links, forKey: "_links")
         try values.encode(authorAssociation, forKey: "author_association")
-        try values.encodeIfPresent(autoMerge, forKey: "auto_merge")
+        try values.encode(autoMerge, forKey: "auto_merge")
         try values.encodeIfPresent(isDraft, forKey: "draft")
     }
 }

@@ -26,9 +26,30 @@ extension Paths {
             Request(path: path, method: "GET", id: "users/get-authenticated")
         }
 
-        public enum GetResponse: Decodable {
+        public enum GetResponse: Decodable, OneOfEnum {
             case privateUser(OctoKit.PrivateUser)
             case publicUser(OctoKit.PublicUser)
+
+            case unknown(UnknownGetResponse)
+
+            public struct UnknownGetResponse: Decodable, UnknownOneOfCase {
+              public enum `Type`: String, Codable, CaseIterable, Sendable {
+                case unknown
+              }
+              public var type: `Type` = .unknown
+              public var discriminatorValue: String
+              public init(discriminatorValue: String) {
+                self.discriminatorValue = discriminatorValue
+              }
+            }
+
+            public var isUnknownCase: Bool {
+              if case .unknown = self {
+                true
+              } else {
+                false
+              }
+            }
 
             public init(from decoder: Decoder) throws {
                 let container = try decoder.singleValueContainer()

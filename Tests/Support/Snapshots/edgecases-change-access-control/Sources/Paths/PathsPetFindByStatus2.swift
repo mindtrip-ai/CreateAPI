@@ -29,10 +29,18 @@ extension Paths.Pet {
             return encoder.items
         }
 
-        enum Status: String, Codable, CaseIterable {
+        enum Status: String, Codable, CaseIterable, Sendable {
             case available
             case pending
             case sold
+            case unknown
+
+
+            init(from decoder: Decoder) throws {
+                let container = try decoder.singleValueContainer()
+                let rawValue = try container.decode(String.self)
+                self = Self(rawValue: rawValue) ?? .unknown
+            }
         }
     }
 }

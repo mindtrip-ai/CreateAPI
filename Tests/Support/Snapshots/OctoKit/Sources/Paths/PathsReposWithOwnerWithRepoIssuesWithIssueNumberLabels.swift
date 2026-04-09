@@ -40,12 +40,33 @@ extension Paths.Repos.WithOwner.WithRepo.Issues.WithIssueNumber {
             Request(path: path, method: "POST", body: body, id: "issues/add-labels")
         }
 
-        public enum PostRequest: Encodable {
+        public enum PostRequest: Encodable, OneOfEnum {
             case object1(Object1)
             case strings([String])
             case object2(Object2)
             case placeholderItems([PlaceholderItem])
             case string(String)
+
+            case unknown(UnknownPostRequest)
+
+            public struct UnknownPostRequest: Encodable, UnknownOneOfCase {
+              public enum `Type`: String, Codable, CaseIterable, Sendable {
+                case unknown
+              }
+              public var type: `Type` = .unknown
+              public var discriminatorValue: String
+              public init(discriminatorValue: String) {
+                self.discriminatorValue = discriminatorValue
+              }
+            }
+
+            public var isUnknownCase: Bool {
+              if case .unknown = self {
+                true
+              } else {
+                false
+              }
+            }
 
             public struct Object1: Encodable {
                 /// The names of the labels to add to the issue. You can pass an empty array to remove all labels. **Note:** Alternatively, you can pass a single label as a `string` or an `array` of labels directly, but GitHub recommends passing an object with the `labels` key.
@@ -108,6 +129,7 @@ extension Paths.Repos.WithOwner.WithRepo.Issues.WithIssueNumber {
                 case .object2(let value): try container.encode(value)
                 case .placeholderItems(let value): try container.encode(value)
                 case .string(let value): try container.encode(value)
+                case .unknown(let value): try container.encode(value)
                 }
             }
         }
@@ -121,12 +143,33 @@ extension Paths.Repos.WithOwner.WithRepo.Issues.WithIssueNumber {
             Request(path: path, method: "PUT", body: body, id: "issues/set-labels")
         }
 
-        public enum PutRequest: Encodable {
+        public enum PutRequest: Encodable, OneOfEnum {
             case object1(Object1)
             case strings([String])
             case object2(Object2)
             case placeholderItems([PlaceholderItem])
             case string(String)
+
+            case unknown(UnknownPutRequest)
+
+            public struct UnknownPutRequest: Encodable, UnknownOneOfCase {
+              public enum `Type`: String, Codable, CaseIterable, Sendable {
+                case unknown
+              }
+              public var type: `Type` = .unknown
+              public var discriminatorValue: String
+              public init(discriminatorValue: String) {
+                self.discriminatorValue = discriminatorValue
+              }
+            }
+
+            public var isUnknownCase: Bool {
+              if case .unknown = self {
+                true
+              } else {
+                false
+              }
+            }
 
             public struct Object1: Encodable {
                 /// The names of the labels to add to the issue. You can pass an empty array to remove all labels. **Note:** Alternatively, you can pass a single label as a `string` or an `array` of labels directly, but GitHub recommends passing an object with the `labels` key.
@@ -189,6 +232,7 @@ extension Paths.Repos.WithOwner.WithRepo.Issues.WithIssueNumber {
                 case .object2(let value): try container.encode(value)
                 case .placeholderItems(let value): try container.encode(value)
                 case .string(let value): try container.encode(value)
+                case .unknown(let value): try container.encode(value)
                 }
             }
         }

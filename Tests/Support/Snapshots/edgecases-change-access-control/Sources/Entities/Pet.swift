@@ -15,10 +15,18 @@ struct Pet: Codable {
     var status: Status?
 
     /// Pet status in the store
-    enum Status: String, Codable, CaseIterable {
+    enum Status: String, Codable, CaseIterable, Sendable {
         case available
         case pending
         case sold
+        case unknown
+
+
+        init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let rawValue = try container.decode(String.self)
+            self = Self(rawValue: rawValue) ?? .unknown
+        }
     }
 
     init(id: Int64? = nil, category: Category? = nil, name: String, photoURLs: [String], tags: [Tag]? = nil, status: Status? = nil) {

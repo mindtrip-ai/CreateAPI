@@ -11,9 +11,9 @@ public struct User: Codable {
     /// A URL to the user profile image, or null if one was not specified.
     ///
     /// Example: "https://img-global.cpcdn.com/users/f34ef79fabdb58a4/m/photo.jpg"
-    public var imageURL: URL?
+    public var imageURL: URL
 
-    public init(name: String, imageURL: URL? = nil) {
+    public init(name: String, imageURL: URL) {
         self.name = name
         self.imageURL = imageURL
     }
@@ -21,12 +21,12 @@ public struct User: Codable {
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: StringCodingKey.self)
         self.name = try values.decode(String.self, forKey: "name")
-        self.imageURL = try values.decodeIfPresent(URL.self, forKey: "image_url")
+        self.imageURL = try values.decode(URL.self, forKey: "image_url")
     }
 
     public func encode(to encoder: Encoder) throws {
         var values = encoder.container(keyedBy: StringCodingKey.self)
         try values.encode(name, forKey: "name")
-        try values.encodeIfPresent(imageURL, forKey: "image_url")
+        try values.encode(imageURL, forKey: "image_url")
     }
 }

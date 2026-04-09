@@ -27,9 +27,9 @@ public struct OrganizationSimple: Codable {
     /// Example: "https://github.com/images/error/octocat_happy.gif"
     public var avatarURL: String
     /// Example: "A great organization"
-    public var description: String?
+    public var description: String
 
-    public init(login: String, id: Int, nodeID: String, url: URL, reposURL: URL, eventsURL: URL, hooksURL: String, issuesURL: String, membersURL: String, publicMembersURL: String, avatarURL: String, description: String? = nil) {
+    public init(login: String, id: Int, nodeID: String, url: URL, reposURL: URL, eventsURL: URL, hooksURL: String, issuesURL: String, membersURL: String, publicMembersURL: String, avatarURL: String, description: String) {
         self.login = login
         self.id = id
         self.nodeID = nodeID
@@ -57,7 +57,7 @@ public struct OrganizationSimple: Codable {
         self.membersURL = try values.decode(String.self, forKey: "members_url")
         self.publicMembersURL = try values.decode(String.self, forKey: "public_members_url")
         self.avatarURL = try values.decode(String.self, forKey: "avatar_url")
-        self.description = try values.decodeIfPresent(String.self, forKey: "description")
+        self.description = try values.decode(String.self, forKey: "description")
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -73,6 +73,6 @@ public struct OrganizationSimple: Codable {
         try values.encode(membersURL, forKey: "members_url")
         try values.encode(publicMembersURL, forKey: "public_members_url")
         try values.encode(avatarURL, forKey: "avatar_url")
-        try values.encodeIfPresent(description, forKey: "description")
+        try values.encode(description, forKey: "description")
     }
 }

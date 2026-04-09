@@ -44,12 +44,12 @@ public struct PullRequest: Codable {
     /// Example: "Amazing new feature"
     public var title: String
     /// Simple User
-    public var user: SimpleUser?
+    public var user: SimpleUser
     /// Example: "Please pull these awesome changes"
-    public var body: String?
+    public var body: String
     public var labels: [Label]
     /// A collection of related issues and pull requests.
-    public var milestone: Milestone?
+    public var milestone: Milestone
     /// Example: "too heated"
     public var activeLockReason: String?
     /// Example: "2011-01-26T19:01:12Z"
@@ -57,13 +57,13 @@ public struct PullRequest: Codable {
     /// Example: "2011-01-26T19:01:12Z"
     public var updatedAt: Date
     /// Example: "2011-01-26T19:01:12Z"
-    public var closedAt: Date?
+    public var closedAt: Date
     /// Example: "2011-01-26T19:01:12Z"
-    public var mergedAt: Date?
+    public var mergedAt: Date
     /// Example: "e5bd3914e2e596debea16f433f57875b5b90bcd6"
-    public var mergeCommitSha: String?
+    public var mergeCommitSha: String
     /// Simple User
-    public var assignee: SimpleUser?
+    public var assignee: SimpleUser
     public var assignees: [SimpleUser]?
     public var requestedReviewers: [SimpleUser]?
     public var requestedTeams: [TeamSimple]?
@@ -77,20 +77,20 @@ public struct PullRequest: Codable {
     /// Example: "OWNER"
     public var authorAssociation: AuthorAssociation
     /// The status of auto merging a pull request.
-    public var autoMerge: AutoMerge?
+    public var autoMerge: AutoMerge
     /// Indicates whether or not the pull request is a draft.
     ///
     /// Example: false
     public var isDraft: Bool?
     public var isMerged: Bool
     /// Example: true
-    public var isMergeable: Bool?
+    public var isMergeable: Bool
     /// Example: true
     public var isRebaseable: Bool?
     /// Example: "clean"
     public var mergeableState: String
     /// Simple User
-    public var mergedBy: SimpleUser?
+    public var mergedBy: SimpleUser
     /// Example: 10
     public var comments: Int
     public var reviewComments: Int
@@ -107,9 +107,17 @@ public struct PullRequest: Codable {
     /// State of this Pull Request. Either `open` or `closed`.
     ///
     /// Example: "open"
-    public enum State: String, Codable, CaseIterable {
+    public enum State: String, Codable, CaseIterable, Sendable {
         case `open`
         case closed
+        case unknown
+
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let rawValue = try container.decode(String.self)
+            self = Self(rawValue: rawValue) ?? .unknown
+        }
     }
 
     public struct Label: Codable {
@@ -117,11 +125,11 @@ public struct PullRequest: Codable {
         public var nodeID: String
         public var url: String
         public var name: String
-        public var description: String?
+        public var description: String
         public var color: String
         public var isDefault: Bool
 
-        public init(id: Int64, nodeID: String, url: String, name: String, description: String? = nil, color: String, isDefault: Bool) {
+        public init(id: Int64, nodeID: String, url: String, name: String, description: String, color: String, isDefault: Bool) {
             self.id = id
             self.nodeID = nodeID
             self.url = url
@@ -137,7 +145,7 @@ public struct PullRequest: Codable {
             self.nodeID = try values.decode(String.self, forKey: "node_id")
             self.url = try values.decode(String.self, forKey: "url")
             self.name = try values.decode(String.self, forKey: "name")
-            self.description = try values.decodeIfPresent(String.self, forKey: "description")
+            self.description = try values.decode(String.self, forKey: "description")
             self.color = try values.decode(String.self, forKey: "color")
             self.isDefault = try values.decode(Bool.self, forKey: "default")
         }
@@ -148,7 +156,7 @@ public struct PullRequest: Codable {
             try values.encode(nodeID, forKey: "node_id")
             try values.encode(url, forKey: "url")
             try values.encode(name, forKey: "name")
-            try values.encodeIfPresent(description, forKey: "description")
+            try values.encode(description, forKey: "description")
             try values.encode(color, forKey: "color")
             try values.encode(isDefault, forKey: "default")
         }
@@ -157,7 +165,7 @@ public struct PullRequest: Codable {
     public struct Head: Codable {
         public var label: String
         public var ref: String
-        public var repo: Repo?
+        public var repo: Repo
         public var sha: String
         public var user: User
 
@@ -173,7 +181,7 @@ public struct PullRequest: Codable {
             public var contentsURL: String
             public var contributorsURL: URL
             public var deploymentsURL: URL
-            public var description: String?
+            public var description: String
             public var downloadsURL: URL
             public var eventsURL: URL
             public var isFork: Bool
@@ -218,14 +226,14 @@ public struct PullRequest: Codable {
             public var hasProjects: Bool
             public var hasWiki: Bool
             public var hasPages: Bool
-            public var homepage: URL?
-            public var language: String?
+            public var homepage: URL
+            public var language: String
             public var masterBranch: String?
             public var isArchived: Bool
             public var isDisabled: Bool
             /// The repository visibility: public, private, or internal.
             public var visibility: String?
-            public var mirrorURL: URL?
+            public var mirrorURL: URL
             public var openIssues: Int
             public var openIssuesCount: Int
             public var permissions: Permissions?
@@ -233,7 +241,7 @@ public struct PullRequest: Codable {
             public var allowMergeCommit: Bool?
             public var allowSquashMerge: Bool?
             public var allowRebaseMerge: Bool?
-            public var license: License?
+            public var license: License
             public var pushedAt: Date
             public var size: Int
             public var sshURL: String
@@ -253,7 +261,7 @@ public struct PullRequest: Codable {
                 public var followersURL: URL
                 public var followingURL: String
                 public var gistsURL: String
-                public var gravatarID: String?
+                public var gravatarID: String
                 public var htmlURL: URL
                 public var id: Int
                 public var nodeID: String
@@ -267,7 +275,7 @@ public struct PullRequest: Codable {
                 public var type: String
                 public var url: URL
 
-                public init(avatarURL: URL, eventsURL: String, followersURL: URL, followingURL: String, gistsURL: String, gravatarID: String? = nil, htmlURL: URL, id: Int, nodeID: String, login: String, organizationsURL: URL, receivedEventsURL: URL, reposURL: URL, isSiteAdmin: Bool, starredURL: String, subscriptionsURL: URL, type: String, url: URL) {
+                public init(avatarURL: URL, eventsURL: String, followersURL: URL, followingURL: String, gistsURL: String, gravatarID: String, htmlURL: URL, id: Int, nodeID: String, login: String, organizationsURL: URL, receivedEventsURL: URL, reposURL: URL, isSiteAdmin: Bool, starredURL: String, subscriptionsURL: URL, type: String, url: URL) {
                     self.avatarURL = avatarURL
                     self.eventsURL = eventsURL
                     self.followersURL = followersURL
@@ -295,7 +303,7 @@ public struct PullRequest: Codable {
                     self.followersURL = try values.decode(URL.self, forKey: "followers_url")
                     self.followingURL = try values.decode(String.self, forKey: "following_url")
                     self.gistsURL = try values.decode(String.self, forKey: "gists_url")
-                    self.gravatarID = try values.decodeIfPresent(String.self, forKey: "gravatar_id")
+                    self.gravatarID = try values.decode(String.self, forKey: "gravatar_id")
                     self.htmlURL = try values.decode(URL.self, forKey: "html_url")
                     self.id = try values.decode(Int.self, forKey: "id")
                     self.nodeID = try values.decode(String.self, forKey: "node_id")
@@ -317,7 +325,7 @@ public struct PullRequest: Codable {
                     try values.encode(followersURL, forKey: "followers_url")
                     try values.encode(followingURL, forKey: "following_url")
                     try values.encode(gistsURL, forKey: "gists_url")
-                    try values.encodeIfPresent(gravatarID, forKey: "gravatar_id")
+                    try values.encode(gravatarID, forKey: "gravatar_id")
                     try values.encode(htmlURL, forKey: "html_url")
                     try values.encode(id, forKey: "id")
                     try values.encode(nodeID, forKey: "node_id")
@@ -370,11 +378,11 @@ public struct PullRequest: Codable {
             public struct License: Codable {
                 public var key: String
                 public var name: String
-                public var url: URL?
-                public var spdxID: String?
+                public var url: URL
+                public var spdxID: String
                 public var nodeID: String
 
-                public init(key: String, name: String, url: URL? = nil, spdxID: String? = nil, nodeID: String) {
+                public init(key: String, name: String, url: URL, spdxID: String, nodeID: String) {
                     self.key = key
                     self.name = name
                     self.url = url
@@ -386,8 +394,8 @@ public struct PullRequest: Codable {
                     let values = try decoder.container(keyedBy: StringCodingKey.self)
                     self.key = try values.decode(String.self, forKey: "key")
                     self.name = try values.decode(String.self, forKey: "name")
-                    self.url = try values.decodeIfPresent(URL.self, forKey: "url")
-                    self.spdxID = try values.decodeIfPresent(String.self, forKey: "spdx_id")
+                    self.url = try values.decode(URL.self, forKey: "url")
+                    self.spdxID = try values.decode(String.self, forKey: "spdx_id")
                     self.nodeID = try values.decode(String.self, forKey: "node_id")
                 }
 
@@ -395,13 +403,13 @@ public struct PullRequest: Codable {
                     var values = encoder.container(keyedBy: StringCodingKey.self)
                     try values.encode(key, forKey: "key")
                     try values.encode(name, forKey: "name")
-                    try values.encodeIfPresent(url, forKey: "url")
-                    try values.encodeIfPresent(spdxID, forKey: "spdx_id")
+                    try values.encode(url, forKey: "url")
+                    try values.encode(spdxID, forKey: "spdx_id")
                     try values.encode(nodeID, forKey: "node_id")
                 }
             }
 
-            public init(archiveURL: String, assigneesURL: String, blobsURL: String, branchesURL: String, collaboratorsURL: String, commentsURL: String, commitsURL: String, compareURL: String, contentsURL: String, contributorsURL: URL, deploymentsURL: URL, description: String? = nil, downloadsURL: URL, eventsURL: URL, isFork: Bool, forksURL: URL, fullName: String, gitCommitsURL: String, gitRefsURL: String, gitTagsURL: String, hooksURL: URL, htmlURL: URL, id: Int, nodeID: String, issueCommentURL: String, issueEventsURL: String, issuesURL: String, keysURL: String, labelsURL: String, languagesURL: URL, mergesURL: URL, milestonesURL: String, name: String, notificationsURL: String, owner: Owner, isPrivate: Bool, pullsURL: String, releasesURL: String, stargazersURL: URL, statusesURL: String, subscribersURL: URL, subscriptionURL: URL, tagsURL: URL, teamsURL: URL, treesURL: String, url: URL, cloneURL: String, defaultBranch: String, forks: Int, forksCount: Int, gitURL: String, hasDownloads: Bool, hasIssues: Bool, hasProjects: Bool, hasWiki: Bool, hasPages: Bool, homepage: URL? = nil, language: String? = nil, masterBranch: String? = nil, isArchived: Bool, isDisabled: Bool, visibility: String? = nil, mirrorURL: URL? = nil, openIssues: Int, openIssuesCount: Int, permissions: Permissions? = nil, tempCloneToken: String? = nil, allowMergeCommit: Bool? = nil, allowSquashMerge: Bool? = nil, allowRebaseMerge: Bool? = nil, license: License? = nil, pushedAt: Date, size: Int, sshURL: String, stargazersCount: Int, svnURL: URL, topics: [String]? = nil, watchers: Int, watchersCount: Int, createdAt: Date, updatedAt: Date, allowForking: Bool? = nil, isTemplate: Bool? = nil) {
+            public init(archiveURL: String, assigneesURL: String, blobsURL: String, branchesURL: String, collaboratorsURL: String, commentsURL: String, commitsURL: String, compareURL: String, contentsURL: String, contributorsURL: URL, deploymentsURL: URL, description: String, downloadsURL: URL, eventsURL: URL, isFork: Bool, forksURL: URL, fullName: String, gitCommitsURL: String, gitRefsURL: String, gitTagsURL: String, hooksURL: URL, htmlURL: URL, id: Int, nodeID: String, issueCommentURL: String, issueEventsURL: String, issuesURL: String, keysURL: String, labelsURL: String, languagesURL: URL, mergesURL: URL, milestonesURL: String, name: String, notificationsURL: String, owner: Owner, isPrivate: Bool, pullsURL: String, releasesURL: String, stargazersURL: URL, statusesURL: String, subscribersURL: URL, subscriptionURL: URL, tagsURL: URL, teamsURL: URL, treesURL: String, url: URL, cloneURL: String, defaultBranch: String, forks: Int, forksCount: Int, gitURL: String, hasDownloads: Bool, hasIssues: Bool, hasProjects: Bool, hasWiki: Bool, hasPages: Bool, homepage: URL, language: String, masterBranch: String? = nil, isArchived: Bool, isDisabled: Bool, visibility: String? = nil, mirrorURL: URL, openIssues: Int, openIssuesCount: Int, permissions: Permissions? = nil, tempCloneToken: String? = nil, allowMergeCommit: Bool? = nil, allowSquashMerge: Bool? = nil, allowRebaseMerge: Bool? = nil, license: License, pushedAt: Date, size: Int, sshURL: String, stargazersCount: Int, svnURL: URL, topics: [String]? = nil, watchers: Int, watchersCount: Int, createdAt: Date, updatedAt: Date, allowForking: Bool? = nil, isTemplate: Bool? = nil) {
                 self.archiveURL = archiveURL
                 self.assigneesURL = assigneesURL
                 self.blobsURL = blobsURL
@@ -500,7 +508,7 @@ public struct PullRequest: Codable {
                 self.contentsURL = try values.decode(String.self, forKey: "contents_url")
                 self.contributorsURL = try values.decode(URL.self, forKey: "contributors_url")
                 self.deploymentsURL = try values.decode(URL.self, forKey: "deployments_url")
-                self.description = try values.decodeIfPresent(String.self, forKey: "description")
+                self.description = try values.decode(String.self, forKey: "description")
                 self.downloadsURL = try values.decode(URL.self, forKey: "downloads_url")
                 self.eventsURL = try values.decode(URL.self, forKey: "events_url")
                 self.isFork = try values.decode(Bool.self, forKey: "fork")
@@ -545,13 +553,13 @@ public struct PullRequest: Codable {
                 self.hasProjects = try values.decode(Bool.self, forKey: "has_projects")
                 self.hasWiki = try values.decode(Bool.self, forKey: "has_wiki")
                 self.hasPages = try values.decode(Bool.self, forKey: "has_pages")
-                self.homepage = try values.decodeIfPresent(URL.self, forKey: "homepage")
-                self.language = try values.decodeIfPresent(String.self, forKey: "language")
+                self.homepage = try values.decode(URL.self, forKey: "homepage")
+                self.language = try values.decode(String.self, forKey: "language")
                 self.masterBranch = try values.decodeIfPresent(String.self, forKey: "master_branch")
                 self.isArchived = try values.decode(Bool.self, forKey: "archived")
                 self.isDisabled = try values.decode(Bool.self, forKey: "disabled")
                 self.visibility = try values.decodeIfPresent(String.self, forKey: "visibility")
-                self.mirrorURL = try values.decodeIfPresent(URL.self, forKey: "mirror_url")
+                self.mirrorURL = try values.decode(URL.self, forKey: "mirror_url")
                 self.openIssues = try values.decode(Int.self, forKey: "open_issues")
                 self.openIssuesCount = try values.decode(Int.self, forKey: "open_issues_count")
                 self.permissions = try values.decodeIfPresent(Permissions.self, forKey: "permissions")
@@ -559,7 +567,7 @@ public struct PullRequest: Codable {
                 self.allowMergeCommit = try values.decodeIfPresent(Bool.self, forKey: "allow_merge_commit")
                 self.allowSquashMerge = try values.decodeIfPresent(Bool.self, forKey: "allow_squash_merge")
                 self.allowRebaseMerge = try values.decodeIfPresent(Bool.self, forKey: "allow_rebase_merge")
-                self.license = try values.decodeIfPresent(License.self, forKey: "license")
+                self.license = try values.decode(License.self, forKey: "license")
                 self.pushedAt = try values.decode(Date.self, forKey: "pushed_at")
                 self.size = try values.decode(Int.self, forKey: "size")
                 self.sshURL = try values.decode(String.self, forKey: "ssh_url")
@@ -587,7 +595,7 @@ public struct PullRequest: Codable {
                 try values.encode(contentsURL, forKey: "contents_url")
                 try values.encode(contributorsURL, forKey: "contributors_url")
                 try values.encode(deploymentsURL, forKey: "deployments_url")
-                try values.encodeIfPresent(description, forKey: "description")
+                try values.encode(description, forKey: "description")
                 try values.encode(downloadsURL, forKey: "downloads_url")
                 try values.encode(eventsURL, forKey: "events_url")
                 try values.encode(isFork, forKey: "fork")
@@ -632,13 +640,13 @@ public struct PullRequest: Codable {
                 try values.encode(hasProjects, forKey: "has_projects")
                 try values.encode(hasWiki, forKey: "has_wiki")
                 try values.encode(hasPages, forKey: "has_pages")
-                try values.encodeIfPresent(homepage, forKey: "homepage")
-                try values.encodeIfPresent(language, forKey: "language")
+                try values.encode(homepage, forKey: "homepage")
+                try values.encode(language, forKey: "language")
                 try values.encodeIfPresent(masterBranch, forKey: "master_branch")
                 try values.encode(isArchived, forKey: "archived")
                 try values.encode(isDisabled, forKey: "disabled")
                 try values.encodeIfPresent(visibility, forKey: "visibility")
-                try values.encodeIfPresent(mirrorURL, forKey: "mirror_url")
+                try values.encode(mirrorURL, forKey: "mirror_url")
                 try values.encode(openIssues, forKey: "open_issues")
                 try values.encode(openIssuesCount, forKey: "open_issues_count")
                 try values.encodeIfPresent(permissions, forKey: "permissions")
@@ -646,7 +654,7 @@ public struct PullRequest: Codable {
                 try values.encodeIfPresent(allowMergeCommit, forKey: "allow_merge_commit")
                 try values.encodeIfPresent(allowSquashMerge, forKey: "allow_squash_merge")
                 try values.encodeIfPresent(allowRebaseMerge, forKey: "allow_rebase_merge")
-                try values.encodeIfPresent(license, forKey: "license")
+                try values.encode(license, forKey: "license")
                 try values.encode(pushedAt, forKey: "pushed_at")
                 try values.encode(size, forKey: "size")
                 try values.encode(sshURL, forKey: "ssh_url")
@@ -668,7 +676,7 @@ public struct PullRequest: Codable {
             public var followersURL: URL
             public var followingURL: String
             public var gistsURL: String
-            public var gravatarID: String?
+            public var gravatarID: String
             public var htmlURL: URL
             public var id: Int
             public var nodeID: String
@@ -682,7 +690,7 @@ public struct PullRequest: Codable {
             public var type: String
             public var url: URL
 
-            public init(avatarURL: URL, eventsURL: String, followersURL: URL, followingURL: String, gistsURL: String, gravatarID: String? = nil, htmlURL: URL, id: Int, nodeID: String, login: String, organizationsURL: URL, receivedEventsURL: URL, reposURL: URL, isSiteAdmin: Bool, starredURL: String, subscriptionsURL: URL, type: String, url: URL) {
+            public init(avatarURL: URL, eventsURL: String, followersURL: URL, followingURL: String, gistsURL: String, gravatarID: String, htmlURL: URL, id: Int, nodeID: String, login: String, organizationsURL: URL, receivedEventsURL: URL, reposURL: URL, isSiteAdmin: Bool, starredURL: String, subscriptionsURL: URL, type: String, url: URL) {
                 self.avatarURL = avatarURL
                 self.eventsURL = eventsURL
                 self.followersURL = followersURL
@@ -710,7 +718,7 @@ public struct PullRequest: Codable {
                 self.followersURL = try values.decode(URL.self, forKey: "followers_url")
                 self.followingURL = try values.decode(String.self, forKey: "following_url")
                 self.gistsURL = try values.decode(String.self, forKey: "gists_url")
-                self.gravatarID = try values.decodeIfPresent(String.self, forKey: "gravatar_id")
+                self.gravatarID = try values.decode(String.self, forKey: "gravatar_id")
                 self.htmlURL = try values.decode(URL.self, forKey: "html_url")
                 self.id = try values.decode(Int.self, forKey: "id")
                 self.nodeID = try values.decode(String.self, forKey: "node_id")
@@ -732,7 +740,7 @@ public struct PullRequest: Codable {
                 try values.encode(followersURL, forKey: "followers_url")
                 try values.encode(followingURL, forKey: "following_url")
                 try values.encode(gistsURL, forKey: "gists_url")
-                try values.encodeIfPresent(gravatarID, forKey: "gravatar_id")
+                try values.encode(gravatarID, forKey: "gravatar_id")
                 try values.encode(htmlURL, forKey: "html_url")
                 try values.encode(id, forKey: "id")
                 try values.encode(nodeID, forKey: "node_id")
@@ -748,7 +756,7 @@ public struct PullRequest: Codable {
             }
         }
 
-        public init(label: String, ref: String, repo: Repo? = nil, sha: String, user: User) {
+        public init(label: String, ref: String, repo: Repo, sha: String, user: User) {
             self.label = label
             self.ref = ref
             self.repo = repo
@@ -760,7 +768,7 @@ public struct PullRequest: Codable {
             let values = try decoder.container(keyedBy: StringCodingKey.self)
             self.label = try values.decode(String.self, forKey: "label")
             self.ref = try values.decode(String.self, forKey: "ref")
-            self.repo = try values.decodeIfPresent(Repo.self, forKey: "repo")
+            self.repo = try values.decode(Repo.self, forKey: "repo")
             self.sha = try values.decode(String.self, forKey: "sha")
             self.user = try values.decode(User.self, forKey: "user")
         }
@@ -769,7 +777,7 @@ public struct PullRequest: Codable {
             var values = encoder.container(keyedBy: StringCodingKey.self)
             try values.encode(label, forKey: "label")
             try values.encode(ref, forKey: "ref")
-            try values.encodeIfPresent(repo, forKey: "repo")
+            try values.encode(repo, forKey: "repo")
             try values.encode(sha, forKey: "sha")
             try values.encode(user, forKey: "user")
         }
@@ -794,7 +802,7 @@ public struct PullRequest: Codable {
             public var contentsURL: String
             public var contributorsURL: URL
             public var deploymentsURL: URL
-            public var description: String?
+            public var description: String
             public var downloadsURL: URL
             public var eventsURL: URL
             public var isFork: Bool
@@ -840,14 +848,14 @@ public struct PullRequest: Codable {
             public var hasProjects: Bool
             public var hasWiki: Bool
             public var hasPages: Bool
-            public var homepage: URL?
-            public var language: String?
+            public var homepage: URL
+            public var language: String
             public var masterBranch: String?
             public var isArchived: Bool
             public var isDisabled: Bool
             /// The repository visibility: public, private, or internal.
             public var visibility: String?
-            public var mirrorURL: URL?
+            public var mirrorURL: URL
             public var openIssues: Int
             public var openIssuesCount: Int
             public var permissions: Permissions?
@@ -856,7 +864,7 @@ public struct PullRequest: Codable {
             public var allowSquashMerge: Bool?
             public var allowRebaseMerge: Bool?
             /// License Simple
-            public var license: LicenseSimple?
+            public var license: LicenseSimple
             public var pushedAt: Date
             public var size: Int
             public var sshURL: String
@@ -875,7 +883,7 @@ public struct PullRequest: Codable {
                 public var followersURL: URL
                 public var followingURL: String
                 public var gistsURL: String
-                public var gravatarID: String?
+                public var gravatarID: String
                 public var htmlURL: URL
                 public var id: Int
                 public var nodeID: String
@@ -889,7 +897,7 @@ public struct PullRequest: Codable {
                 public var type: String
                 public var url: URL
 
-                public init(avatarURL: URL, eventsURL: String, followersURL: URL, followingURL: String, gistsURL: String, gravatarID: String? = nil, htmlURL: URL, id: Int, nodeID: String, login: String, organizationsURL: URL, receivedEventsURL: URL, reposURL: URL, isSiteAdmin: Bool, starredURL: String, subscriptionsURL: URL, type: String, url: URL) {
+                public init(avatarURL: URL, eventsURL: String, followersURL: URL, followingURL: String, gistsURL: String, gravatarID: String, htmlURL: URL, id: Int, nodeID: String, login: String, organizationsURL: URL, receivedEventsURL: URL, reposURL: URL, isSiteAdmin: Bool, starredURL: String, subscriptionsURL: URL, type: String, url: URL) {
                     self.avatarURL = avatarURL
                     self.eventsURL = eventsURL
                     self.followersURL = followersURL
@@ -917,7 +925,7 @@ public struct PullRequest: Codable {
                     self.followersURL = try values.decode(URL.self, forKey: "followers_url")
                     self.followingURL = try values.decode(String.self, forKey: "following_url")
                     self.gistsURL = try values.decode(String.self, forKey: "gists_url")
-                    self.gravatarID = try values.decodeIfPresent(String.self, forKey: "gravatar_id")
+                    self.gravatarID = try values.decode(String.self, forKey: "gravatar_id")
                     self.htmlURL = try values.decode(URL.self, forKey: "html_url")
                     self.id = try values.decode(Int.self, forKey: "id")
                     self.nodeID = try values.decode(String.self, forKey: "node_id")
@@ -939,7 +947,7 @@ public struct PullRequest: Codable {
                     try values.encode(followersURL, forKey: "followers_url")
                     try values.encode(followingURL, forKey: "following_url")
                     try values.encode(gistsURL, forKey: "gists_url")
-                    try values.encodeIfPresent(gravatarID, forKey: "gravatar_id")
+                    try values.encode(gravatarID, forKey: "gravatar_id")
                     try values.encode(htmlURL, forKey: "html_url")
                     try values.encode(id, forKey: "id")
                     try values.encode(nodeID, forKey: "node_id")
@@ -989,7 +997,7 @@ public struct PullRequest: Codable {
                 }
             }
 
-            public init(archiveURL: String, assigneesURL: String, blobsURL: String, branchesURL: String, collaboratorsURL: String, commentsURL: String, commitsURL: String, compareURL: String, contentsURL: String, contributorsURL: URL, deploymentsURL: URL, description: String? = nil, downloadsURL: URL, eventsURL: URL, isFork: Bool, forksURL: URL, fullName: String, gitCommitsURL: String, gitRefsURL: String, gitTagsURL: String, hooksURL: URL, htmlURL: URL, id: Int, isTemplate: Bool? = nil, nodeID: String, issueCommentURL: String, issueEventsURL: String, issuesURL: String, keysURL: String, labelsURL: String, languagesURL: URL, mergesURL: URL, milestonesURL: String, name: String, notificationsURL: String, owner: Owner, isPrivate: Bool, pullsURL: String, releasesURL: String, stargazersURL: URL, statusesURL: String, subscribersURL: URL, subscriptionURL: URL, tagsURL: URL, teamsURL: URL, treesURL: String, url: URL, cloneURL: String, defaultBranch: String, forks: Int, forksCount: Int, gitURL: String, hasDownloads: Bool, hasIssues: Bool, hasProjects: Bool, hasWiki: Bool, hasPages: Bool, homepage: URL? = nil, language: String? = nil, masterBranch: String? = nil, isArchived: Bool, isDisabled: Bool, visibility: String? = nil, mirrorURL: URL? = nil, openIssues: Int, openIssuesCount: Int, permissions: Permissions? = nil, tempCloneToken: String? = nil, allowMergeCommit: Bool? = nil, allowSquashMerge: Bool? = nil, allowRebaseMerge: Bool? = nil, license: LicenseSimple? = nil, pushedAt: Date, size: Int, sshURL: String, stargazersCount: Int, svnURL: URL, topics: [String]? = nil, watchers: Int, watchersCount: Int, createdAt: Date, updatedAt: Date, allowForking: Bool? = nil) {
+            public init(archiveURL: String, assigneesURL: String, blobsURL: String, branchesURL: String, collaboratorsURL: String, commentsURL: String, commitsURL: String, compareURL: String, contentsURL: String, contributorsURL: URL, deploymentsURL: URL, description: String, downloadsURL: URL, eventsURL: URL, isFork: Bool, forksURL: URL, fullName: String, gitCommitsURL: String, gitRefsURL: String, gitTagsURL: String, hooksURL: URL, htmlURL: URL, id: Int, isTemplate: Bool? = nil, nodeID: String, issueCommentURL: String, issueEventsURL: String, issuesURL: String, keysURL: String, labelsURL: String, languagesURL: URL, mergesURL: URL, milestonesURL: String, name: String, notificationsURL: String, owner: Owner, isPrivate: Bool, pullsURL: String, releasesURL: String, stargazersURL: URL, statusesURL: String, subscribersURL: URL, subscriptionURL: URL, tagsURL: URL, teamsURL: URL, treesURL: String, url: URL, cloneURL: String, defaultBranch: String, forks: Int, forksCount: Int, gitURL: String, hasDownloads: Bool, hasIssues: Bool, hasProjects: Bool, hasWiki: Bool, hasPages: Bool, homepage: URL, language: String, masterBranch: String? = nil, isArchived: Bool, isDisabled: Bool, visibility: String? = nil, mirrorURL: URL, openIssues: Int, openIssuesCount: Int, permissions: Permissions? = nil, tempCloneToken: String? = nil, allowMergeCommit: Bool? = nil, allowSquashMerge: Bool? = nil, allowRebaseMerge: Bool? = nil, license: LicenseSimple, pushedAt: Date, size: Int, sshURL: String, stargazersCount: Int, svnURL: URL, topics: [String]? = nil, watchers: Int, watchersCount: Int, createdAt: Date, updatedAt: Date, allowForking: Bool? = nil) {
                 self.archiveURL = archiveURL
                 self.assigneesURL = assigneesURL
                 self.blobsURL = blobsURL
@@ -1088,7 +1096,7 @@ public struct PullRequest: Codable {
                 self.contentsURL = try values.decode(String.self, forKey: "contents_url")
                 self.contributorsURL = try values.decode(URL.self, forKey: "contributors_url")
                 self.deploymentsURL = try values.decode(URL.self, forKey: "deployments_url")
-                self.description = try values.decodeIfPresent(String.self, forKey: "description")
+                self.description = try values.decode(String.self, forKey: "description")
                 self.downloadsURL = try values.decode(URL.self, forKey: "downloads_url")
                 self.eventsURL = try values.decode(URL.self, forKey: "events_url")
                 self.isFork = try values.decode(Bool.self, forKey: "fork")
@@ -1134,13 +1142,13 @@ public struct PullRequest: Codable {
                 self.hasProjects = try values.decode(Bool.self, forKey: "has_projects")
                 self.hasWiki = try values.decode(Bool.self, forKey: "has_wiki")
                 self.hasPages = try values.decode(Bool.self, forKey: "has_pages")
-                self.homepage = try values.decodeIfPresent(URL.self, forKey: "homepage")
-                self.language = try values.decodeIfPresent(String.self, forKey: "language")
+                self.homepage = try values.decode(URL.self, forKey: "homepage")
+                self.language = try values.decode(String.self, forKey: "language")
                 self.masterBranch = try values.decodeIfPresent(String.self, forKey: "master_branch")
                 self.isArchived = try values.decode(Bool.self, forKey: "archived")
                 self.isDisabled = try values.decode(Bool.self, forKey: "disabled")
                 self.visibility = try values.decodeIfPresent(String.self, forKey: "visibility")
-                self.mirrorURL = try values.decodeIfPresent(URL.self, forKey: "mirror_url")
+                self.mirrorURL = try values.decode(URL.self, forKey: "mirror_url")
                 self.openIssues = try values.decode(Int.self, forKey: "open_issues")
                 self.openIssuesCount = try values.decode(Int.self, forKey: "open_issues_count")
                 self.permissions = try values.decodeIfPresent(Permissions.self, forKey: "permissions")
@@ -1148,7 +1156,7 @@ public struct PullRequest: Codable {
                 self.allowMergeCommit = try values.decodeIfPresent(Bool.self, forKey: "allow_merge_commit")
                 self.allowSquashMerge = try values.decodeIfPresent(Bool.self, forKey: "allow_squash_merge")
                 self.allowRebaseMerge = try values.decodeIfPresent(Bool.self, forKey: "allow_rebase_merge")
-                self.license = try values.decodeIfPresent(LicenseSimple.self, forKey: "license")
+                self.license = try values.decode(LicenseSimple.self, forKey: "license")
                 self.pushedAt = try values.decode(Date.self, forKey: "pushed_at")
                 self.size = try values.decode(Int.self, forKey: "size")
                 self.sshURL = try values.decode(String.self, forKey: "ssh_url")
@@ -1175,7 +1183,7 @@ public struct PullRequest: Codable {
                 try values.encode(contentsURL, forKey: "contents_url")
                 try values.encode(contributorsURL, forKey: "contributors_url")
                 try values.encode(deploymentsURL, forKey: "deployments_url")
-                try values.encodeIfPresent(description, forKey: "description")
+                try values.encode(description, forKey: "description")
                 try values.encode(downloadsURL, forKey: "downloads_url")
                 try values.encode(eventsURL, forKey: "events_url")
                 try values.encode(isFork, forKey: "fork")
@@ -1221,13 +1229,13 @@ public struct PullRequest: Codable {
                 try values.encode(hasProjects, forKey: "has_projects")
                 try values.encode(hasWiki, forKey: "has_wiki")
                 try values.encode(hasPages, forKey: "has_pages")
-                try values.encodeIfPresent(homepage, forKey: "homepage")
-                try values.encodeIfPresent(language, forKey: "language")
+                try values.encode(homepage, forKey: "homepage")
+                try values.encode(language, forKey: "language")
                 try values.encodeIfPresent(masterBranch, forKey: "master_branch")
                 try values.encode(isArchived, forKey: "archived")
                 try values.encode(isDisabled, forKey: "disabled")
                 try values.encodeIfPresent(visibility, forKey: "visibility")
-                try values.encodeIfPresent(mirrorURL, forKey: "mirror_url")
+                try values.encode(mirrorURL, forKey: "mirror_url")
                 try values.encode(openIssues, forKey: "open_issues")
                 try values.encode(openIssuesCount, forKey: "open_issues_count")
                 try values.encodeIfPresent(permissions, forKey: "permissions")
@@ -1235,7 +1243,7 @@ public struct PullRequest: Codable {
                 try values.encodeIfPresent(allowMergeCommit, forKey: "allow_merge_commit")
                 try values.encodeIfPresent(allowSquashMerge, forKey: "allow_squash_merge")
                 try values.encodeIfPresent(allowRebaseMerge, forKey: "allow_rebase_merge")
-                try values.encodeIfPresent(license, forKey: "license")
+                try values.encode(license, forKey: "license")
                 try values.encode(pushedAt, forKey: "pushed_at")
                 try values.encode(size, forKey: "size")
                 try values.encode(sshURL, forKey: "ssh_url")
@@ -1256,7 +1264,7 @@ public struct PullRequest: Codable {
             public var followersURL: URL
             public var followingURL: String
             public var gistsURL: String
-            public var gravatarID: String?
+            public var gravatarID: String
             public var htmlURL: URL
             public var id: Int
             public var nodeID: String
@@ -1270,7 +1278,7 @@ public struct PullRequest: Codable {
             public var type: String
             public var url: URL
 
-            public init(avatarURL: URL, eventsURL: String, followersURL: URL, followingURL: String, gistsURL: String, gravatarID: String? = nil, htmlURL: URL, id: Int, nodeID: String, login: String, organizationsURL: URL, receivedEventsURL: URL, reposURL: URL, isSiteAdmin: Bool, starredURL: String, subscriptionsURL: URL, type: String, url: URL) {
+            public init(avatarURL: URL, eventsURL: String, followersURL: URL, followingURL: String, gistsURL: String, gravatarID: String, htmlURL: URL, id: Int, nodeID: String, login: String, organizationsURL: URL, receivedEventsURL: URL, reposURL: URL, isSiteAdmin: Bool, starredURL: String, subscriptionsURL: URL, type: String, url: URL) {
                 self.avatarURL = avatarURL
                 self.eventsURL = eventsURL
                 self.followersURL = followersURL
@@ -1298,7 +1306,7 @@ public struct PullRequest: Codable {
                 self.followersURL = try values.decode(URL.self, forKey: "followers_url")
                 self.followingURL = try values.decode(String.self, forKey: "following_url")
                 self.gistsURL = try values.decode(String.self, forKey: "gists_url")
-                self.gravatarID = try values.decodeIfPresent(String.self, forKey: "gravatar_id")
+                self.gravatarID = try values.decode(String.self, forKey: "gravatar_id")
                 self.htmlURL = try values.decode(URL.self, forKey: "html_url")
                 self.id = try values.decode(Int.self, forKey: "id")
                 self.nodeID = try values.decode(String.self, forKey: "node_id")
@@ -1320,7 +1328,7 @@ public struct PullRequest: Codable {
                 try values.encode(followersURL, forKey: "followers_url")
                 try values.encode(followingURL, forKey: "following_url")
                 try values.encode(gistsURL, forKey: "gists_url")
-                try values.encodeIfPresent(gravatarID, forKey: "gravatar_id")
+                try values.encode(gravatarID, forKey: "gravatar_id")
                 try values.encode(htmlURL, forKey: "html_url")
                 try values.encode(id, forKey: "id")
                 try values.encode(nodeID, forKey: "node_id")
@@ -1433,7 +1441,7 @@ public struct PullRequest: Codable {
         }
     }
 
-    public init(url: URL, id: Int, nodeID: String, htmlURL: URL, diffURL: URL, patchURL: URL, issueURL: URL, commitsURL: URL, reviewCommentsURL: URL, reviewCommentURL: String, commentsURL: URL, statusesURL: URL, number: Int, state: State, isLocked: Bool, title: String, user: SimpleUser? = nil, body: String? = nil, labels: [Label], milestone: Milestone? = nil, activeLockReason: String? = nil, createdAt: Date, updatedAt: Date, closedAt: Date? = nil, mergedAt: Date? = nil, mergeCommitSha: String? = nil, assignee: SimpleUser? = nil, assignees: [SimpleUser]? = nil, requestedReviewers: [SimpleUser]? = nil, requestedTeams: [TeamSimple]? = nil, head: Head, base: Base, links: Links, authorAssociation: AuthorAssociation, autoMerge: AutoMerge? = nil, isDraft: Bool? = nil, isMerged: Bool, isMergeable: Bool? = nil, isRebaseable: Bool? = nil, mergeableState: String, mergedBy: SimpleUser? = nil, comments: Int, reviewComments: Int, maintainerCanModify: Bool, commits: Int, additions: Int, deletions: Int, changedFiles: Int) {
+    public init(url: URL, id: Int, nodeID: String, htmlURL: URL, diffURL: URL, patchURL: URL, issueURL: URL, commitsURL: URL, reviewCommentsURL: URL, reviewCommentURL: String, commentsURL: URL, statusesURL: URL, number: Int, state: State, isLocked: Bool, title: String, user: SimpleUser, body: String, labels: [Label], milestone: Milestone, activeLockReason: String? = nil, createdAt: Date, updatedAt: Date, closedAt: Date, mergedAt: Date, mergeCommitSha: String, assignee: SimpleUser, assignees: [SimpleUser]? = nil, requestedReviewers: [SimpleUser]? = nil, requestedTeams: [TeamSimple]? = nil, head: Head, base: Base, links: Links, authorAssociation: AuthorAssociation, autoMerge: AutoMerge, isDraft: Bool? = nil, isMerged: Bool, isMergeable: Bool, isRebaseable: Bool? = nil, mergeableState: String, mergedBy: SimpleUser, comments: Int, reviewComments: Int, maintainerCanModify: Bool, commits: Int, additions: Int, deletions: Int, changedFiles: Int) {
         self.url = url
         self.id = id
         self.nodeID = nodeID
@@ -1502,17 +1510,17 @@ public struct PullRequest: Codable {
         self.state = try values.decode(State.self, forKey: "state")
         self.isLocked = try values.decode(Bool.self, forKey: "locked")
         self.title = try values.decode(String.self, forKey: "title")
-        self.user = try values.decodeIfPresent(SimpleUser.self, forKey: "user")
-        self.body = try values.decodeIfPresent(String.self, forKey: "body")
+        self.user = try values.decode(SimpleUser.self, forKey: "user")
+        self.body = try values.decode(String.self, forKey: "body")
         self.labels = try values.decode([Label].self, forKey: "labels")
-        self.milestone = try values.decodeIfPresent(Milestone.self, forKey: "milestone")
+        self.milestone = try values.decode(Milestone.self, forKey: "milestone")
         self.activeLockReason = try values.decodeIfPresent(String.self, forKey: "active_lock_reason")
         self.createdAt = try values.decode(Date.self, forKey: "created_at")
         self.updatedAt = try values.decode(Date.self, forKey: "updated_at")
-        self.closedAt = try values.decodeIfPresent(Date.self, forKey: "closed_at")
-        self.mergedAt = try values.decodeIfPresent(Date.self, forKey: "merged_at")
-        self.mergeCommitSha = try values.decodeIfPresent(String.self, forKey: "merge_commit_sha")
-        self.assignee = try values.decodeIfPresent(SimpleUser.self, forKey: "assignee")
+        self.closedAt = try values.decode(Date.self, forKey: "closed_at")
+        self.mergedAt = try values.decode(Date.self, forKey: "merged_at")
+        self.mergeCommitSha = try values.decode(String.self, forKey: "merge_commit_sha")
+        self.assignee = try values.decode(SimpleUser.self, forKey: "assignee")
         self.assignees = try values.decodeIfPresent([SimpleUser].self, forKey: "assignees")
         self.requestedReviewers = try values.decodeIfPresent([SimpleUser].self, forKey: "requested_reviewers")
         self.requestedTeams = try values.decodeIfPresent([TeamSimple].self, forKey: "requested_teams")
@@ -1520,13 +1528,13 @@ public struct PullRequest: Codable {
         self.base = try values.decode(Base.self, forKey: "base")
         self.links = try values.decode(Links.self, forKey: "_links")
         self.authorAssociation = try values.decode(AuthorAssociation.self, forKey: "author_association")
-        self.autoMerge = try values.decodeIfPresent(AutoMerge.self, forKey: "auto_merge")
+        self.autoMerge = try values.decode(AutoMerge.self, forKey: "auto_merge")
         self.isDraft = try values.decodeIfPresent(Bool.self, forKey: "draft")
         self.isMerged = try values.decode(Bool.self, forKey: "merged")
-        self.isMergeable = try values.decodeIfPresent(Bool.self, forKey: "mergeable")
+        self.isMergeable = try values.decode(Bool.self, forKey: "mergeable")
         self.isRebaseable = try values.decodeIfPresent(Bool.self, forKey: "rebaseable")
         self.mergeableState = try values.decode(String.self, forKey: "mergeable_state")
-        self.mergedBy = try values.decodeIfPresent(SimpleUser.self, forKey: "merged_by")
+        self.mergedBy = try values.decode(SimpleUser.self, forKey: "merged_by")
         self.comments = try values.decode(Int.self, forKey: "comments")
         self.reviewComments = try values.decode(Int.self, forKey: "review_comments")
         self.maintainerCanModify = try values.decode(Bool.self, forKey: "maintainer_can_modify")
@@ -1554,17 +1562,17 @@ public struct PullRequest: Codable {
         try values.encode(state, forKey: "state")
         try values.encode(isLocked, forKey: "locked")
         try values.encode(title, forKey: "title")
-        try values.encodeIfPresent(user, forKey: "user")
-        try values.encodeIfPresent(body, forKey: "body")
+        try values.encode(user, forKey: "user")
+        try values.encode(body, forKey: "body")
         try values.encode(labels, forKey: "labels")
-        try values.encodeIfPresent(milestone, forKey: "milestone")
+        try values.encode(milestone, forKey: "milestone")
         try values.encodeIfPresent(activeLockReason, forKey: "active_lock_reason")
         try values.encode(createdAt, forKey: "created_at")
         try values.encode(updatedAt, forKey: "updated_at")
-        try values.encodeIfPresent(closedAt, forKey: "closed_at")
-        try values.encodeIfPresent(mergedAt, forKey: "merged_at")
-        try values.encodeIfPresent(mergeCommitSha, forKey: "merge_commit_sha")
-        try values.encodeIfPresent(assignee, forKey: "assignee")
+        try values.encode(closedAt, forKey: "closed_at")
+        try values.encode(mergedAt, forKey: "merged_at")
+        try values.encode(mergeCommitSha, forKey: "merge_commit_sha")
+        try values.encode(assignee, forKey: "assignee")
         try values.encodeIfPresent(assignees, forKey: "assignees")
         try values.encodeIfPresent(requestedReviewers, forKey: "requested_reviewers")
         try values.encodeIfPresent(requestedTeams, forKey: "requested_teams")
@@ -1572,13 +1580,13 @@ public struct PullRequest: Codable {
         try values.encode(base, forKey: "base")
         try values.encode(links, forKey: "_links")
         try values.encode(authorAssociation, forKey: "author_association")
-        try values.encodeIfPresent(autoMerge, forKey: "auto_merge")
+        try values.encode(autoMerge, forKey: "auto_merge")
         try values.encodeIfPresent(isDraft, forKey: "draft")
         try values.encode(isMerged, forKey: "merged")
-        try values.encodeIfPresent(isMergeable, forKey: "mergeable")
+        try values.encode(isMergeable, forKey: "mergeable")
         try values.encodeIfPresent(isRebaseable, forKey: "rebaseable")
         try values.encode(mergeableState, forKey: "mergeable_state")
-        try values.encodeIfPresent(mergedBy, forKey: "merged_by")
+        try values.encode(mergedBy, forKey: "merged_by")
         try values.encode(comments, forKey: "comments")
         try values.encode(reviewComments, forKey: "review_comments")
         try values.encode(maintainerCanModify, forKey: "maintainer_can_modify")

@@ -5,7 +5,7 @@ import Foundation
 import NaiveDate
 
 public struct FileCommit: Codable {
-    public var content: Content?
+    public var content: Content
     public var commit: Commit
 
     public struct Content: Codable {
@@ -272,20 +272,20 @@ public struct FileCommit: Codable {
         }
     }
 
-    public init(content: Content? = nil, commit: Commit) {
+    public init(content: Content, commit: Commit) {
         self.content = content
         self.commit = commit
     }
 
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: StringCodingKey.self)
-        self.content = try values.decodeIfPresent(Content.self, forKey: "content")
+        self.content = try values.decode(Content.self, forKey: "content")
         self.commit = try values.decode(Commit.self, forKey: "commit")
     }
 
     public func encode(to encoder: Encoder) throws {
         var values = encoder.container(keyedBy: StringCodingKey.self)
-        try values.encodeIfPresent(content, forKey: "content")
+        try values.encode(content, forKey: "content")
         try values.encode(commit, forKey: "commit")
     }
 }

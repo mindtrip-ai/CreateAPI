@@ -26,15 +26,31 @@ extension Paths {
       public var enumQueryString: EnumQueryString?
       public var enumQueryInteger: Int32?
 
-      public enum EnumQueryStringArray: String, Codable, CaseIterable {
+      public enum EnumQueryStringArray: String, Codable, CaseIterable, Sendable {
         case greaterThan = ">"
         case dollar = "$"
+        case unknown
+
+
+        public init(from decoder: Decoder) throws {
+          let container = try decoder.singleValueContainer()
+          let rawValue = try container.decode(String.self)
+          self = Self(rawValue: rawValue) ?? .unknown
+        }
       }
 
-      public enum EnumQueryString: String, Codable, CaseIterable {
+      public enum EnumQueryString: String, Codable, CaseIterable, Sendable {
         case abc = "_abc"
         case minusefg = "-efg"
         case xyz = "(xyz)"
+        case unknown
+
+
+        public init(from decoder: Decoder) throws {
+          let container = try decoder.singleValueContainer()
+          let rawValue = try container.decode(String.self)
+          self = Self(rawValue: rawValue) ?? .unknown
+        }
       }
 
       public init(enumQueryStringArray: [EnumQueryStringArray]? = nil, enumQueryString: EnumQueryString? = nil, enumQueryInteger: Int32? = nil) {

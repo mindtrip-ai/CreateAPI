@@ -27,7 +27,7 @@ public struct TeamFull: Codable {
     /// Example: "justice-league"
     public var slug: String
     /// Example: "A great team."
-    public var description: String?
+    public var description: String
     /// The level of privacy this team should have
     ///
     /// Example: "closed"
@@ -61,12 +61,20 @@ public struct TeamFull: Codable {
     /// The level of privacy this team should have
     ///
     /// Example: "closed"
-    public enum Privacy: String, Codable, CaseIterable {
+    public enum Privacy: String, Codable, CaseIterable, Sendable {
         case closed
         case secret
+        case unknown
+
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let rawValue = try container.decode(String.self)
+            self = Self(rawValue: rawValue) ?? .unknown
+        }
     }
 
-    public init(id: Int, nodeID: String, url: URL, htmlURL: URL, name: String, slug: String, description: String? = nil, privacy: Privacy? = nil, permission: String, membersURL: String, repositoriesURL: URL, parent: TeamSimple? = nil, membersCount: Int, reposCount: Int, createdAt: Date, updatedAt: Date, organization: OrganizationFull, ldapDn: String? = nil) {
+    public init(id: Int, nodeID: String, url: URL, htmlURL: URL, name: String, slug: String, description: String, privacy: Privacy? = nil, permission: String, membersURL: String, repositoriesURL: URL, parent: TeamSimple? = nil, membersCount: Int, reposCount: Int, createdAt: Date, updatedAt: Date, organization: OrganizationFull, ldapDn: String? = nil) {
         self.id = id
         self.nodeID = nodeID
         self.url = url
@@ -95,7 +103,7 @@ public struct TeamFull: Codable {
         self.htmlURL = try values.decode(URL.self, forKey: "html_url")
         self.name = try values.decode(String.self, forKey: "name")
         self.slug = try values.decode(String.self, forKey: "slug")
-        self.description = try values.decodeIfPresent(String.self, forKey: "description")
+        self.description = try values.decode(String.self, forKey: "description")
         self.privacy = try values.decodeIfPresent(Privacy.self, forKey: "privacy")
         self.permission = try values.decode(String.self, forKey: "permission")
         self.membersURL = try values.decode(String.self, forKey: "members_url")
@@ -117,7 +125,7 @@ public struct TeamFull: Codable {
         try values.encode(htmlURL, forKey: "html_url")
         try values.encode(name, forKey: "name")
         try values.encode(slug, forKey: "slug")
-        try values.encodeIfPresent(description, forKey: "description")
+        try values.encode(description, forKey: "description")
         try values.encodeIfPresent(privacy, forKey: "privacy")
         try values.encode(permission, forKey: "permission")
         try values.encode(membersURL, forKey: "members_url")

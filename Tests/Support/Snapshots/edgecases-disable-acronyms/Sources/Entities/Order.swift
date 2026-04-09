@@ -14,10 +14,18 @@ public struct Order: Codable {
     public var isComplete: Bool
 
     /// Order Status
-    public enum Status: String, Codable, CaseIterable {
+    public enum Status: String, Codable, CaseIterable, Sendable {
         case placed
         case approved
         case delivered
+        case unknown
+
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let rawValue = try container.decode(String.self)
+            self = Self(rawValue: rawValue) ?? .unknown
+        }
     }
 
     public init(id: Int64? = nil, petId: Int64? = nil, quantity: Int32? = nil, shipDate: Date? = nil, status: Status? = nil, isComplete: Bool? = nil) {

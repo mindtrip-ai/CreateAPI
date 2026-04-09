@@ -31,10 +31,18 @@ extension Paths.Projects.Columns.WithColumnID {
             public var perPage: Int?
             public var page: Int?
 
-            public enum ArchivedState: String, Codable, CaseIterable {
+            public enum ArchivedState: String, Codable, CaseIterable, Sendable {
                 case all
                 case archived
                 case notArchived = "not_archived"
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             public init(archivedState: ArchivedState? = nil, perPage: Int? = nil, page: Int? = nil) {
@@ -59,23 +67,44 @@ extension Paths.Projects.Columns.WithColumnID {
             Request(path: path, method: "POST", body: body, id: "projects/create-card")
         }
 
-        public enum PostRequest: Encodable {
+        public enum PostRequest: Encodable, OneOfEnum {
             case a(A)
             case b(B)
+
+            case unknown(UnknownPostRequest)
+
+            public struct UnknownPostRequest: Encodable, UnknownOneOfCase {
+              public enum `Type`: String, Codable, CaseIterable, Sendable {
+                case unknown
+              }
+              public var type: `Type` = .unknown
+              public var discriminatorValue: String
+              public init(discriminatorValue: String) {
+                self.discriminatorValue = discriminatorValue
+              }
+            }
+
+            public var isUnknownCase: Bool {
+              if case .unknown = self {
+                true
+              } else {
+                false
+              }
+            }
 
             public struct A: Encodable {
                 /// The project card's note
                 ///
                 /// Example: "Update all gems"
-                public var note: String?
+                public var note: String
 
-                public init(note: String? = nil) {
+                public init(note: String) {
                     self.note = note
                 }
 
                 public func encode(to encoder: Encoder) throws {
                     var values = encoder.container(keyedBy: StringCodingKey.self)
-                    try values.encodeIfPresent(note, forKey: "note")
+                    try values.encode(note, forKey: "note")
                 }
             }
 
@@ -106,6 +135,7 @@ extension Paths.Projects.Columns.WithColumnID {
                 switch self {
                 case .a(let value): try container.encode(value)
                 case .b(let value): try container.encode(value)
+                case .unknown(let value): try container.encode(value)
                 }
             }
         }

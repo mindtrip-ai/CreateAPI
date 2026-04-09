@@ -6,14 +6,14 @@ import NaiveDate
 
 public struct Event: Codable {
     public var id: String
-    public var type: String?
+    public var type: String
     public var actor: Actor
     public var repo: Repo
     /// Actor
     public var org: Actor?
     public var payload: Payload
     public var isPublic: Bool
-    public var createdAt: Date?
+    public var createdAt: Date
 
     public struct Repo: Codable {
         public var id: Int
@@ -113,7 +113,7 @@ public struct Event: Codable {
         }
     }
 
-    public init(id: String, type: String? = nil, actor: Actor, repo: Repo, org: Actor? = nil, payload: Payload, isPublic: Bool, createdAt: Date? = nil) {
+    public init(id: String, type: String, actor: Actor, repo: Repo, org: Actor? = nil, payload: Payload, isPublic: Bool, createdAt: Date) {
         self.id = id
         self.type = type
         self.actor = actor
@@ -127,24 +127,24 @@ public struct Event: Codable {
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: StringCodingKey.self)
         self.id = try values.decode(String.self, forKey: "id")
-        self.type = try values.decodeIfPresent(String.self, forKey: "type")
+        self.type = try values.decode(String.self, forKey: "type")
         self.actor = try values.decode(Actor.self, forKey: "actor")
         self.repo = try values.decode(Repo.self, forKey: "repo")
         self.org = try values.decodeIfPresent(Actor.self, forKey: "org")
         self.payload = try values.decode(Payload.self, forKey: "payload")
         self.isPublic = try values.decode(Bool.self, forKey: "public")
-        self.createdAt = try values.decodeIfPresent(Date.self, forKey: "created_at")
+        self.createdAt = try values.decode(Date.self, forKey: "created_at")
     }
 
     public func encode(to encoder: Encoder) throws {
         var values = encoder.container(keyedBy: StringCodingKey.self)
         try values.encode(id, forKey: "id")
-        try values.encodeIfPresent(type, forKey: "type")
+        try values.encode(type, forKey: "type")
         try values.encode(actor, forKey: "actor")
         try values.encode(repo, forKey: "repo")
         try values.encodeIfPresent(org, forKey: "org")
         try values.encode(payload, forKey: "payload")
         try values.encode(isPublic, forKey: "public")
-        try values.encodeIfPresent(createdAt, forKey: "created_at")
+        try values.encode(createdAt, forKey: "created_at")
     }
 }

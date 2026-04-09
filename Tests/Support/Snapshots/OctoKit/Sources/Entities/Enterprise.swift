@@ -27,12 +27,12 @@ public struct Enterprise: Codable {
     /// Example: "octo-business"
     public var slug: String
     /// Example: "2019-01-26T19:01:12Z"
-    public var createdAt: Date?
+    public var createdAt: Date
     /// Example: "2019-01-26T19:14:43Z"
-    public var updatedAt: Date?
+    public var updatedAt: Date
     public var avatarURL: URL
 
-    public init(description: String? = nil, htmlURL: URL, websiteURL: URL? = nil, id: Int, nodeID: String, name: String, slug: String, createdAt: Date? = nil, updatedAt: Date? = nil, avatarURL: URL) {
+    public init(description: String? = nil, htmlURL: URL, websiteURL: URL? = nil, id: Int, nodeID: String, name: String, slug: String, createdAt: Date, updatedAt: Date, avatarURL: URL) {
         self.description = description
         self.htmlURL = htmlURL
         self.websiteURL = websiteURL
@@ -54,8 +54,8 @@ public struct Enterprise: Codable {
         self.nodeID = try values.decode(String.self, forKey: "node_id")
         self.name = try values.decode(String.self, forKey: "name")
         self.slug = try values.decode(String.self, forKey: "slug")
-        self.createdAt = try values.decodeIfPresent(Date.self, forKey: "created_at")
-        self.updatedAt = try values.decodeIfPresent(Date.self, forKey: "updated_at")
+        self.createdAt = try values.decode(Date.self, forKey: "created_at")
+        self.updatedAt = try values.decode(Date.self, forKey: "updated_at")
         self.avatarURL = try values.decode(URL.self, forKey: "avatar_url")
     }
 
@@ -68,8 +68,8 @@ public struct Enterprise: Codable {
         try values.encode(nodeID, forKey: "node_id")
         try values.encode(name, forKey: "name")
         try values.encode(slug, forKey: "slug")
-        try values.encodeIfPresent(createdAt, forKey: "created_at")
-        try values.encodeIfPresent(updatedAt, forKey: "updated_at")
+        try values.encode(createdAt, forKey: "created_at")
+        try values.encode(updatedAt, forKey: "updated_at")
         try values.encode(avatarURL, forKey: "avatar_url")
     }
 }

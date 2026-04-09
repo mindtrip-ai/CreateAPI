@@ -33,10 +33,18 @@ extension Paths.Projects.WithProjectID.Collaborators {
             /// The permission to grant the collaborator.
             ///
             /// Example: "write"
-            public enum Permission: String, Codable, CaseIterable {
+            public enum Permission: String, Codable, CaseIterable, Sendable {
                 case read
                 case write
                 case admin
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             public init(permission: Permission? = nil) {

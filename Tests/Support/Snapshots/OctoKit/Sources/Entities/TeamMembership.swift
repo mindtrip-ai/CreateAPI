@@ -16,15 +16,31 @@ public struct TeamMembership: Codable {
     /// The role of the user in the team.
     ///
     /// Example: "member"
-    public enum Role: String, Codable, CaseIterable {
+    public enum Role: String, Codable, CaseIterable, Sendable {
         case member
         case maintainer
+        case unknown
+
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let rawValue = try container.decode(String.self)
+            self = Self(rawValue: rawValue) ?? .unknown
+        }
     }
 
     /// The state of the user's membership in the team.
-    public enum State: String, Codable, CaseIterable {
+    public enum State: String, Codable, CaseIterable, Sendable {
         case active
         case pending
+        case unknown
+
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let rawValue = try container.decode(String.self)
+            self = Self(rawValue: rawValue) ?? .unknown
+        }
     }
 
     public init(url: URL, role: Role, state: State) {

@@ -42,10 +42,18 @@ extension Paths.Repos.WithOwner.WithRepo.Pulls.WithPullNumber {
             public var mergeMethod: MergeMethod?
 
             /// Merge method to use. Possible values are `merge`, `squash` or `rebase`. Default is `merge`.
-            public enum MergeMethod: String, Codable, CaseIterable {
+            public enum MergeMethod: String, Codable, CaseIterable, Sendable {
                 case merge
                 case squash
                 case rebase
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             public init(commitTitle: String? = nil, commitMessage: String? = nil, sha: String? = nil, mergeMethod: MergeMethod? = nil) {

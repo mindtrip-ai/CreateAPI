@@ -29,9 +29,17 @@ extension Paths.User.Email {
             public var visibility: Visibility
 
             /// Denotes whether an email is publicly visible.
-            public enum Visibility: String, Codable, CaseIterable {
+            public enum Visibility: String, Codable, CaseIterable, Sendable {
                 case `public`
                 case `private`
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             public init(visibility: Visibility) {

@@ -28,9 +28,30 @@ extension Paths.Repos.WithOwner.WithRepo {
             Request(path: path, method: "POST", body: body, id: "checks/create")
         }
 
-        public enum PostRequest: Encodable {
+        public enum PostRequest: Encodable, OneOfEnum {
             case a(A)
             case b(B)
+
+            case unknown(UnknownPostRequest)
+
+            public struct UnknownPostRequest: Encodable, UnknownOneOfCase {
+              public enum `Type`: String, Codable, CaseIterable, Sendable {
+                case unknown
+              }
+              public var type: `Type` = .unknown
+              public var discriminatorValue: String
+              public init(discriminatorValue: String) {
+                self.discriminatorValue = discriminatorValue
+              }
+            }
+
+            public var isUnknownCase: Bool {
+              if case .unknown = self {
+                true
+              } else {
+                false
+              }
+            }
 
             public struct A: Encodable {
                 public var status: AnyJSON
@@ -66,6 +87,7 @@ extension Paths.Repos.WithOwner.WithRepo {
                 switch self {
                 case .a(let value): try container.encode(value)
                 case .b(let value): try container.encode(value)
+                case .unknown(let value): try container.encode(value)
                 }
             }
         }

@@ -27,12 +27,20 @@ extension Paths.Repos.WithOwner.WithRepo.Invitations {
             public var permissions: Permissions?
 
             /// The permissions that the associated user will have on the repository. Valid values are `read`, `write`, `maintain`, `triage`, and `admin`.
-            public enum Permissions: String, Codable, CaseIterable {
+            public enum Permissions: String, Codable, CaseIterable, Sendable {
                 case read
                 case write
                 case maintain
                 case triage
                 case admin
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             public init(permissions: Permissions? = nil) {

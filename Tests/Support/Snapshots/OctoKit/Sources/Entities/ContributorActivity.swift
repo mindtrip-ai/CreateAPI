@@ -6,7 +6,7 @@ import NaiveDate
 
 public struct ContributorActivity: Codable {
     /// Simple User
-    public var author: SimpleUser?
+    public var author: SimpleUser
     /// Example: 135
     public var total: Int
     /// Example:
@@ -51,7 +51,7 @@ public struct ContributorActivity: Codable {
         }
     }
 
-    public init(author: SimpleUser? = nil, total: Int, weeks: [Week]) {
+    public init(author: SimpleUser, total: Int, weeks: [Week]) {
         self.author = author
         self.total = total
         self.weeks = weeks
@@ -59,14 +59,14 @@ public struct ContributorActivity: Codable {
 
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: StringCodingKey.self)
-        self.author = try values.decodeIfPresent(SimpleUser.self, forKey: "author")
+        self.author = try values.decode(SimpleUser.self, forKey: "author")
         self.total = try values.decode(Int.self, forKey: "total")
         self.weeks = try values.decode([Week].self, forKey: "weeks")
     }
 
     public func encode(to encoder: Encoder) throws {
         var values = encoder.container(keyedBy: StringCodingKey.self)
-        try values.encodeIfPresent(author, forKey: "author")
+        try values.encode(author, forKey: "author")
         try values.encode(total, forKey: "total")
         try values.encode(weeks, forKey: "weeks")
     }

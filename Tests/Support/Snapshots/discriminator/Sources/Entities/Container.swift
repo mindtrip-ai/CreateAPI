@@ -6,10 +6,31 @@ import Foundation
 public struct Container: Codable {
     public var content: Content
 
-    public enum Content: Codable {
+    public enum Content: Codable, OneOfEnum {
         case a(A)
         case b(B)
         case c(C)
+
+        case unknown(UnknownContent)
+
+        public struct UnknownContent: Codable, UnknownOneOfCase {
+          public enum `Type`: String, Codable, CaseIterable, Sendable {
+            case unknown
+          }
+          public var type: `Type` = .unknown
+          public var discriminatorValue: String
+          public init(discriminatorValue: String) {
+            self.discriminatorValue = discriminatorValue
+          }
+        }
+
+        public var isUnknownCase: Bool {
+          if case .unknown = self {
+            true
+          } else {
+            false
+          }
+        }
 
         public init(from decoder: Decoder) throws {
 
@@ -25,12 +46,7 @@ public struct Container: Codable {
             case "d": self = .a(try container.decode(A.self))
             case "b": self = .b(try container.decode(B.self))
             case "c": self = .c(try container.decode(C.self))
-
-            default:
-                throw DecodingError.dataCorruptedError(
-                    in: container,
-                    debugDescription: "Discriminator value '\(discriminatorValue)' does not match any expected values (a, d, b, c)."
-                )
+            default: self = .unknown(.init(discriminatorValue: discriminatorValue))
             }
         }
 
@@ -40,6 +56,7 @@ public struct Container: Codable {
             case .a(let value): try container.encode(value)
             case .b(let value): try container.encode(value)
             case .c(let value): try container.encode(value)
+            case .unknown(let value): try container.encode(value)
             }
         }
     }

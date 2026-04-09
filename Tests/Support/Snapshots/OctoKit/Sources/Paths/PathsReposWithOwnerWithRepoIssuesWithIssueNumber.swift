@@ -59,41 +59,114 @@ extension Paths.Repos.WithOwner.WithRepo.Issues {
             public var assignees: [String]?
 
             /// The title of the issue.
-            public enum Title: Encodable, Hashable {
+            public enum Title: Encodable, Hashable, OneOfEnum {
                 case string(String)
                 case int(Int)
+
+                case unknown(UnknownTitle)
+
+                public struct UnknownTitle: Encodable, Hashable, UnknownOneOfCase {
+                  public enum `Type`: String, Codable, CaseIterable, Sendable {
+                    case unknown
+                  }
+                  public var type: `Type` = .unknown
+                  public var discriminatorValue: String
+                  public init(discriminatorValue: String) {
+                    self.discriminatorValue = discriminatorValue
+                  }
+                }
+
+                public var isUnknownCase: Bool {
+                  if case .unknown = self {
+                    true
+                  } else {
+                    false
+                  }
+                }
 
                 public func encode(to encoder: Encoder) throws {
                     var container = encoder.singleValueContainer()
                     switch self {
                     case .string(let value): try container.encode(value)
                     case .int(let value): try container.encode(value)
+                    case .unknown(let value): try container.encode(value)
                     }
                 }
             }
 
             /// State of the issue. Either `open` or `closed`.
-            public enum State: String, Codable, CaseIterable {
+            public enum State: String, Codable, CaseIterable, Sendable {
                 case `open`
                 case closed
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
-            public enum Milestone: Encodable, Hashable {
+            public enum Milestone: Encodable, Hashable, OneOfEnum {
                 case string(String)
                 case int(Int)
+
+                case unknown(UnknownMilestone)
+
+                public struct UnknownMilestone: Encodable, Hashable, UnknownOneOfCase {
+                  public enum `Type`: String, Codable, CaseIterable, Sendable {
+                    case unknown
+                  }
+                  public var type: `Type` = .unknown
+                  public var discriminatorValue: String
+                  public init(discriminatorValue: String) {
+                    self.discriminatorValue = discriminatorValue
+                  }
+                }
+
+                public var isUnknownCase: Bool {
+                  if case .unknown = self {
+                    true
+                  } else {
+                    false
+                  }
+                }
 
                 public func encode(to encoder: Encoder) throws {
                     var container = encoder.singleValueContainer()
                     switch self {
                     case .string(let value): try container.encode(value)
                     case .int(let value): try container.encode(value)
+                    case .unknown(let value): try container.encode(value)
                     }
                 }
             }
 
-            public enum Label: Encodable {
+            public enum Label: Encodable, OneOfEnum {
                 case string(String)
                 case object(Object)
+
+                case unknown(UnknownLabel)
+
+                public struct UnknownLabel: Encodable, UnknownOneOfCase {
+                  public enum `Type`: String, Codable, CaseIterable, Sendable {
+                    case unknown
+                  }
+                  public var type: `Type` = .unknown
+                  public var discriminatorValue: String
+                  public init(discriminatorValue: String) {
+                    self.discriminatorValue = discriminatorValue
+                  }
+                }
+
+                public var isUnknownCase: Bool {
+                  if case .unknown = self {
+                    true
+                  } else {
+                    false
+                  }
+                }
 
                 public struct Object: Encodable {
                     public var id: Int?
@@ -122,6 +195,7 @@ extension Paths.Repos.WithOwner.WithRepo.Issues {
                     switch self {
                     case .string(let value): try container.encode(value)
                     case .object(let value): try container.encode(value)
+                    case .unknown(let value): try container.encode(value)
                     }
                 }
             }

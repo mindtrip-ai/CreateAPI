@@ -35,7 +35,7 @@ extension Paths.Orgs.WithOrg {
             public var perPage: Int?
             public var page: Int?
 
-            public enum `Type`: String, Codable, CaseIterable {
+            public enum `Type`: String, Codable, CaseIterable, Sendable {
                 case all
                 case `public`
                 case `private`
@@ -43,18 +43,42 @@ extension Paths.Orgs.WithOrg {
                 case sources
                 case member
                 case `internal`
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
-            public enum Sort: String, Codable, CaseIterable {
+            public enum Sort: String, Codable, CaseIterable, Sendable {
                 case created
                 case updated
                 case pushed
                 case fullName = "full_name"
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
-            public enum Direction: String, Codable, CaseIterable {
+            public enum Direction: String, Codable, CaseIterable, Sendable {
                 case asc
                 case desc
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             public init(type: `Type`? = nil, sort: Sort? = nil, direction: Direction? = nil, perPage: Int? = nil, page: Int? = nil) {
@@ -135,10 +159,18 @@ extension Paths.Orgs.WithOrg {
             public var deleteBranchOnMerge: Bool
 
             /// Can be `public` or `private`. If your organization is associated with an enterprise account using GitHub Enterprise Cloud or GitHub Enterprise Server 2.20+, `visibility` can also be `internal`. Note: For GitHub Enterprise Server and GitHub AE, this endpoint will only list repositories available to all users on the enterprise. For more information, see "[Creating an internal repository](https://help.github.com/en/github/creating-cloning-and-archiving-repositories/about-repository-visibility#about-internal-repositories)" in the GitHub Help documentation.
-            public enum Visibility: String, Codable, CaseIterable {
+            public enum Visibility: String, Codable, CaseIterable, Sendable {
                 case `public`
                 case `private`
                 case `internal`
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             public init(name: String, description: String? = nil, homepage: String? = nil, isPrivate: Bool? = nil, visibility: Visibility? = nil, hasIssues: Bool? = nil, hasProjects: Bool? = nil, hasWiki: Bool? = nil, isTemplate: Bool? = nil, teamID: Int? = nil, isAutoInit: Bool? = nil, gitignoreTemplate: String? = nil, licenseTemplate: String? = nil, allowSquashMerge: Bool? = nil, allowMergeCommit: Bool? = nil, allowRebaseMerge: Bool? = nil, allowAutoMerge: Bool? = nil, deleteBranchOnMerge: Bool? = nil) {

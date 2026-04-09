@@ -4,9 +4,30 @@
 import Foundation
 import NaiveDate
 
-public enum WebhookConfigInsecureSSL: Codable, Hashable {
+public enum WebhookConfigInsecureSSL: Codable, Hashable, OneOfEnum {
     case string(String)
     case double(Double)
+
+    case unknown(UnknownWebhookConfigInsecureSSL)
+
+    public struct UnknownWebhookConfigInsecureSSL: Codable, Hashable, UnknownOneOfCase {
+      public enum `Type`: String, Codable, CaseIterable, Sendable {
+        case unknown
+      }
+      public var type: `Type` = .unknown
+      public var discriminatorValue: String
+      public init(discriminatorValue: String) {
+        self.discriminatorValue = discriminatorValue
+      }
+    }
+
+    public var isUnknownCase: Bool {
+      if case .unknown = self {
+        true
+      } else {
+        false
+      }
+    }
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
@@ -27,6 +48,7 @@ public enum WebhookConfigInsecureSSL: Codable, Hashable {
         switch self {
         case .string(let value): try container.encode(value)
         case .double(let value): try container.encode(value)
+        case .unknown(let value): try container.encode(value)
         }
     }
 }

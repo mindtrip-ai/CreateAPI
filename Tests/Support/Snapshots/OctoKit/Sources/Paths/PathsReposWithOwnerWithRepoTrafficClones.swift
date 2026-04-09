@@ -30,10 +30,18 @@ extension Paths.Repos.WithOwner.WithRepo.Traffic {
             return encoder.items
         }
 
-        public enum Per: String, Codable, CaseIterable {
+        public enum Per: String, Codable, CaseIterable, Sendable {
             case empty = ""
             case day
             case week
+            case unknown
+
+
+            public init(from decoder: Decoder) throws {
+                let container = try decoder.singleValueContainer()
+                let rawValue = try container.decode(String.self)
+                self = Self(rawValue: rawValue) ?? .unknown
+            }
         }
     }
 }

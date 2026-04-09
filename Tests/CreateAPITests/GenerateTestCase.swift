@@ -28,10 +28,11 @@ class GenerateTestCase: XCTestCase {
         let outputURL = temp.url
             .appendingPathComponent("Output")
 
-        // Append the output, and spec to the arguments passed
+        // Append the output, spec, and package manifest flag to the arguments passed
         var arguments = arguments
         arguments.append(contentsOf: [
             "--output", outputURL.path,
+            "--write-package-manifest",
             spec.path
         ])
 

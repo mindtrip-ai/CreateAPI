@@ -75,9 +75,30 @@ extension Paths.User {
             Request(path: path, method: "POST", body: body, id: "codespaces/create-for-authenticated-user")
         }
 
-        public enum PostRequest: Encodable {
+        public enum PostRequest: Encodable, OneOfEnum {
             case a(A)
             case b(B)
+
+            case unknown(UnknownPostRequest)
+
+            public struct UnknownPostRequest: Encodable, UnknownOneOfCase {
+              public enum `Type`: String, Codable, CaseIterable, Sendable {
+                case unknown
+              }
+              public var type: `Type` = .unknown
+              public var discriminatorValue: String
+              public init(discriminatorValue: String) {
+                self.discriminatorValue = discriminatorValue
+              }
+            }
+
+            public var isUnknownCase: Bool {
+              if case .unknown = self {
+                true
+              } else {
+                false
+              }
+            }
 
             public struct A: Encodable {
                 /// Repository id for this codespace
@@ -167,6 +188,7 @@ extension Paths.User {
                 switch self {
                 case .a(let value): try container.encode(value)
                 case .b(let value): try container.encode(value)
+                case .unknown(let value): try container.encode(value)
                 }
             }
         }

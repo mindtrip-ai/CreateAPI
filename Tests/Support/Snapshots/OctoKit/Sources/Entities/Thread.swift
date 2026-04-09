@@ -12,7 +12,7 @@ public struct Thread: Codable {
     public var reason: String
     public var isUnread: Bool
     public var updatedAt: String
-    public var lastReadAt: String?
+    public var lastReadAt: String
     public var url: String
     /// Example: "https://api.github.com/notifications/threads/2/subscription"
     public var subscriptionURL: String
@@ -47,7 +47,7 @@ public struct Thread: Codable {
         }
     }
 
-    public init(id: String, repository: MinimalRepository, subject: Subject, reason: String, isUnread: Bool, updatedAt: String, lastReadAt: String? = nil, url: String, subscriptionURL: String) {
+    public init(id: String, repository: MinimalRepository, subject: Subject, reason: String, isUnread: Bool, updatedAt: String, lastReadAt: String, url: String, subscriptionURL: String) {
         self.id = id
         self.repository = repository
         self.subject = subject
@@ -67,7 +67,7 @@ public struct Thread: Codable {
         self.reason = try values.decode(String.self, forKey: "reason")
         self.isUnread = try values.decode(Bool.self, forKey: "unread")
         self.updatedAt = try values.decode(String.self, forKey: "updated_at")
-        self.lastReadAt = try values.decodeIfPresent(String.self, forKey: "last_read_at")
+        self.lastReadAt = try values.decode(String.self, forKey: "last_read_at")
         self.url = try values.decode(String.self, forKey: "url")
         self.subscriptionURL = try values.decode(String.self, forKey: "subscription_url")
     }
@@ -80,7 +80,7 @@ public struct Thread: Codable {
         try values.encode(reason, forKey: "reason")
         try values.encode(isUnread, forKey: "unread")
         try values.encode(updatedAt, forKey: "updated_at")
-        try values.encodeIfPresent(lastReadAt, forKey: "last_read_at")
+        try values.encode(lastReadAt, forKey: "last_read_at")
         try values.encode(url, forKey: "url")
         try values.encode(subscriptionURL, forKey: "subscription_url")
     }

@@ -8,11 +8,11 @@ public struct Actor: Codable {
     public var id: Int
     public var login: String
     public var displayLogin: String?
-    public var gravatarID: String?
+    public var gravatarID: String
     public var url: URL
     public var avatarURL: URL
 
-    public init(id: Int, login: String, displayLogin: String? = nil, gravatarID: String? = nil, url: URL, avatarURL: URL) {
+    public init(id: Int, login: String, displayLogin: String? = nil, gravatarID: String, url: URL, avatarURL: URL) {
         self.id = id
         self.login = login
         self.displayLogin = displayLogin
@@ -26,7 +26,7 @@ public struct Actor: Codable {
         self.id = try values.decode(Int.self, forKey: "id")
         self.login = try values.decode(String.self, forKey: "login")
         self.displayLogin = try values.decodeIfPresent(String.self, forKey: "display_login")
-        self.gravatarID = try values.decodeIfPresent(String.self, forKey: "gravatar_id")
+        self.gravatarID = try values.decode(String.self, forKey: "gravatar_id")
         self.url = try values.decode(URL.self, forKey: "url")
         self.avatarURL = try values.decode(URL.self, forKey: "avatar_url")
     }
@@ -36,7 +36,7 @@ public struct Actor: Codable {
         try values.encode(id, forKey: "id")
         try values.encode(login, forKey: "login")
         try values.encodeIfPresent(displayLogin, forKey: "display_login")
-        try values.encodeIfPresent(gravatarID, forKey: "gravatar_id")
+        try values.encode(gravatarID, forKey: "gravatar_id")
         try values.encode(url, forKey: "url")
         try values.encode(avatarURL, forKey: "avatar_url")
     }

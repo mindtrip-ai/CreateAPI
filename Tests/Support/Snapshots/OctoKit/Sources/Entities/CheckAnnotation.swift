@@ -9,20 +9,20 @@ public struct CheckAnnotation: Codable {
     public var path: String
     public var startLine: Int
     public var endLine: Int
-    public var startColumn: Int?
+    public var startColumn: Int
     /// Example: 10
-    public var endColumn: Int?
+    public var endColumn: Int
     /// Example: "warning"
-    public var annotationLevel: String?
+    public var annotationLevel: String
     /// Example: "Spell Checker"
-    public var title: String?
+    public var title: String
     /// Example: "Check your spelling for 'banaas'."
-    public var message: String?
+    public var message: String
     /// Example: "Do you mean 'bananas' or 'banana'?"
-    public var rawDetails: String?
+    public var rawDetails: String
     public var blobHref: String
 
-    public init(path: String, startLine: Int, endLine: Int, startColumn: Int? = nil, endColumn: Int? = nil, annotationLevel: String? = nil, title: String? = nil, message: String? = nil, rawDetails: String? = nil, blobHref: String) {
+    public init(path: String, startLine: Int, endLine: Int, startColumn: Int, endColumn: Int, annotationLevel: String, title: String, message: String, rawDetails: String, blobHref: String) {
         self.path = path
         self.startLine = startLine
         self.endLine = endLine
@@ -40,12 +40,12 @@ public struct CheckAnnotation: Codable {
         self.path = try values.decode(String.self, forKey: "path")
         self.startLine = try values.decode(Int.self, forKey: "start_line")
         self.endLine = try values.decode(Int.self, forKey: "end_line")
-        self.startColumn = try values.decodeIfPresent(Int.self, forKey: "start_column")
-        self.endColumn = try values.decodeIfPresent(Int.self, forKey: "end_column")
-        self.annotationLevel = try values.decodeIfPresent(String.self, forKey: "annotation_level")
-        self.title = try values.decodeIfPresent(String.self, forKey: "title")
-        self.message = try values.decodeIfPresent(String.self, forKey: "message")
-        self.rawDetails = try values.decodeIfPresent(String.self, forKey: "raw_details")
+        self.startColumn = try values.decode(Int.self, forKey: "start_column")
+        self.endColumn = try values.decode(Int.self, forKey: "end_column")
+        self.annotationLevel = try values.decode(String.self, forKey: "annotation_level")
+        self.title = try values.decode(String.self, forKey: "title")
+        self.message = try values.decode(String.self, forKey: "message")
+        self.rawDetails = try values.decode(String.self, forKey: "raw_details")
         self.blobHref = try values.decode(String.self, forKey: "blob_href")
     }
 
@@ -54,12 +54,12 @@ public struct CheckAnnotation: Codable {
         try values.encode(path, forKey: "path")
         try values.encode(startLine, forKey: "start_line")
         try values.encode(endLine, forKey: "end_line")
-        try values.encodeIfPresent(startColumn, forKey: "start_column")
-        try values.encodeIfPresent(endColumn, forKey: "end_column")
-        try values.encodeIfPresent(annotationLevel, forKey: "annotation_level")
-        try values.encodeIfPresent(title, forKey: "title")
-        try values.encodeIfPresent(message, forKey: "message")
-        try values.encodeIfPresent(rawDetails, forKey: "raw_details")
+        try values.encode(startColumn, forKey: "start_column")
+        try values.encode(endColumn, forKey: "end_column")
+        try values.encode(annotationLevel, forKey: "annotation_level")
+        try values.encode(title, forKey: "title")
+        try values.encode(message, forKey: "message")
+        try values.encode(rawDetails, forKey: "raw_details")
         try values.encode(blobHref, forKey: "blob_href")
     }
 }

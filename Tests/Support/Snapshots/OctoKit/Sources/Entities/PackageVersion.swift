@@ -40,13 +40,21 @@ public struct PackageVersion: Codable {
         public var docker: Docker?
 
         /// Example: "docker"
-        public enum PackageType: String, Codable, CaseIterable {
+        public enum PackageType: String, Codable, CaseIterable, Sendable {
             case npm
             case maven
             case rubygems
             case docker
             case nuget
             case container
+            case unknown
+
+
+            public init(from decoder: Decoder) throws {
+                let container = try decoder.singleValueContainer()
+                let rawValue = try container.decode(String.self)
+                self = Self(rawValue: rawValue) ?? .unknown
+            }
         }
 
         /// Container Metadata

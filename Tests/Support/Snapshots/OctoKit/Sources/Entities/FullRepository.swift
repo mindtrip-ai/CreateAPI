@@ -19,7 +19,7 @@ public struct FullRepository: Codable {
     /// Example: "https://github.com/octocat/Hello-World"
     public var htmlURL: URL
     /// Example: "This your first repo!"
-    public var description: String?
+    public var description: String
     public var isFork: Bool
     /// Example: "https://api.github.com/repos/octocat/Hello-World"
     public var url: URL
@@ -100,14 +100,14 @@ public struct FullRepository: Codable {
     /// Example: "https://github.com/octocat/Hello-World.git"
     public var cloneURL: String
     /// Example: "git:git.example.com/octocat/Hello-World"
-    public var mirrorURL: URL?
+    public var mirrorURL: URL
     /// Example: "http://api.github.com/repos/octocat/Hello-World/hooks"
     public var hooksURL: URL
     /// Example: "https://svn.github.com/octocat/Hello-World"
     public var svnURL: URL
     /// Example: "https://github.com"
-    public var homepage: URL?
-    public var language: String?
+    public var homepage: URL
+    public var language: String
     public var forksCount: Int
     /// Example: 80
     public var stargazersCount: Int
@@ -166,7 +166,7 @@ public struct FullRepository: Codable {
     public var subscribersCount: Int
     public var networkCount: Int
     /// License Simple
-    public var license: LicenseSimple?
+    public var license: LicenseSimple
     /// Simple User
     public var organization: SimpleUser?
     /// Repository
@@ -230,9 +230,17 @@ public struct FullRepository: Codable {
         public struct AdvancedSecurity: Codable {
             public var status: Status?
 
-            public enum Status: String, Codable, CaseIterable {
+            public enum Status: String, Codable, CaseIterable, Sendable {
                 case enabled
                 case disabled
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             public init(status: Status? = nil) {
@@ -253,9 +261,17 @@ public struct FullRepository: Codable {
         public struct SecretScanning: Codable {
             public var status: Status?
 
-            public enum Status: String, Codable, CaseIterable {
+            public enum Status: String, Codable, CaseIterable, Sendable {
                 case enabled
                 case disabled
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             public init(status: Status? = nil) {
@@ -291,7 +307,7 @@ public struct FullRepository: Codable {
         }
     }
 
-    public init(id: Int, nodeID: String, name: String, fullName: String, owner: SimpleUser, isPrivate: Bool, htmlURL: URL, description: String? = nil, isFork: Bool, url: URL, archiveURL: String, assigneesURL: String, blobsURL: String, branchesURL: String, collaboratorsURL: String, commentsURL: String, commitsURL: String, compareURL: String, contentsURL: String, contributorsURL: URL, deploymentsURL: URL, downloadsURL: URL, eventsURL: URL, forksURL: URL, gitCommitsURL: String, gitRefsURL: String, gitTagsURL: String, gitURL: String, issueCommentURL: String, issueEventsURL: String, issuesURL: String, keysURL: String, labelsURL: String, languagesURL: URL, mergesURL: URL, milestonesURL: String, notificationsURL: String, pullsURL: String, releasesURL: String, sshURL: String, stargazersURL: URL, statusesURL: String, subscribersURL: URL, subscriptionURL: URL, tagsURL: URL, teamsURL: URL, treesURL: String, cloneURL: String, mirrorURL: URL? = nil, hooksURL: URL, svnURL: URL, homepage: URL? = nil, language: String? = nil, forksCount: Int, stargazersCount: Int, watchersCount: Int, size: Int, defaultBranch: String, openIssuesCount: Int, isTemplate: Bool? = nil, topics: [String]? = nil, hasIssues: Bool, hasProjects: Bool, hasWiki: Bool, hasPages: Bool, hasDownloads: Bool, isArchived: Bool, isDisabled: Bool, visibility: String? = nil, pushedAt: Date, createdAt: Date, updatedAt: Date, permissions: Permissions? = nil, allowRebaseMerge: Bool? = nil, templateRepository: Repository? = nil, tempCloneToken: String? = nil, allowSquashMerge: Bool? = nil, allowAutoMerge: Bool? = nil, deleteBranchOnMerge: Bool? = nil, allowMergeCommit: Bool? = nil, allowForking: Bool? = nil, subscribersCount: Int, networkCount: Int, license: LicenseSimple? = nil, organization: SimpleUser? = nil, parent: Repository? = nil, source: Repository? = nil, forks: Int, masterBranch: String? = nil, openIssues: Int, watchers: Int, isAnonymousAccessEnabled: Bool? = nil, codeOfConduct: CodeOfConductSimple? = nil, securityAndAnalysis: SecurityAndAnalysis? = nil) {
+    public init(id: Int, nodeID: String, name: String, fullName: String, owner: SimpleUser, isPrivate: Bool, htmlURL: URL, description: String, isFork: Bool, url: URL, archiveURL: String, assigneesURL: String, blobsURL: String, branchesURL: String, collaboratorsURL: String, commentsURL: String, commitsURL: String, compareURL: String, contentsURL: String, contributorsURL: URL, deploymentsURL: URL, downloadsURL: URL, eventsURL: URL, forksURL: URL, gitCommitsURL: String, gitRefsURL: String, gitTagsURL: String, gitURL: String, issueCommentURL: String, issueEventsURL: String, issuesURL: String, keysURL: String, labelsURL: String, languagesURL: URL, mergesURL: URL, milestonesURL: String, notificationsURL: String, pullsURL: String, releasesURL: String, sshURL: String, stargazersURL: URL, statusesURL: String, subscribersURL: URL, subscriptionURL: URL, tagsURL: URL, teamsURL: URL, treesURL: String, cloneURL: String, mirrorURL: URL, hooksURL: URL, svnURL: URL, homepage: URL, language: String, forksCount: Int, stargazersCount: Int, watchersCount: Int, size: Int, defaultBranch: String, openIssuesCount: Int, isTemplate: Bool? = nil, topics: [String]? = nil, hasIssues: Bool, hasProjects: Bool, hasWiki: Bool, hasPages: Bool, hasDownloads: Bool, isArchived: Bool, isDisabled: Bool, visibility: String? = nil, pushedAt: Date, createdAt: Date, updatedAt: Date, permissions: Permissions? = nil, allowRebaseMerge: Bool? = nil, templateRepository: Repository? = nil, tempCloneToken: String? = nil, allowSquashMerge: Bool? = nil, allowAutoMerge: Bool? = nil, deleteBranchOnMerge: Bool? = nil, allowMergeCommit: Bool? = nil, allowForking: Bool? = nil, subscribersCount: Int, networkCount: Int, license: LicenseSimple, organization: SimpleUser? = nil, parent: Repository? = nil, source: Repository? = nil, forks: Int, masterBranch: String? = nil, openIssues: Int, watchers: Int, isAnonymousAccessEnabled: Bool? = nil, codeOfConduct: CodeOfConductSimple? = nil, securityAndAnalysis: SecurityAndAnalysis? = nil) {
         self.id = id
         self.nodeID = nodeID
         self.name = name
@@ -397,7 +413,7 @@ public struct FullRepository: Codable {
         self.owner = try values.decode(SimpleUser.self, forKey: "owner")
         self.isPrivate = try values.decode(Bool.self, forKey: "private")
         self.htmlURL = try values.decode(URL.self, forKey: "html_url")
-        self.description = try values.decodeIfPresent(String.self, forKey: "description")
+        self.description = try values.decode(String.self, forKey: "description")
         self.isFork = try values.decode(Bool.self, forKey: "fork")
         self.url = try values.decode(URL.self, forKey: "url")
         self.archiveURL = try values.decode(String.self, forKey: "archive_url")
@@ -438,11 +454,11 @@ public struct FullRepository: Codable {
         self.teamsURL = try values.decode(URL.self, forKey: "teams_url")
         self.treesURL = try values.decode(String.self, forKey: "trees_url")
         self.cloneURL = try values.decode(String.self, forKey: "clone_url")
-        self.mirrorURL = try values.decodeIfPresent(URL.self, forKey: "mirror_url")
+        self.mirrorURL = try values.decode(URL.self, forKey: "mirror_url")
         self.hooksURL = try values.decode(URL.self, forKey: "hooks_url")
         self.svnURL = try values.decode(URL.self, forKey: "svn_url")
-        self.homepage = try values.decodeIfPresent(URL.self, forKey: "homepage")
-        self.language = try values.decodeIfPresent(String.self, forKey: "language")
+        self.homepage = try values.decode(URL.self, forKey: "homepage")
+        self.language = try values.decode(String.self, forKey: "language")
         self.forksCount = try values.decode(Int.self, forKey: "forks_count")
         self.stargazersCount = try values.decode(Int.self, forKey: "stargazers_count")
         self.watchersCount = try values.decode(Int.self, forKey: "watchers_count")
@@ -473,7 +489,7 @@ public struct FullRepository: Codable {
         self.allowForking = try values.decodeIfPresent(Bool.self, forKey: "allow_forking")
         self.subscribersCount = try values.decode(Int.self, forKey: "subscribers_count")
         self.networkCount = try values.decode(Int.self, forKey: "network_count")
-        self.license = try values.decodeIfPresent(LicenseSimple.self, forKey: "license")
+        self.license = try values.decode(LicenseSimple.self, forKey: "license")
         self.organization = try values.decodeIfPresent(SimpleUser.self, forKey: "organization")
         self.parent = try values.decodeIfPresent(Repository.self, forKey: "parent")
         self.source = try values.decodeIfPresent(Repository.self, forKey: "source")
@@ -495,7 +511,7 @@ public struct FullRepository: Codable {
         try values.encode(owner, forKey: "owner")
         try values.encode(isPrivate, forKey: "private")
         try values.encode(htmlURL, forKey: "html_url")
-        try values.encodeIfPresent(description, forKey: "description")
+        try values.encode(description, forKey: "description")
         try values.encode(isFork, forKey: "fork")
         try values.encode(url, forKey: "url")
         try values.encode(archiveURL, forKey: "archive_url")
@@ -536,11 +552,11 @@ public struct FullRepository: Codable {
         try values.encode(teamsURL, forKey: "teams_url")
         try values.encode(treesURL, forKey: "trees_url")
         try values.encode(cloneURL, forKey: "clone_url")
-        try values.encodeIfPresent(mirrorURL, forKey: "mirror_url")
+        try values.encode(mirrorURL, forKey: "mirror_url")
         try values.encode(hooksURL, forKey: "hooks_url")
         try values.encode(svnURL, forKey: "svn_url")
-        try values.encodeIfPresent(homepage, forKey: "homepage")
-        try values.encodeIfPresent(language, forKey: "language")
+        try values.encode(homepage, forKey: "homepage")
+        try values.encode(language, forKey: "language")
         try values.encode(forksCount, forKey: "forks_count")
         try values.encode(stargazersCount, forKey: "stargazers_count")
         try values.encode(watchersCount, forKey: "watchers_count")
@@ -571,7 +587,7 @@ public struct FullRepository: Codable {
         try values.encodeIfPresent(allowForking, forKey: "allow_forking")
         try values.encode(subscribersCount, forKey: "subscribers_count")
         try values.encode(networkCount, forKey: "network_count")
-        try values.encodeIfPresent(license, forKey: "license")
+        try values.encode(license, forKey: "license")
         try values.encodeIfPresent(organization, forKey: "organization")
         try values.encodeIfPresent(parent, forKey: "parent")
         try values.encodeIfPresent(source, forKey: "source")

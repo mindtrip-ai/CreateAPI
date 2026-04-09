@@ -16,10 +16,18 @@ public struct AutoMerge: Codable {
     public var commitMessage: String
 
     /// The merge method to use.
-    public enum MergeMethod: String, Codable, CaseIterable {
+    public enum MergeMethod: String, Codable, CaseIterable, Sendable {
         case merge
         case squash
         case rebase
+        case unknown
+
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let rawValue = try container.decode(String.self)
+            self = Self(rawValue: rawValue) ?? .unknown
+        }
     }
 
     public init(enabledBy: SimpleUser, mergeMethod: MergeMethod, commitTitle: String, commitMessage: String) {

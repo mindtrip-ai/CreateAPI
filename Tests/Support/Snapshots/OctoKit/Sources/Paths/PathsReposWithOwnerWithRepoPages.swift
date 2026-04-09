@@ -44,9 +44,17 @@ extension Paths.Repos.WithOwner.WithRepo {
                 public var path: Path?
 
                 /// The repository directory that includes the source files for the Pages site. Allowed paths are `/` or `/docs`. Default: `/`
-                public enum Path: String, Codable, CaseIterable {
+                public enum Path: String, Codable, CaseIterable, Sendable {
                     case slash = "/"
                     case docs = "/docs"
+                    case unknown
+
+
+                    public init(from decoder: Decoder) throws {
+                        let container = try decoder.singleValueContainer()
+                        let rawValue = try container.decode(String.self)
+                        self = Self(rawValue: rawValue) ?? .unknown
+                    }
                 }
 
                 public init(branch: String, path: Path? = nil) {
@@ -96,10 +104,18 @@ extension Paths.Repos.WithOwner.WithRepo {
                 public var b: B?
 
                 /// Update the source for the repository. Must include the branch name, and may optionally specify the subdirectory `/docs`. Possible values are `"gh-pages"`, `"master"`, and `"master /docs"`.
-                public enum A: String, Codable, CaseIterable {
+                public enum A: String, Codable, CaseIterable, Sendable {
                     case ghPages = "gh-pages"
                     case master
                     case masterDocs = "master /docs"
+                    case unknown
+
+
+                    public init(from decoder: Decoder) throws {
+                        let container = try decoder.singleValueContainer()
+                        let rawValue = try container.decode(String.self)
+                        self = Self(rawValue: rawValue) ?? .unknown
+                    }
                 }
 
                 /// Update the source for the repository. Must include the branch name and path.
@@ -110,9 +126,17 @@ extension Paths.Repos.WithOwner.WithRepo {
                     public var path: Path
 
                     /// The repository directory that includes the source files for the Pages site. Allowed paths are `/` or `/docs`.
-                    public enum Path: String, Codable, CaseIterable {
+                    public enum Path: String, Codable, CaseIterable, Sendable {
                         case slash = "/"
                         case docs = "/docs"
+                        case unknown
+
+
+                        public init(from decoder: Decoder) throws {
+                            let container = try decoder.singleValueContainer()
+                            let rawValue = try container.decode(String.self)
+                            self = Self(rawValue: rawValue) ?? .unknown
+                        }
                     }
 
                     public init(branch: String, path: Path) {

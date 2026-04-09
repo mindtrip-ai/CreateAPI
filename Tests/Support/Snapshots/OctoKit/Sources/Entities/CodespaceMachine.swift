@@ -31,18 +31,26 @@ public struct CodespaceMachine: Codable {
     /// Whether a prebuild is currently available when creating a codespace for this machine and repository. If a branch was not specified as a ref, the default branch will be assumed. Value will be "null" if prebuilds are not supported or prebuild availability could not be determined. Value is the type of prebuild available, or "none" if none are available.
     ///
     /// Example: "blob"
-    public var prebuildAvailability: PrebuildAvailability?
+    public var prebuildAvailability: PrebuildAvailability
 
     /// Whether a prebuild is currently available when creating a codespace for this machine and repository. If a branch was not specified as a ref, the default branch will be assumed. Value will be "null" if prebuilds are not supported or prebuild availability could not be determined. Value is the type of prebuild available, or "none" if none are available.
     ///
     /// Example: "blob"
-    public enum PrebuildAvailability: String, Codable, CaseIterable {
+    public enum PrebuildAvailability: String, Codable, CaseIterable, Sendable {
         case `none`
         case blob
         case pool
+        case unknown
+
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let rawValue = try container.decode(String.self)
+            self = Self(rawValue: rawValue) ?? .unknown
+        }
     }
 
-    public init(name: String, displayName: String, operatingSystem: String, storageInBytes: Int, memoryInBytes: Int, cpus: Int, prebuildAvailability: PrebuildAvailability? = nil) {
+    public init(name: String, displayName: String, operatingSystem: String, storageInBytes: Int, memoryInBytes: Int, cpus: Int, prebuildAvailability: PrebuildAvailability) {
         self.name = name
         self.displayName = displayName
         self.operatingSystem = operatingSystem
@@ -60,7 +68,7 @@ public struct CodespaceMachine: Codable {
         self.storageInBytes = try values.decode(Int.self, forKey: "storage_in_bytes")
         self.memoryInBytes = try values.decode(Int.self, forKey: "memory_in_bytes")
         self.cpus = try values.decode(Int.self, forKey: "cpus")
-        self.prebuildAvailability = try values.decodeIfPresent(PrebuildAvailability.self, forKey: "prebuild_availability")
+        self.prebuildAvailability = try values.decode(PrebuildAvailability.self, forKey: "prebuild_availability")
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -71,6 +79,6 @@ public struct CodespaceMachine: Codable {
         try values.encode(storageInBytes, forKey: "storage_in_bytes")
         try values.encode(memoryInBytes, forKey: "memory_in_bytes")
         try values.encode(cpus, forKey: "cpus")
-        try values.encodeIfPresent(prebuildAvailability, forKey: "prebuild_availability")
+        try values.encode(prebuildAvailability, forKey: "prebuild_availability")
     }
 }

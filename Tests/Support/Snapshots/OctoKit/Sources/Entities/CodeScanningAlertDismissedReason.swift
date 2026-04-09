@@ -5,8 +5,17 @@ import Foundation
 import NaiveDate
 
 /// **Required when the state is dismissed.** The reason for dismissing or closing the alert. Can be one of: `false positive`, `won't fix`, and `used in tests`.
-public enum CodeScanningAlertDismissedReason: String, Codable, CaseIterable {
+public enum CodeScanningAlertDismissedReason: String, Codable, CaseIterable, Sendable {
+    case empty = ""
     case falsePositive = "false positive"
     case wontFix = "won't fix"
     case usedInTests = "used in tests"
+    case unknown
+
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let rawValue = try container.decode(String.self)
+        self = Self(rawValue: rawValue) ?? .unknown
+    }
 }

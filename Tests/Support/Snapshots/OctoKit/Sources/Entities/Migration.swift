@@ -9,7 +9,7 @@ public struct Migration: Codable {
     /// Example: 79
     public var id: Int
     /// Simple User
-    public var owner: SimpleUser?
+    public var owner: SimpleUser
     /// Example: "0b989ba4-242f-11e5-81e1-c7b6966d2516"
     public var guid: String
     /// Example: "pending"
@@ -32,7 +32,7 @@ public struct Migration: Codable {
     public var archiveURL: URL?
     public var exclude: [AnyJSON]?
 
-    public init(id: Int, owner: SimpleUser? = nil, guid: String, state: String, lockRepositories: Bool, excludeMetadata: Bool, excludeGitData: Bool, excludeAttachments: Bool, excludeReleases: Bool, excludeOwnerProjects: Bool, repositories: [Repository], url: URL, createdAt: Date, updatedAt: Date, nodeID: String, archiveURL: URL? = nil, exclude: [AnyJSON]? = nil) {
+    public init(id: Int, owner: SimpleUser, guid: String, state: String, lockRepositories: Bool, excludeMetadata: Bool, excludeGitData: Bool, excludeAttachments: Bool, excludeReleases: Bool, excludeOwnerProjects: Bool, repositories: [Repository], url: URL, createdAt: Date, updatedAt: Date, nodeID: String, archiveURL: URL? = nil, exclude: [AnyJSON]? = nil) {
         self.id = id
         self.owner = owner
         self.guid = guid
@@ -55,7 +55,7 @@ public struct Migration: Codable {
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: StringCodingKey.self)
         self.id = try values.decode(Int.self, forKey: "id")
-        self.owner = try values.decodeIfPresent(SimpleUser.self, forKey: "owner")
+        self.owner = try values.decode(SimpleUser.self, forKey: "owner")
         self.guid = try values.decode(String.self, forKey: "guid")
         self.state = try values.decode(String.self, forKey: "state")
         self.lockRepositories = try values.decode(Bool.self, forKey: "lock_repositories")
@@ -76,7 +76,7 @@ public struct Migration: Codable {
     public func encode(to encoder: Encoder) throws {
         var values = encoder.container(keyedBy: StringCodingKey.self)
         try values.encode(id, forKey: "id")
-        try values.encodeIfPresent(owner, forKey: "owner")
+        try values.encode(owner, forKey: "owner")
         try values.encode(guid, forKey: "guid")
         try values.encode(state, forKey: "state")
         try values.encode(lockRepositories, forKey: "lock_repositories")

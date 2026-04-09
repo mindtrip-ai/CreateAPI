@@ -17,9 +17,9 @@ public struct Commit: Codable {
     public var commentsURL: URL
     public var commit: Commit
     /// Simple User
-    public var author: SimpleUser?
+    public var author: SimpleUser
     /// Simple User
-    public var committer: SimpleUser?
+    public var committer: SimpleUser
     public var parents: [Parent]
     public var stats: Stats?
     public var files: [DiffEntry]?
@@ -30,11 +30,11 @@ public struct Commit: Codable {
         /// Git User
         ///
         /// Metaproperties for Git author/committer information.
-        public var author: GitUser?
+        public var author: GitUser
         /// Git User
         ///
         /// Metaproperties for Git author/committer information.
-        public var committer: GitUser?
+        public var committer: GitUser
         /// Example: "Fix all the bugs"
         public var message: String
         public var commentCount: Int
@@ -65,7 +65,7 @@ public struct Commit: Codable {
             }
         }
 
-        public init(url: URL, author: GitUser? = nil, committer: GitUser? = nil, message: String, commentCount: Int, tree: Tree, verification: Verification? = nil) {
+        public init(url: URL, author: GitUser, committer: GitUser, message: String, commentCount: Int, tree: Tree, verification: Verification? = nil) {
             self.url = url
             self.author = author
             self.committer = committer
@@ -78,8 +78,8 @@ public struct Commit: Codable {
         public init(from decoder: Decoder) throws {
             let values = try decoder.container(keyedBy: StringCodingKey.self)
             self.url = try values.decode(URL.self, forKey: "url")
-            self.author = try values.decodeIfPresent(GitUser.self, forKey: "author")
-            self.committer = try values.decodeIfPresent(GitUser.self, forKey: "committer")
+            self.author = try values.decode(GitUser.self, forKey: "author")
+            self.committer = try values.decode(GitUser.self, forKey: "committer")
             self.message = try values.decode(String.self, forKey: "message")
             self.commentCount = try values.decode(Int.self, forKey: "comment_count")
             self.tree = try values.decode(Tree.self, forKey: "tree")
@@ -89,8 +89,8 @@ public struct Commit: Codable {
         public func encode(to encoder: Encoder) throws {
             var values = encoder.container(keyedBy: StringCodingKey.self)
             try values.encode(url, forKey: "url")
-            try values.encodeIfPresent(author, forKey: "author")
-            try values.encodeIfPresent(committer, forKey: "committer")
+            try values.encode(author, forKey: "author")
+            try values.encode(committer, forKey: "committer")
             try values.encode(message, forKey: "message")
             try values.encode(commentCount, forKey: "comment_count")
             try values.encode(tree, forKey: "tree")
@@ -153,7 +153,7 @@ public struct Commit: Codable {
         }
     }
 
-    public init(url: URL, sha: String, nodeID: String, htmlURL: URL, commentsURL: URL, commit: Commit, author: SimpleUser? = nil, committer: SimpleUser? = nil, parents: [Parent], stats: Stats? = nil, files: [DiffEntry]? = nil) {
+    public init(url: URL, sha: String, nodeID: String, htmlURL: URL, commentsURL: URL, commit: Commit, author: SimpleUser, committer: SimpleUser, parents: [Parent], stats: Stats? = nil, files: [DiffEntry]? = nil) {
         self.url = url
         self.sha = sha
         self.nodeID = nodeID
@@ -175,8 +175,8 @@ public struct Commit: Codable {
         self.htmlURL = try values.decode(URL.self, forKey: "html_url")
         self.commentsURL = try values.decode(URL.self, forKey: "comments_url")
         self.commit = try values.decode(Commit.self, forKey: "commit")
-        self.author = try values.decodeIfPresent(SimpleUser.self, forKey: "author")
-        self.committer = try values.decodeIfPresent(SimpleUser.self, forKey: "committer")
+        self.author = try values.decode(SimpleUser.self, forKey: "author")
+        self.committer = try values.decode(SimpleUser.self, forKey: "committer")
         self.parents = try values.decode([Parent].self, forKey: "parents")
         self.stats = try values.decodeIfPresent(Stats.self, forKey: "stats")
         self.files = try values.decodeIfPresent([DiffEntry].self, forKey: "files")
@@ -190,8 +190,8 @@ public struct Commit: Codable {
         try values.encode(htmlURL, forKey: "html_url")
         try values.encode(commentsURL, forKey: "comments_url")
         try values.encode(commit, forKey: "commit")
-        try values.encodeIfPresent(author, forKey: "author")
-        try values.encodeIfPresent(committer, forKey: "committer")
+        try values.encode(author, forKey: "author")
+        try values.encode(committer, forKey: "committer")
         try values.encode(parents, forKey: "parents")
         try values.encodeIfPresent(stats, forKey: "stats")
         try values.encodeIfPresent(files, forKey: "files")

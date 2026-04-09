@@ -54,19 +54,35 @@ extension Paths.Repos.WithOwner.WithRepo.Git {
                 public var content: String?
 
                 /// The file mode; one of `100644` for file (blob), `100755` for executable (blob), `040000` for subdirectory (tree), `160000` for submodule (commit), or `120000` for a blob that specifies the path of a symlink.
-                public enum Mode: String, Codable, CaseIterable {
+                public enum Mode: String, Codable, CaseIterable, Sendable {
                     case _100644 = "100644"
                     case _100755 = "100755"
                     case _040000 = "040000"
                     case _160000 = "160000"
                     case _120000 = "120000"
+                    case unknown
+
+
+                    public init(from decoder: Decoder) throws {
+                        let container = try decoder.singleValueContainer()
+                        let rawValue = try container.decode(String.self)
+                        self = Self(rawValue: rawValue) ?? .unknown
+                    }
                 }
 
                 /// Either `blob`, `tree`, or `commit`.
-                public enum `Type`: String, Codable, CaseIterable {
+                public enum `Type`: String, Codable, CaseIterable, Sendable {
                     case blob
                     case tree
                     case commit
+                    case unknown
+
+
+                    public init(from decoder: Decoder) throws {
+                        let container = try decoder.singleValueContainer()
+                        let rawValue = try container.decode(String.self)
+                        self = Self(rawValue: rawValue) ?? .unknown
+                    }
                 }
 
                 public init(path: String? = nil, mode: Mode? = nil, type: `Type`? = nil, sha: String? = nil, content: String? = nil) {

@@ -13,9 +13,9 @@ public struct RepositoryInvitation: Codable {
     /// Minimal Repository
     public var repository: MinimalRepository
     /// Simple User
-    public var invitee: SimpleUser?
+    public var invitee: SimpleUser
     /// Simple User
-    public var inviter: SimpleUser?
+    public var inviter: SimpleUser
     /// The permission associated with the invitation.
     ///
     /// Example: "read"
@@ -35,15 +35,23 @@ public struct RepositoryInvitation: Codable {
     /// The permission associated with the invitation.
     ///
     /// Example: "read"
-    public enum Permissions: String, Codable, CaseIterable {
+    public enum Permissions: String, Codable, CaseIterable, Sendable {
         case read
         case write
         case admin
         case triage
         case maintain
+        case unknown
+
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let rawValue = try container.decode(String.self)
+            self = Self(rawValue: rawValue) ?? .unknown
+        }
     }
 
-    public init(id: Int, repository: MinimalRepository, invitee: SimpleUser? = nil, inviter: SimpleUser? = nil, permissions: Permissions, createdAt: Date, isExpired: Bool? = nil, url: String, htmlURL: String, nodeID: String) {
+    public init(id: Int, repository: MinimalRepository, invitee: SimpleUser, inviter: SimpleUser, permissions: Permissions, createdAt: Date, isExpired: Bool? = nil, url: String, htmlURL: String, nodeID: String) {
         self.id = id
         self.repository = repository
         self.invitee = invitee
@@ -60,8 +68,8 @@ public struct RepositoryInvitation: Codable {
         let values = try decoder.container(keyedBy: StringCodingKey.self)
         self.id = try values.decode(Int.self, forKey: "id")
         self.repository = try values.decode(MinimalRepository.self, forKey: "repository")
-        self.invitee = try values.decodeIfPresent(SimpleUser.self, forKey: "invitee")
-        self.inviter = try values.decodeIfPresent(SimpleUser.self, forKey: "inviter")
+        self.invitee = try values.decode(SimpleUser.self, forKey: "invitee")
+        self.inviter = try values.decode(SimpleUser.self, forKey: "inviter")
         self.permissions = try values.decode(Permissions.self, forKey: "permissions")
         self.createdAt = try values.decode(Date.self, forKey: "created_at")
         self.isExpired = try values.decodeIfPresent(Bool.self, forKey: "expired")
@@ -74,8 +82,8 @@ public struct RepositoryInvitation: Codable {
         var values = encoder.container(keyedBy: StringCodingKey.self)
         try values.encode(id, forKey: "id")
         try values.encode(repository, forKey: "repository")
-        try values.encodeIfPresent(invitee, forKey: "invitee")
-        try values.encodeIfPresent(inviter, forKey: "inviter")
+        try values.encode(invitee, forKey: "invitee")
+        try values.encode(inviter, forKey: "inviter")
         try values.encode(permissions, forKey: "permissions")
         try values.encode(createdAt, forKey: "created_at")
         try values.encodeIfPresent(isExpired, forKey: "expired")

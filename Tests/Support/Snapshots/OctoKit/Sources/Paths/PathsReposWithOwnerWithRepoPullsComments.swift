@@ -35,15 +35,31 @@ extension Paths.Repos.WithOwner.WithRepo.Pulls {
             public var perPage: Int?
             public var page: Int?
 
-            public enum Sort: String, Codable, CaseIterable {
+            public enum Sort: String, Codable, CaseIterable, Sendable {
                 case created
                 case updated
                 case createdAt = "created_at"
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
-            public enum Direction: String, Codable, CaseIterable {
+            public enum Direction: String, Codable, CaseIterable, Sendable {
                 case asc
                 case desc
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             public init(sort: Sort? = nil, direction: Direction? = nil, since: Date? = nil, perPage: Int? = nil, page: Int? = nil) {

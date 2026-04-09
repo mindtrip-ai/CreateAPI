@@ -6,10 +6,31 @@ import Foundation
 public struct Container: Codable {
     public var content: Content
 
-    public enum Content: Codable {
+    public enum Content: Codable, OneOfEnum {
         case containerA(ContainerA)
         case containerB(ContainerB)
         case containerC(ContainerC)
+
+        case unknown(UnknownContent)
+
+        public struct UnknownContent: Codable, UnknownOneOfCase {
+          public enum `Type`: String, Codable, CaseIterable, Sendable {
+            case unknown
+          }
+          public var type: `Type` = .unknown
+          public var discriminatorValue: String
+          public init(discriminatorValue: String) {
+            self.discriminatorValue = discriminatorValue
+          }
+        }
+
+        public var isUnknownCase: Bool {
+          if case .unknown = self {
+            true
+          } else {
+            false
+          }
+        }
 
         public init(from decoder: Decoder) throws {
             let container = try decoder.singleValueContainer()
@@ -33,6 +54,7 @@ public struct Container: Codable {
             case .containerA(let value): try container.encode(value)
             case .containerB(let value): try container.encode(value)
             case .containerC(let value): try container.encode(value)
+            case .unknown(let value): try container.encode(value)
             }
         }
     }

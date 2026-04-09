@@ -19,19 +19,19 @@ public struct TeamRepository: Codable {
     /// Example: "octocat/Hello-World"
     public var fullName: String
     /// License Simple
-    public var license: LicenseSimple?
+    public var license: LicenseSimple
     public var forks: Int
     public var permissions: Permissions?
     /// Example: "admin"
     public var roleName: String?
     /// Simple User
-    public var owner: SimpleUser?
+    public var owner: SimpleUser
     /// Whether the repository is private or public.
     public var isPrivate: Bool
     /// Example: "https://github.com/octocat/Hello-World"
     public var htmlURL: URL
     /// Example: "This your first repo!"
-    public var description: String?
+    public var description: String
     public var isFork: Bool
     /// Example: "https://api.github.com/repos/octocat/Hello-World"
     public var url: URL
@@ -112,14 +112,14 @@ public struct TeamRepository: Codable {
     /// Example: "https://github.com/octocat/Hello-World.git"
     public var cloneURL: String
     /// Example: "git:git.example.com/octocat/Hello-World"
-    public var mirrorURL: URL?
+    public var mirrorURL: URL
     /// Example: "http://api.github.com/repos/octocat/Hello-World/hooks"
     public var hooksURL: URL
     /// Example: "https://svn.github.com/octocat/Hello-World"
     public var svnURL: URL
     /// Example: "https://github.com"
-    public var homepage: URL?
-    public var language: String?
+    public var homepage: URL
+    public var language: String
     public var forksCount: Int
     /// Example: 80
     public var stargazersCount: Int
@@ -161,11 +161,11 @@ public struct TeamRepository: Codable {
     /// The repository visibility: public, private, or internal.
     public var visibility: String?
     /// Example: "2011-01-26T19:06:43Z"
-    public var pushedAt: Date?
+    public var pushedAt: Date
     /// Example: "2011-01-26T19:01:12Z"
-    public var createdAt: Date?
+    public var createdAt: Date
     /// Example: "2011-01-26T19:14:43Z"
-    public var updatedAt: Date?
+    public var updatedAt: Date
     /// Whether to allow rebase merges for pull requests.
     ///
     /// Example: true
@@ -235,7 +235,7 @@ public struct TeamRepository: Codable {
         }
     }
 
-    public init(id: Int, nodeID: String, name: String, fullName: String, license: LicenseSimple? = nil, forks: Int, permissions: Permissions? = nil, roleName: String? = nil, owner: SimpleUser? = nil, isPrivate: Bool, htmlURL: URL, description: String? = nil, isFork: Bool, url: URL, archiveURL: String, assigneesURL: String, blobsURL: String, branchesURL: String, collaboratorsURL: String, commentsURL: String, commitsURL: String, compareURL: String, contentsURL: String, contributorsURL: URL, deploymentsURL: URL, downloadsURL: URL, eventsURL: URL, forksURL: URL, gitCommitsURL: String, gitRefsURL: String, gitTagsURL: String, gitURL: String, issueCommentURL: String, issueEventsURL: String, issuesURL: String, keysURL: String, labelsURL: String, languagesURL: URL, mergesURL: URL, milestonesURL: String, notificationsURL: String, pullsURL: String, releasesURL: String, sshURL: String, stargazersURL: URL, statusesURL: String, subscribersURL: URL, subscriptionURL: URL, tagsURL: URL, teamsURL: URL, treesURL: String, cloneURL: String, mirrorURL: URL? = nil, hooksURL: URL, svnURL: URL, homepage: URL? = nil, language: String? = nil, forksCount: Int, stargazersCount: Int, watchersCount: Int, size: Int, defaultBranch: String, openIssuesCount: Int, isTemplate: Bool? = nil, topics: [String]? = nil, hasIssues: Bool, hasProjects: Bool, hasWiki: Bool, hasPages: Bool, hasDownloads: Bool, isArchived: Bool, isDisabled: Bool, visibility: String? = nil, pushedAt: Date? = nil, createdAt: Date? = nil, updatedAt: Date? = nil, allowRebaseMerge: Bool? = nil, templateRepository: Repository? = nil, tempCloneToken: String? = nil, allowSquashMerge: Bool? = nil, allowAutoMerge: Bool? = nil, deleteBranchOnMerge: Bool? = nil, allowMergeCommit: Bool? = nil, allowForking: Bool? = nil, subscribersCount: Int? = nil, networkCount: Int? = nil, openIssues: Int, watchers: Int, masterBranch: String? = nil) {
+    public init(id: Int, nodeID: String, name: String, fullName: String, license: LicenseSimple, forks: Int, permissions: Permissions? = nil, roleName: String? = nil, owner: SimpleUser, isPrivate: Bool, htmlURL: URL, description: String, isFork: Bool, url: URL, archiveURL: String, assigneesURL: String, blobsURL: String, branchesURL: String, collaboratorsURL: String, commentsURL: String, commitsURL: String, compareURL: String, contentsURL: String, contributorsURL: URL, deploymentsURL: URL, downloadsURL: URL, eventsURL: URL, forksURL: URL, gitCommitsURL: String, gitRefsURL: String, gitTagsURL: String, gitURL: String, issueCommentURL: String, issueEventsURL: String, issuesURL: String, keysURL: String, labelsURL: String, languagesURL: URL, mergesURL: URL, milestonesURL: String, notificationsURL: String, pullsURL: String, releasesURL: String, sshURL: String, stargazersURL: URL, statusesURL: String, subscribersURL: URL, subscriptionURL: URL, tagsURL: URL, teamsURL: URL, treesURL: String, cloneURL: String, mirrorURL: URL, hooksURL: URL, svnURL: URL, homepage: URL, language: String, forksCount: Int, stargazersCount: Int, watchersCount: Int, size: Int, defaultBranch: String, openIssuesCount: Int, isTemplate: Bool? = nil, topics: [String]? = nil, hasIssues: Bool, hasProjects: Bool, hasWiki: Bool, hasPages: Bool, hasDownloads: Bool, isArchived: Bool, isDisabled: Bool, visibility: String? = nil, pushedAt: Date, createdAt: Date, updatedAt: Date, allowRebaseMerge: Bool? = nil, templateRepository: Repository? = nil, tempCloneToken: String? = nil, allowSquashMerge: Bool? = nil, allowAutoMerge: Bool? = nil, deleteBranchOnMerge: Bool? = nil, allowMergeCommit: Bool? = nil, allowForking: Bool? = nil, subscribersCount: Int? = nil, networkCount: Int? = nil, openIssues: Int, watchers: Int, masterBranch: String? = nil) {
         self.id = id
         self.nodeID = nodeID
         self.name = name
@@ -333,14 +333,14 @@ public struct TeamRepository: Codable {
         self.nodeID = try values.decode(String.self, forKey: "node_id")
         self.name = try values.decode(String.self, forKey: "name")
         self.fullName = try values.decode(String.self, forKey: "full_name")
-        self.license = try values.decodeIfPresent(LicenseSimple.self, forKey: "license")
+        self.license = try values.decode(LicenseSimple.self, forKey: "license")
         self.forks = try values.decode(Int.self, forKey: "forks")
         self.permissions = try values.decodeIfPresent(Permissions.self, forKey: "permissions")
         self.roleName = try values.decodeIfPresent(String.self, forKey: "role_name")
-        self.owner = try values.decodeIfPresent(SimpleUser.self, forKey: "owner")
+        self.owner = try values.decode(SimpleUser.self, forKey: "owner")
         self.isPrivate = try values.decode(Bool.self, forKey: "private")
         self.htmlURL = try values.decode(URL.self, forKey: "html_url")
-        self.description = try values.decodeIfPresent(String.self, forKey: "description")
+        self.description = try values.decode(String.self, forKey: "description")
         self.isFork = try values.decode(Bool.self, forKey: "fork")
         self.url = try values.decode(URL.self, forKey: "url")
         self.archiveURL = try values.decode(String.self, forKey: "archive_url")
@@ -381,11 +381,11 @@ public struct TeamRepository: Codable {
         self.teamsURL = try values.decode(URL.self, forKey: "teams_url")
         self.treesURL = try values.decode(String.self, forKey: "trees_url")
         self.cloneURL = try values.decode(String.self, forKey: "clone_url")
-        self.mirrorURL = try values.decodeIfPresent(URL.self, forKey: "mirror_url")
+        self.mirrorURL = try values.decode(URL.self, forKey: "mirror_url")
         self.hooksURL = try values.decode(URL.self, forKey: "hooks_url")
         self.svnURL = try values.decode(URL.self, forKey: "svn_url")
-        self.homepage = try values.decodeIfPresent(URL.self, forKey: "homepage")
-        self.language = try values.decodeIfPresent(String.self, forKey: "language")
+        self.homepage = try values.decode(URL.self, forKey: "homepage")
+        self.language = try values.decode(String.self, forKey: "language")
         self.forksCount = try values.decode(Int.self, forKey: "forks_count")
         self.stargazersCount = try values.decode(Int.self, forKey: "stargazers_count")
         self.watchersCount = try values.decode(Int.self, forKey: "watchers_count")
@@ -402,9 +402,9 @@ public struct TeamRepository: Codable {
         self.isArchived = try values.decode(Bool.self, forKey: "archived")
         self.isDisabled = try values.decode(Bool.self, forKey: "disabled")
         self.visibility = try values.decodeIfPresent(String.self, forKey: "visibility")
-        self.pushedAt = try values.decodeIfPresent(Date.self, forKey: "pushed_at")
-        self.createdAt = try values.decodeIfPresent(Date.self, forKey: "created_at")
-        self.updatedAt = try values.decodeIfPresent(Date.self, forKey: "updated_at")
+        self.pushedAt = try values.decode(Date.self, forKey: "pushed_at")
+        self.createdAt = try values.decode(Date.self, forKey: "created_at")
+        self.updatedAt = try values.decode(Date.self, forKey: "updated_at")
         self.allowRebaseMerge = try values.decodeIfPresent(Bool.self, forKey: "allow_rebase_merge") ?? true
         self.templateRepository = try values.decodeIfPresent(Repository.self, forKey: "template_repository")
         self.tempCloneToken = try values.decodeIfPresent(String.self, forKey: "temp_clone_token")
@@ -426,14 +426,14 @@ public struct TeamRepository: Codable {
         try values.encode(nodeID, forKey: "node_id")
         try values.encode(name, forKey: "name")
         try values.encode(fullName, forKey: "full_name")
-        try values.encodeIfPresent(license, forKey: "license")
+        try values.encode(license, forKey: "license")
         try values.encode(forks, forKey: "forks")
         try values.encodeIfPresent(permissions, forKey: "permissions")
         try values.encodeIfPresent(roleName, forKey: "role_name")
-        try values.encodeIfPresent(owner, forKey: "owner")
+        try values.encode(owner, forKey: "owner")
         try values.encode(isPrivate, forKey: "private")
         try values.encode(htmlURL, forKey: "html_url")
-        try values.encodeIfPresent(description, forKey: "description")
+        try values.encode(description, forKey: "description")
         try values.encode(isFork, forKey: "fork")
         try values.encode(url, forKey: "url")
         try values.encode(archiveURL, forKey: "archive_url")
@@ -474,11 +474,11 @@ public struct TeamRepository: Codable {
         try values.encode(teamsURL, forKey: "teams_url")
         try values.encode(treesURL, forKey: "trees_url")
         try values.encode(cloneURL, forKey: "clone_url")
-        try values.encodeIfPresent(mirrorURL, forKey: "mirror_url")
+        try values.encode(mirrorURL, forKey: "mirror_url")
         try values.encode(hooksURL, forKey: "hooks_url")
         try values.encode(svnURL, forKey: "svn_url")
-        try values.encodeIfPresent(homepage, forKey: "homepage")
-        try values.encodeIfPresent(language, forKey: "language")
+        try values.encode(homepage, forKey: "homepage")
+        try values.encode(language, forKey: "language")
         try values.encode(forksCount, forKey: "forks_count")
         try values.encode(stargazersCount, forKey: "stargazers_count")
         try values.encode(watchersCount, forKey: "watchers_count")
@@ -495,9 +495,9 @@ public struct TeamRepository: Codable {
         try values.encode(isArchived, forKey: "archived")
         try values.encode(isDisabled, forKey: "disabled")
         try values.encodeIfPresent(visibility, forKey: "visibility")
-        try values.encodeIfPresent(pushedAt, forKey: "pushed_at")
-        try values.encodeIfPresent(createdAt, forKey: "created_at")
-        try values.encodeIfPresent(updatedAt, forKey: "updated_at")
+        try values.encode(pushedAt, forKey: "pushed_at")
+        try values.encode(createdAt, forKey: "created_at")
+        try values.encode(updatedAt, forKey: "updated_at")
         try values.encodeIfPresent(allowRebaseMerge, forKey: "allow_rebase_merge")
         try values.encodeIfPresent(templateRepository, forKey: "template_repository")
         try values.encodeIfPresent(tempCloneToken, forKey: "temp_clone_token")

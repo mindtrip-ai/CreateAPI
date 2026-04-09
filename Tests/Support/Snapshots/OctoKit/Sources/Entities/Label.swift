@@ -19,7 +19,7 @@ public struct Label: Codable {
     /// Example: "bug"
     public var name: String
     /// Example: "Something isn't working"
-    public var description: String?
+    public var description: String
     /// 6-character hex code, without the leading #, identifying the color
     ///
     /// Example: "FFFFFF"
@@ -27,7 +27,7 @@ public struct Label: Codable {
     /// Example: true
     public var isDefault: Bool
 
-    public init(id: Int64, nodeID: String, url: URL, name: String, description: String? = nil, color: String, isDefault: Bool) {
+    public init(id: Int64, nodeID: String, url: URL, name: String, description: String, color: String, isDefault: Bool) {
         self.id = id
         self.nodeID = nodeID
         self.url = url
@@ -43,7 +43,7 @@ public struct Label: Codable {
         self.nodeID = try values.decode(String.self, forKey: "node_id")
         self.url = try values.decode(URL.self, forKey: "url")
         self.name = try values.decode(String.self, forKey: "name")
-        self.description = try values.decodeIfPresent(String.self, forKey: "description")
+        self.description = try values.decode(String.self, forKey: "description")
         self.color = try values.decode(String.self, forKey: "color")
         self.isDefault = try values.decode(Bool.self, forKey: "default")
     }
@@ -54,7 +54,7 @@ public struct Label: Codable {
         try values.encode(nodeID, forKey: "node_id")
         try values.encode(url, forKey: "url")
         try values.encode(name, forKey: "name")
-        try values.encodeIfPresent(description, forKey: "description")
+        try values.encode(description, forKey: "description")
         try values.encode(color, forKey: "color")
         try values.encode(isDefault, forKey: "default")
     }

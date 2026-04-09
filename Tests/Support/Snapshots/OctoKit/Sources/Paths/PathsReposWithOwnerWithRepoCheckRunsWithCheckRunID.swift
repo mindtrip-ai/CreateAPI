@@ -59,15 +59,23 @@ extension Paths.Repos.WithOwner.WithRepo.CheckRuns {
             public var actions: [Action]?
 
             /// The current status. Can be one of `queued`, `in_progress`, or `completed`.
-            public enum Status: String, Codable, CaseIterable {
+            public enum Status: String, Codable, CaseIterable, Sendable {
                 case queued
                 case inProgress = "in_progress"
                 case completed
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             /// **Required if you provide `completed_at` or a `status` of `completed`**. The final conclusion of the check. Can be one of `action_required`, `cancelled`, `failure`, `neutral`, `success`, `skipped`, `stale`, or `timed_out`.  
             /// **Note:** Providing `conclusion` will automatically set the `status` parameter to `completed`. You cannot change a check run conclusion to `stale`, only GitHub can set this.
-            public enum Conclusion: String, Codable, CaseIterable {
+            public enum Conclusion: String, Codable, CaseIterable, Sendable {
                 case actionRequired = "action_required"
                 case cancelled
                 case failure
@@ -76,6 +84,14 @@ extension Paths.Repos.WithOwner.WithRepo.CheckRuns {
                 case skipped
                 case stale
                 case timedOut = "timed_out"
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             /// Check runs can accept a variety of data in the `output` object, including a `title` and `summary` and can optionally provide descriptive details about the run. See the [`output` object](https://docs.github.com/rest/reference/checks#output-object-1) description.
@@ -112,10 +128,18 @@ extension Paths.Repos.WithOwner.WithRepo.CheckRuns {
                     public var rawDetails: String?
 
                     /// The level of the annotation. Can be one of `notice`, `warning`, or `failure`.
-                    public enum AnnotationLevel: String, Codable, CaseIterable {
+                    public enum AnnotationLevel: String, Codable, CaseIterable, Sendable {
                         case notice
                         case warning
                         case failure
+                        case unknown
+
+
+                        public init(from decoder: Decoder) throws {
+                            let container = try decoder.singleValueContainer()
+                            let rawValue = try container.decode(String.self)
+                            self = Self(rawValue: rawValue) ?? .unknown
+                        }
                     }
 
                     public init(path: String, startLine: Int, endLine: Int, startColumn: Int? = nil, endColumn: Int? = nil, annotationLevel: AnnotationLevel, message: String, title: String? = nil, rawDetails: String? = nil) {

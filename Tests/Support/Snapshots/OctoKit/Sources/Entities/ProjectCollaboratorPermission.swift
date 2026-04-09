@@ -7,9 +7,9 @@ import NaiveDate
 public struct ProjectCollaboratorPermission: Codable {
     public var permission: String
     /// Simple User
-    public var user: SimpleUser?
+    public var user: SimpleUser
 
-    public init(permission: String, user: SimpleUser? = nil) {
+    public init(permission: String, user: SimpleUser) {
         self.permission = permission
         self.user = user
     }
@@ -17,12 +17,12 @@ public struct ProjectCollaboratorPermission: Codable {
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: StringCodingKey.self)
         self.permission = try values.decode(String.self, forKey: "permission")
-        self.user = try values.decodeIfPresent(SimpleUser.self, forKey: "user")
+        self.user = try values.decode(SimpleUser.self, forKey: "user")
     }
 
     public func encode(to encoder: Encoder) throws {
         var values = encoder.container(keyedBy: StringCodingKey.self)
         try values.encode(permission, forKey: "permission")
-        try values.encodeIfPresent(user, forKey: "user")
+        try values.encode(user, forKey: "user")
     }
 }

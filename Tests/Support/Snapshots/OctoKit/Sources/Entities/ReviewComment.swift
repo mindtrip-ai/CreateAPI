@@ -9,7 +9,7 @@ public struct ReviewComment: Codable {
     /// Example: "https://api.github.com/repos/octocat/Hello-World/pulls/comments/1"
     public var url: URL
     /// Example: 42
-    public var pullRequestReviewID: Int?
+    public var pullRequestReviewID: Int
     /// Example: 10
     public var id: Int
     /// Example: "MDI0OlB1bGxSZXF1ZXN0UmV2aWV3Q29tbWVudDEw"
@@ -18,7 +18,7 @@ public struct ReviewComment: Codable {
     public var diffHunk: String
     /// Example: "file1.txt"
     public var path: String
-    public var position: Int?
+    public var position: Int
     public var originalPosition: Int
     /// Example: "6dcb09b5b57875f334f61aebed695e2e4193db5e"
     public var commitID: String
@@ -26,7 +26,7 @@ public struct ReviewComment: Codable {
     public var originalCommitID: String
     public var inReplyToID: Int?
     /// Simple User
-    public var user: SimpleUser?
+    public var user: SimpleUser
     /// Example: "Great stuff"
     public var body: String
     /// Example: "2011-04-14T16:00:49Z"
@@ -97,18 +97,34 @@ public struct ReviewComment: Codable {
     }
 
     /// The side of the first line of the range for a multi-line comment.
-    public enum Side: String, Codable, CaseIterable {
+    public enum Side: String, Codable, CaseIterable, Sendable {
         case left = "LEFT"
         case right = "RIGHT"
+        case unknown
+
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let rawValue = try container.decode(String.self)
+            self = Self(rawValue: rawValue) ?? .unknown
+        }
     }
 
     /// The side of the first line of the range for a multi-line comment.
-    public enum StartSide: String, Codable, CaseIterable {
+    public enum StartSide: String, Codable, CaseIterable, Sendable {
         case left = "LEFT"
         case right = "RIGHT"
+        case unknown
+
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let rawValue = try container.decode(String.self)
+            self = Self(rawValue: rawValue) ?? .unknown
+        }
     }
 
-    public init(url: URL, pullRequestReviewID: Int? = nil, id: Int, nodeID: String, diffHunk: String, path: String, position: Int? = nil, originalPosition: Int, commitID: String, originalCommitID: String, inReplyToID: Int? = nil, user: SimpleUser? = nil, body: String, createdAt: Date, updatedAt: Date, htmlURL: URL, pullRequestURL: URL, authorAssociation: AuthorAssociation, links: Links, bodyText: String? = nil, bodyHTML: String? = nil, reactions: ReactionRollup? = nil, side: Side? = nil, startSide: StartSide? = nil, line: Int? = nil, originalLine: Int? = nil, startLine: Int? = nil, originalStartLine: Int? = nil) {
+    public init(url: URL, pullRequestReviewID: Int, id: Int, nodeID: String, diffHunk: String, path: String, position: Int, originalPosition: Int, commitID: String, originalCommitID: String, inReplyToID: Int? = nil, user: SimpleUser, body: String, createdAt: Date, updatedAt: Date, htmlURL: URL, pullRequestURL: URL, authorAssociation: AuthorAssociation, links: Links, bodyText: String? = nil, bodyHTML: String? = nil, reactions: ReactionRollup? = nil, side: Side? = nil, startSide: StartSide? = nil, line: Int? = nil, originalLine: Int? = nil, startLine: Int? = nil, originalStartLine: Int? = nil) {
         self.url = url
         self.pullRequestReviewID = pullRequestReviewID
         self.id = id
@@ -142,17 +158,17 @@ public struct ReviewComment: Codable {
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: StringCodingKey.self)
         self.url = try values.decode(URL.self, forKey: "url")
-        self.pullRequestReviewID = try values.decodeIfPresent(Int.self, forKey: "pull_request_review_id")
+        self.pullRequestReviewID = try values.decode(Int.self, forKey: "pull_request_review_id")
         self.id = try values.decode(Int.self, forKey: "id")
         self.nodeID = try values.decode(String.self, forKey: "node_id")
         self.diffHunk = try values.decode(String.self, forKey: "diff_hunk")
         self.path = try values.decode(String.self, forKey: "path")
-        self.position = try values.decodeIfPresent(Int.self, forKey: "position")
+        self.position = try values.decode(Int.self, forKey: "position")
         self.originalPosition = try values.decode(Int.self, forKey: "original_position")
         self.commitID = try values.decode(String.self, forKey: "commit_id")
         self.originalCommitID = try values.decode(String.self, forKey: "original_commit_id")
         self.inReplyToID = try values.decodeIfPresent(Int.self, forKey: "in_reply_to_id")
-        self.user = try values.decodeIfPresent(SimpleUser.self, forKey: "user")
+        self.user = try values.decode(SimpleUser.self, forKey: "user")
         self.body = try values.decode(String.self, forKey: "body")
         self.createdAt = try values.decode(Date.self, forKey: "created_at")
         self.updatedAt = try values.decode(Date.self, forKey: "updated_at")
@@ -174,17 +190,17 @@ public struct ReviewComment: Codable {
     public func encode(to encoder: Encoder) throws {
         var values = encoder.container(keyedBy: StringCodingKey.self)
         try values.encode(url, forKey: "url")
-        try values.encodeIfPresent(pullRequestReviewID, forKey: "pull_request_review_id")
+        try values.encode(pullRequestReviewID, forKey: "pull_request_review_id")
         try values.encode(id, forKey: "id")
         try values.encode(nodeID, forKey: "node_id")
         try values.encode(diffHunk, forKey: "diff_hunk")
         try values.encode(path, forKey: "path")
-        try values.encodeIfPresent(position, forKey: "position")
+        try values.encode(position, forKey: "position")
         try values.encode(originalPosition, forKey: "original_position")
         try values.encode(commitID, forKey: "commit_id")
         try values.encode(originalCommitID, forKey: "original_commit_id")
         try values.encodeIfPresent(inReplyToID, forKey: "in_reply_to_id")
-        try values.encodeIfPresent(user, forKey: "user")
+        try values.encode(user, forKey: "user")
         try values.encode(body, forKey: "body")
         try values.encode(createdAt, forKey: "created_at")
         try values.encode(updatedAt, forKey: "updated_at")

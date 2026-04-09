@@ -73,9 +73,17 @@ extension Paths.Enterprises.WithEnterprise.Actions {
             public var allowsPublicRepositories: Bool
 
             /// Visibility of a runner group. You can select all organizations or select individual organization. Can be one of: `all` or `selected`
-            public enum Visibility: String, Codable, CaseIterable {
+            public enum Visibility: String, Codable, CaseIterable, Sendable {
                 case selected
                 case all
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             public init(name: String, visibility: Visibility? = nil, selectedOrganizationIDs: [Int]? = nil, runners: [Int]? = nil, allowsPublicRepositories: Bool? = nil) {

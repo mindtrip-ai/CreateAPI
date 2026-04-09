@@ -5,9 +5,18 @@ import Foundation
 import NaiveDate
 
 /// **Required when the `state` is `resolved`.** The reason for resolving the alert. Can be one of `false_positive`, `wont_fix`, `revoked`, or `used_in_tests`.
-public enum SecretScanningAlertResolution: String, Codable, CaseIterable {
+public enum SecretScanningAlertResolution: String, Codable, CaseIterable, Sendable {
+    case empty = ""
     case falsePositive = "false_positive"
     case wontFix = "wont_fix"
     case revoked
     case usedInTests = "used_in_tests"
+    case unknown
+
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let rawValue = try container.decode(String.self)
+        self = Self(rawValue: rawValue) ?? .unknown
+    }
 }

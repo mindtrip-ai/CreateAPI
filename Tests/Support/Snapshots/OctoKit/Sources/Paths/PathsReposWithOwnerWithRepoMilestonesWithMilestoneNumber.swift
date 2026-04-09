@@ -40,9 +40,17 @@ extension Paths.Repos.WithOwner.WithRepo.Milestones {
             public var dueOn: Date?
 
             /// The state of the milestone. Either `open` or `closed`.
-            public enum State: String, Codable, CaseIterable {
+            public enum State: String, Codable, CaseIterable, Sendable {
                 case `open`
                 case closed
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             public init(title: String? = nil, state: State? = nil, description: String? = nil, dueOn: Date? = nil) {

@@ -10,8 +10,8 @@ public struct Release: Codable {
     public var htmlURL: URL
     public var assetsURL: URL
     public var uploadURL: String
-    public var tarballURL: URL?
-    public var zipballURL: URL?
+    public var tarballURL: URL
+    public var zipballURL: URL
     public var id: Int
     public var nodeID: String
     /// The name of the tag.
@@ -22,7 +22,7 @@ public struct Release: Codable {
     ///
     /// Example: "master"
     public var targetCommitish: String
-    public var name: String?
+    public var name: String
     public var body: String?
     /// True to create a draft (unpublished) release, false to create a published one.
     ///
@@ -33,7 +33,7 @@ public struct Release: Codable {
     /// Example: false
     public var isPrerelease: Bool
     public var createdAt: Date
-    public var publishedAt: Date?
+    public var publishedAt: Date
     /// Simple User
     public var author: SimpleUser
     public var assets: [ReleaseAsset]
@@ -45,7 +45,7 @@ public struct Release: Codable {
     /// Reaction Rollup
     public var reactions: ReactionRollup?
 
-    public init(url: URL, htmlURL: URL, assetsURL: URL, uploadURL: String, tarballURL: URL? = nil, zipballURL: URL? = nil, id: Int, nodeID: String, tagName: String, targetCommitish: String, name: String? = nil, body: String? = nil, isDraft: Bool, isPrerelease: Bool, createdAt: Date, publishedAt: Date? = nil, author: SimpleUser, assets: [ReleaseAsset], bodyHTML: String? = nil, bodyText: String? = nil, mentionsCount: Int? = nil, discussionURL: URL? = nil, reactions: ReactionRollup? = nil) {
+    public init(url: URL, htmlURL: URL, assetsURL: URL, uploadURL: String, tarballURL: URL, zipballURL: URL, id: Int, nodeID: String, tagName: String, targetCommitish: String, name: String, body: String? = nil, isDraft: Bool, isPrerelease: Bool, createdAt: Date, publishedAt: Date, author: SimpleUser, assets: [ReleaseAsset], bodyHTML: String? = nil, bodyText: String? = nil, mentionsCount: Int? = nil, discussionURL: URL? = nil, reactions: ReactionRollup? = nil) {
         self.url = url
         self.htmlURL = htmlURL
         self.assetsURL = assetsURL
@@ -77,18 +77,18 @@ public struct Release: Codable {
         self.htmlURL = try values.decode(URL.self, forKey: "html_url")
         self.assetsURL = try values.decode(URL.self, forKey: "assets_url")
         self.uploadURL = try values.decode(String.self, forKey: "upload_url")
-        self.tarballURL = try values.decodeIfPresent(URL.self, forKey: "tarball_url")
-        self.zipballURL = try values.decodeIfPresent(URL.self, forKey: "zipball_url")
+        self.tarballURL = try values.decode(URL.self, forKey: "tarball_url")
+        self.zipballURL = try values.decode(URL.self, forKey: "zipball_url")
         self.id = try values.decode(Int.self, forKey: "id")
         self.nodeID = try values.decode(String.self, forKey: "node_id")
         self.tagName = try values.decode(String.self, forKey: "tag_name")
         self.targetCommitish = try values.decode(String.self, forKey: "target_commitish")
-        self.name = try values.decodeIfPresent(String.self, forKey: "name")
+        self.name = try values.decode(String.self, forKey: "name")
         self.body = try values.decodeIfPresent(String.self, forKey: "body")
         self.isDraft = try values.decode(Bool.self, forKey: "draft")
         self.isPrerelease = try values.decode(Bool.self, forKey: "prerelease")
         self.createdAt = try values.decode(Date.self, forKey: "created_at")
-        self.publishedAt = try values.decodeIfPresent(Date.self, forKey: "published_at")
+        self.publishedAt = try values.decode(Date.self, forKey: "published_at")
         self.author = try values.decode(SimpleUser.self, forKey: "author")
         self.assets = try values.decode([ReleaseAsset].self, forKey: "assets")
         self.bodyHTML = try values.decodeIfPresent(String.self, forKey: "body_html")
@@ -104,18 +104,18 @@ public struct Release: Codable {
         try values.encode(htmlURL, forKey: "html_url")
         try values.encode(assetsURL, forKey: "assets_url")
         try values.encode(uploadURL, forKey: "upload_url")
-        try values.encodeIfPresent(tarballURL, forKey: "tarball_url")
-        try values.encodeIfPresent(zipballURL, forKey: "zipball_url")
+        try values.encode(tarballURL, forKey: "tarball_url")
+        try values.encode(zipballURL, forKey: "zipball_url")
         try values.encode(id, forKey: "id")
         try values.encode(nodeID, forKey: "node_id")
         try values.encode(tagName, forKey: "tag_name")
         try values.encode(targetCommitish, forKey: "target_commitish")
-        try values.encodeIfPresent(name, forKey: "name")
+        try values.encode(name, forKey: "name")
         try values.encodeIfPresent(body, forKey: "body")
         try values.encode(isDraft, forKey: "draft")
         try values.encode(isPrerelease, forKey: "prerelease")
         try values.encode(createdAt, forKey: "created_at")
-        try values.encodeIfPresent(publishedAt, forKey: "published_at")
+        try values.encode(publishedAt, forKey: "published_at")
         try values.encode(author, forKey: "author")
         try values.encode(assets, forKey: "assets")
         try values.encodeIfPresent(bodyHTML, forKey: "body_html")

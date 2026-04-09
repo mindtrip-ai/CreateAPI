@@ -20,24 +20,40 @@ public struct OrgMembership: Codable {
     /// Organization Simple
     public var organization: OrganizationSimple
     /// Simple User
-    public var user: SimpleUser?
+    public var user: SimpleUser
     public var permissions: Permissions?
 
     /// The state of the member in the organization. The `pending` state indicates the user has not yet accepted an invitation.
     ///
     /// Example: "active"
-    public enum State: String, Codable, CaseIterable {
+    public enum State: String, Codable, CaseIterable, Sendable {
         case active
         case pending
+        case unknown
+
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let rawValue = try container.decode(String.self)
+            self = Self(rawValue: rawValue) ?? .unknown
+        }
     }
 
     /// The user's membership type in the organization.
     ///
     /// Example: "admin"
-    public enum Role: String, Codable, CaseIterable {
+    public enum Role: String, Codable, CaseIterable, Sendable {
         case admin
         case member
         case billingManager = "billing_manager"
+        case unknown
+
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let rawValue = try container.decode(String.self)
+            self = Self(rawValue: rawValue) ?? .unknown
+        }
     }
 
     public struct Permissions: Codable {
@@ -58,7 +74,7 @@ public struct OrgMembership: Codable {
         }
     }
 
-    public init(url: URL, state: State, role: Role, organizationURL: URL, organization: OrganizationSimple, user: SimpleUser? = nil, permissions: Permissions? = nil) {
+    public init(url: URL, state: State, role: Role, organizationURL: URL, organization: OrganizationSimple, user: SimpleUser, permissions: Permissions? = nil) {
         self.url = url
         self.state = state
         self.role = role
@@ -75,7 +91,7 @@ public struct OrgMembership: Codable {
         self.role = try values.decode(Role.self, forKey: "role")
         self.organizationURL = try values.decode(URL.self, forKey: "organization_url")
         self.organization = try values.decode(OrganizationSimple.self, forKey: "organization")
-        self.user = try values.decodeIfPresent(SimpleUser.self, forKey: "user")
+        self.user = try values.decode(SimpleUser.self, forKey: "user")
         self.permissions = try values.decodeIfPresent(Permissions.self, forKey: "permissions")
     }
 
@@ -86,7 +102,7 @@ public struct OrgMembership: Codable {
         try values.encode(role, forKey: "role")
         try values.encode(organizationURL, forKey: "organization_url")
         try values.encode(organization, forKey: "organization")
-        try values.encodeIfPresent(user, forKey: "user")
+        try values.encode(user, forKey: "user")
         try values.encodeIfPresent(permissions, forKey: "permissions")
     }
 }

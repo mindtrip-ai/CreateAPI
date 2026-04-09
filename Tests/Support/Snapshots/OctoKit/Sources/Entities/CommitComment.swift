@@ -10,12 +10,12 @@ public struct CommitComment: Codable {
     public var id: Int
     public var nodeID: String
     public var body: String
-    public var path: String?
-    public var position: Int?
-    public var line: Int?
+    public var path: String
+    public var position: Int
+    public var line: Int
     public var commitID: String
     /// Simple User
-    public var user: SimpleUser?
+    public var user: SimpleUser
     public var createdAt: Date
     public var updatedAt: Date
     /// Author_association
@@ -27,7 +27,7 @@ public struct CommitComment: Codable {
     /// Reaction Rollup
     public var reactions: ReactionRollup?
 
-    public init(htmlURL: URL, url: URL, id: Int, nodeID: String, body: String, path: String? = nil, position: Int? = nil, line: Int? = nil, commitID: String, user: SimpleUser? = nil, createdAt: Date, updatedAt: Date, authorAssociation: AuthorAssociation, reactions: ReactionRollup? = nil) {
+    public init(htmlURL: URL, url: URL, id: Int, nodeID: String, body: String, path: String, position: Int, line: Int, commitID: String, user: SimpleUser, createdAt: Date, updatedAt: Date, authorAssociation: AuthorAssociation, reactions: ReactionRollup? = nil) {
         self.htmlURL = htmlURL
         self.url = url
         self.id = id
@@ -51,11 +51,11 @@ public struct CommitComment: Codable {
         self.id = try values.decode(Int.self, forKey: "id")
         self.nodeID = try values.decode(String.self, forKey: "node_id")
         self.body = try values.decode(String.self, forKey: "body")
-        self.path = try values.decodeIfPresent(String.self, forKey: "path")
-        self.position = try values.decodeIfPresent(Int.self, forKey: "position")
-        self.line = try values.decodeIfPresent(Int.self, forKey: "line")
+        self.path = try values.decode(String.self, forKey: "path")
+        self.position = try values.decode(Int.self, forKey: "position")
+        self.line = try values.decode(Int.self, forKey: "line")
         self.commitID = try values.decode(String.self, forKey: "commit_id")
-        self.user = try values.decodeIfPresent(SimpleUser.self, forKey: "user")
+        self.user = try values.decode(SimpleUser.self, forKey: "user")
         self.createdAt = try values.decode(Date.self, forKey: "created_at")
         self.updatedAt = try values.decode(Date.self, forKey: "updated_at")
         self.authorAssociation = try values.decode(AuthorAssociation.self, forKey: "author_association")
@@ -69,11 +69,11 @@ public struct CommitComment: Codable {
         try values.encode(id, forKey: "id")
         try values.encode(nodeID, forKey: "node_id")
         try values.encode(body, forKey: "body")
-        try values.encodeIfPresent(path, forKey: "path")
-        try values.encodeIfPresent(position, forKey: "position")
-        try values.encodeIfPresent(line, forKey: "line")
+        try values.encode(path, forKey: "path")
+        try values.encode(position, forKey: "position")
+        try values.encode(line, forKey: "line")
         try values.encode(commitID, forKey: "commit_id")
-        try values.encodeIfPresent(user, forKey: "user")
+        try values.encode(user, forKey: "user")
         try values.encode(createdAt, forKey: "created_at")
         try values.encode(updatedAt, forKey: "updated_at")
         try values.encode(authorAssociation, forKey: "author_association")

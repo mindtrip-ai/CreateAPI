@@ -31,10 +31,10 @@ extension Paths.AppManifests.WithCode {
             public var integration: OctoKit.Integration
             public var clientID: String
             public var clientSecret: String
-            public var webhookSecret: String?
+            public var webhookSecret: String
             public var pem: String
 
-            public init(integration: OctoKit.Integration, clientID: String, clientSecret: String, webhookSecret: String? = nil, pem: String) {
+            public init(integration: OctoKit.Integration, clientID: String, clientSecret: String, webhookSecret: String, pem: String) {
                 self.integration = integration
                 self.clientID = clientID
                 self.clientSecret = clientSecret
@@ -47,7 +47,7 @@ extension Paths.AppManifests.WithCode {
                 self.integration = try OctoKit.Integration(from: decoder)
                 self.clientID = try values.decode(String.self, forKey: "client_id")
                 self.clientSecret = try values.decode(String.self, forKey: "client_secret")
-                self.webhookSecret = try values.decodeIfPresent(String.self, forKey: "webhook_secret")
+                self.webhookSecret = try values.decode(String.self, forKey: "webhook_secret")
                 self.pem = try values.decode(String.self, forKey: "pem")
             }
         }

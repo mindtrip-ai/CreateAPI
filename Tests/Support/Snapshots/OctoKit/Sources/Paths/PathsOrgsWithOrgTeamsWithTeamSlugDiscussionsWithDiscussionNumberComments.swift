@@ -35,9 +35,17 @@ extension Paths.Orgs.WithOrg.Teams.WithTeamSlug.Discussions.WithDiscussionNumber
             public var perPage: Int?
             public var page: Int?
 
-            public enum Direction: String, Codable, CaseIterable {
+            public enum Direction: String, Codable, CaseIterable, Sendable {
                 case asc
                 case desc
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             public init(direction: Direction? = nil, perPage: Int? = nil, page: Int? = nil) {

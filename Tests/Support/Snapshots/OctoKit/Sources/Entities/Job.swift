@@ -25,7 +25,7 @@ public struct Job: Codable {
     /// Example: "https://api.github.com/repos/github/hello-world/actions/jobs/21"
     public var url: String
     /// Example: "https://github.com/github/hello-world/runs/4"
-    public var htmlURL: String?
+    public var htmlURL: String
     /// The phase of the lifecycle that the job is currently in.
     ///
     /// Example: "queued"
@@ -33,7 +33,7 @@ public struct Job: Codable {
     /// The outcome of the job.
     ///
     /// Example: "success"
-    public var conclusion: String?
+    public var conclusion: String
     /// The time that the job started, in ISO 8601 format.
     ///
     /// Example: "2019-08-08T08:00:00-07:00"
@@ -41,7 +41,7 @@ public struct Job: Codable {
     /// The time that the job finished, in ISO 8601 format.
     ///
     /// Example: "2019-08-08T08:00:00-07:00"
-    public var completedAt: Date?
+    public var completedAt: Date
     /// The name of the job.
     ///
     /// Example: "test-coverage"
@@ -55,25 +55,33 @@ public struct Job: Codable {
     /// Example: ["self-hosted", "foo", "bar"]
     public var labels: [String]
     /// The ID of the runner to which this job has been assigned. (If a runner hasn't yet been assigned, this will be null.)
-    public var runnerID: Int?
+    public var runnerID: Int
     /// The name of the runner to which this job has been assigned. (If a runner hasn't yet been assigned, this will be null.)
     ///
     /// Example: "my runner"
-    public var runnerName: String?
+    public var runnerName: String
     /// The ID of the runner group to which this job has been assigned. (If a runner hasn't yet been assigned, this will be null.)
-    public var runnerGroupID: Int?
+    public var runnerGroupID: Int
     /// The name of the runner group to which this job has been assigned. (If a runner hasn't yet been assigned, this will be null.)
     ///
     /// Example: "my runner group"
-    public var runnerGroupName: String?
+    public var runnerGroupName: String
 
     /// The phase of the lifecycle that the job is currently in.
     ///
     /// Example: "queued"
-    public enum Status: String, Codable, CaseIterable {
+    public enum Status: String, Codable, CaseIterable, Sendable {
         case queued
         case inProgress = "in_progress"
         case completed
+        case unknown
+
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let rawValue = try container.decode(String.self)
+            self = Self(rawValue: rawValue) ?? .unknown
+        }
     }
 
     public struct Step: Codable {
@@ -84,7 +92,7 @@ public struct Job: Codable {
         /// The outcome of the job.
         ///
         /// Example: "success"
-        public var conclusion: String?
+        public var conclusion: String
         /// The name of the job.
         ///
         /// Example: "test-coverage"
@@ -102,13 +110,21 @@ public struct Job: Codable {
         /// The phase of the lifecycle that the job is currently in.
         ///
         /// Example: "queued"
-        public enum Status: String, Codable, CaseIterable {
+        public enum Status: String, Codable, CaseIterable, Sendable {
             case queued
             case inProgress = "in_progress"
             case completed
+            case unknown
+
+
+            public init(from decoder: Decoder) throws {
+                let container = try decoder.singleValueContainer()
+                let rawValue = try container.decode(String.self)
+                self = Self(rawValue: rawValue) ?? .unknown
+            }
         }
 
-        public init(status: Status, conclusion: String? = nil, name: String, number: Int, startedAt: Date? = nil, completedAt: Date? = nil) {
+        public init(status: Status, conclusion: String, name: String, number: Int, startedAt: Date? = nil, completedAt: Date? = nil) {
             self.status = status
             self.conclusion = conclusion
             self.name = name
@@ -120,7 +136,7 @@ public struct Job: Codable {
         public init(from decoder: Decoder) throws {
             let values = try decoder.container(keyedBy: StringCodingKey.self)
             self.status = try values.decode(Status.self, forKey: "status")
-            self.conclusion = try values.decodeIfPresent(String.self, forKey: "conclusion")
+            self.conclusion = try values.decode(String.self, forKey: "conclusion")
             self.name = try values.decode(String.self, forKey: "name")
             self.number = try values.decode(Int.self, forKey: "number")
             self.startedAt = try values.decodeIfPresent(Date.self, forKey: "started_at")
@@ -130,7 +146,7 @@ public struct Job: Codable {
         public func encode(to encoder: Encoder) throws {
             var values = encoder.container(keyedBy: StringCodingKey.self)
             try values.encode(status, forKey: "status")
-            try values.encodeIfPresent(conclusion, forKey: "conclusion")
+            try values.encode(conclusion, forKey: "conclusion")
             try values.encode(name, forKey: "name")
             try values.encode(number, forKey: "number")
             try values.encodeIfPresent(startedAt, forKey: "started_at")
@@ -138,7 +154,7 @@ public struct Job: Codable {
         }
     }
 
-    public init(id: Int, runID: Int, runURL: String, runAttempt: Int? = nil, nodeID: String, headSha: String, url: String, htmlURL: String? = nil, status: Status, conclusion: String? = nil, startedAt: Date, completedAt: Date? = nil, name: String, steps: [Step]? = nil, checkRunURL: String, labels: [String], runnerID: Int? = nil, runnerName: String? = nil, runnerGroupID: Int? = nil, runnerGroupName: String? = nil) {
+    public init(id: Int, runID: Int, runURL: String, runAttempt: Int? = nil, nodeID: String, headSha: String, url: String, htmlURL: String, status: Status, conclusion: String, startedAt: Date, completedAt: Date, name: String, steps: [Step]? = nil, checkRunURL: String, labels: [String], runnerID: Int, runnerName: String, runnerGroupID: Int, runnerGroupName: String) {
         self.id = id
         self.runID = runID
         self.runURL = runURL
@@ -170,19 +186,19 @@ public struct Job: Codable {
         self.nodeID = try values.decode(String.self, forKey: "node_id")
         self.headSha = try values.decode(String.self, forKey: "head_sha")
         self.url = try values.decode(String.self, forKey: "url")
-        self.htmlURL = try values.decodeIfPresent(String.self, forKey: "html_url")
+        self.htmlURL = try values.decode(String.self, forKey: "html_url")
         self.status = try values.decode(Status.self, forKey: "status")
-        self.conclusion = try values.decodeIfPresent(String.self, forKey: "conclusion")
+        self.conclusion = try values.decode(String.self, forKey: "conclusion")
         self.startedAt = try values.decode(Date.self, forKey: "started_at")
-        self.completedAt = try values.decodeIfPresent(Date.self, forKey: "completed_at")
+        self.completedAt = try values.decode(Date.self, forKey: "completed_at")
         self.name = try values.decode(String.self, forKey: "name")
         self.steps = try values.decodeIfPresent([Step].self, forKey: "steps")
         self.checkRunURL = try values.decode(String.self, forKey: "check_run_url")
         self.labels = try values.decode([String].self, forKey: "labels")
-        self.runnerID = try values.decodeIfPresent(Int.self, forKey: "runner_id")
-        self.runnerName = try values.decodeIfPresent(String.self, forKey: "runner_name")
-        self.runnerGroupID = try values.decodeIfPresent(Int.self, forKey: "runner_group_id")
-        self.runnerGroupName = try values.decodeIfPresent(String.self, forKey: "runner_group_name")
+        self.runnerID = try values.decode(Int.self, forKey: "runner_id")
+        self.runnerName = try values.decode(String.self, forKey: "runner_name")
+        self.runnerGroupID = try values.decode(Int.self, forKey: "runner_group_id")
+        self.runnerGroupName = try values.decode(String.self, forKey: "runner_group_name")
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -194,18 +210,18 @@ public struct Job: Codable {
         try values.encode(nodeID, forKey: "node_id")
         try values.encode(headSha, forKey: "head_sha")
         try values.encode(url, forKey: "url")
-        try values.encodeIfPresent(htmlURL, forKey: "html_url")
+        try values.encode(htmlURL, forKey: "html_url")
         try values.encode(status, forKey: "status")
-        try values.encodeIfPresent(conclusion, forKey: "conclusion")
+        try values.encode(conclusion, forKey: "conclusion")
         try values.encode(startedAt, forKey: "started_at")
-        try values.encodeIfPresent(completedAt, forKey: "completed_at")
+        try values.encode(completedAt, forKey: "completed_at")
         try values.encode(name, forKey: "name")
         try values.encodeIfPresent(steps, forKey: "steps")
         try values.encode(checkRunURL, forKey: "check_run_url")
         try values.encode(labels, forKey: "labels")
-        try values.encodeIfPresent(runnerID, forKey: "runner_id")
-        try values.encodeIfPresent(runnerName, forKey: "runner_name")
-        try values.encodeIfPresent(runnerGroupID, forKey: "runner_group_id")
-        try values.encodeIfPresent(runnerGroupName, forKey: "runner_group_name")
+        try values.encode(runnerID, forKey: "runner_id")
+        try values.encode(runnerName, forKey: "runner_name")
+        try values.encode(runnerGroupID, forKey: "runner_group_id")
+        try values.encode(runnerGroupName, forKey: "runner_group_name")
     }
 }

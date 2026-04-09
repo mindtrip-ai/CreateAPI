@@ -44,10 +44,31 @@ extension Paths.User {
             Request(path: path, method: "POST", body: body, id: "users/add-email-for-authenticated-user")
         }
 
-        public enum PostRequest: Encodable {
+        public enum PostRequest: Encodable, OneOfEnum {
             case object(Object)
             case strings([String])
             case string(String)
+
+            case unknown(UnknownPostRequest)
+
+            public struct UnknownPostRequest: Encodable, UnknownOneOfCase {
+              public enum `Type`: String, Codable, CaseIterable, Sendable {
+                case unknown
+              }
+              public var type: `Type` = .unknown
+              public var discriminatorValue: String
+              public init(discriminatorValue: String) {
+                self.discriminatorValue = discriminatorValue
+              }
+            }
+
+            public var isUnknownCase: Bool {
+              if case .unknown = self {
+                true
+              } else {
+                false
+              }
+            }
 
             /// Example:
             ///
@@ -79,6 +100,7 @@ extension Paths.User {
                 case .object(let value): try container.encode(value)
                 case .strings(let value): try container.encode(value)
                 case .string(let value): try container.encode(value)
+                case .unknown(let value): try container.encode(value)
                 }
             }
         }
@@ -92,10 +114,31 @@ extension Paths.User {
             Request(path: path, method: "DELETE", body: body, id: "users/delete-email-for-authenticated-user")
         }
 
-        public enum DeleteRequest: Encodable {
+        public enum DeleteRequest: Encodable, OneOfEnum {
             case object(Object)
             case strings([String])
             case string(String)
+
+            case unknown(UnknownDeleteRequest)
+
+            public struct UnknownDeleteRequest: Encodable, UnknownOneOfCase {
+              public enum `Type`: String, Codable, CaseIterable, Sendable {
+                case unknown
+              }
+              public var type: `Type` = .unknown
+              public var discriminatorValue: String
+              public init(discriminatorValue: String) {
+                self.discriminatorValue = discriminatorValue
+              }
+            }
+
+            public var isUnknownCase: Bool {
+              if case .unknown = self {
+                true
+              } else {
+                false
+              }
+            }
 
             /// Deletes one or more email addresses from your GitHub account. Must contain at least one email address. **Note:** Alternatively, you can pass a single email address or an `array` of emails addresses directly, but we recommend that you pass an object using the `emails` key.
             ///
@@ -127,6 +170,7 @@ extension Paths.User {
                 case .object(let value): try container.encode(value)
                 case .strings(let value): try container.encode(value)
                 case .string(let value): try container.encode(value)
+                case .unknown(let value): try container.encode(value)
                 }
             }
         }

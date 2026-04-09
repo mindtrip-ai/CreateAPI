@@ -17,7 +17,7 @@ public struct TimelineReviewedEvent: Codable {
     /// The text of the review.
     ///
     /// Example: "This looks great."
-    public var body: String?
+    public var body: String
     /// Example: "CHANGES_REQUESTED"
     public var state: String
     /// Example: "https://github.com/octocat/Hello-World/pull/12#pullrequestreview-80"
@@ -97,7 +97,7 @@ public struct TimelineReviewedEvent: Codable {
         }
     }
 
-    public init(event: String, id: Int, nodeID: String, user: SimpleUser, body: String? = nil, state: String, htmlURL: URL, pullRequestURL: URL, links: Links, submittedAt: Date? = nil, commitID: String, bodyHTML: String? = nil, bodyText: String? = nil, authorAssociation: AuthorAssociation) {
+    public init(event: String, id: Int, nodeID: String, user: SimpleUser, body: String, state: String, htmlURL: URL, pullRequestURL: URL, links: Links, submittedAt: Date? = nil, commitID: String, bodyHTML: String? = nil, bodyText: String? = nil, authorAssociation: AuthorAssociation) {
         self.event = event
         self.id = id
         self.nodeID = nodeID
@@ -120,7 +120,7 @@ public struct TimelineReviewedEvent: Codable {
         self.id = try values.decode(Int.self, forKey: "id")
         self.nodeID = try values.decode(String.self, forKey: "node_id")
         self.user = try values.decode(SimpleUser.self, forKey: "user")
-        self.body = try values.decodeIfPresent(String.self, forKey: "body")
+        self.body = try values.decode(String.self, forKey: "body")
         self.state = try values.decode(String.self, forKey: "state")
         self.htmlURL = try values.decode(URL.self, forKey: "html_url")
         self.pullRequestURL = try values.decode(URL.self, forKey: "pull_request_url")
@@ -138,7 +138,7 @@ public struct TimelineReviewedEvent: Codable {
         try values.encode(id, forKey: "id")
         try values.encode(nodeID, forKey: "node_id")
         try values.encode(user, forKey: "user")
-        try values.encodeIfPresent(body, forKey: "body")
+        try values.encode(body, forKey: "body")
         try values.encode(state, forKey: "state")
         try values.encode(htmlURL, forKey: "html_url")
         try values.encode(pullRequestURL, forKey: "pull_request_url")

@@ -7,7 +7,7 @@ import NaiveDate
 /// A reply to a discussion within a team.
 public struct TeamDiscussionComment: Codable {
     /// Simple User
-    public var author: SimpleUser?
+    public var author: SimpleUser
     /// The main text of the comment.
     ///
     /// Example: "I agree with this suggestion."
@@ -20,7 +20,7 @@ public struct TeamDiscussionComment: Codable {
     public var bodyVersion: String
     /// Example: "2018-01-15T23:53:58Z"
     public var createdAt: Date
-    public var lastEditedAt: Date?
+    public var lastEditedAt: Date
     /// Example: "https://api.github.com/organizations/1/team/2403582/discussions/1"
     public var discussionURL: URL
     /// Example: "https://github.com/orgs/github/teams/justice-league/discussions/1/comments/1"
@@ -38,7 +38,7 @@ public struct TeamDiscussionComment: Codable {
     /// Reaction Rollup
     public var reactions: ReactionRollup?
 
-    public init(author: SimpleUser? = nil, body: String, bodyHTML: String, bodyVersion: String, createdAt: Date, lastEditedAt: Date? = nil, discussionURL: URL, htmlURL: URL, nodeID: String, number: Int, updatedAt: Date, url: URL, reactions: ReactionRollup? = nil) {
+    public init(author: SimpleUser, body: String, bodyHTML: String, bodyVersion: String, createdAt: Date, lastEditedAt: Date, discussionURL: URL, htmlURL: URL, nodeID: String, number: Int, updatedAt: Date, url: URL, reactions: ReactionRollup? = nil) {
         self.author = author
         self.body = body
         self.bodyHTML = bodyHTML
@@ -56,12 +56,12 @@ public struct TeamDiscussionComment: Codable {
 
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: StringCodingKey.self)
-        self.author = try values.decodeIfPresent(SimpleUser.self, forKey: "author")
+        self.author = try values.decode(SimpleUser.self, forKey: "author")
         self.body = try values.decode(String.self, forKey: "body")
         self.bodyHTML = try values.decode(String.self, forKey: "body_html")
         self.bodyVersion = try values.decode(String.self, forKey: "body_version")
         self.createdAt = try values.decode(Date.self, forKey: "created_at")
-        self.lastEditedAt = try values.decodeIfPresent(Date.self, forKey: "last_edited_at")
+        self.lastEditedAt = try values.decode(Date.self, forKey: "last_edited_at")
         self.discussionURL = try values.decode(URL.self, forKey: "discussion_url")
         self.htmlURL = try values.decode(URL.self, forKey: "html_url")
         self.nodeID = try values.decode(String.self, forKey: "node_id")
@@ -73,12 +73,12 @@ public struct TeamDiscussionComment: Codable {
 
     public func encode(to encoder: Encoder) throws {
         var values = encoder.container(keyedBy: StringCodingKey.self)
-        try values.encodeIfPresent(author, forKey: "author")
+        try values.encode(author, forKey: "author")
         try values.encode(body, forKey: "body")
         try values.encode(bodyHTML, forKey: "body_html")
         try values.encode(bodyVersion, forKey: "body_version")
         try values.encode(createdAt, forKey: "created_at")
-        try values.encodeIfPresent(lastEditedAt, forKey: "last_edited_at")
+        try values.encode(lastEditedAt, forKey: "last_edited_at")
         try values.encode(discussionURL, forKey: "discussion_url")
         try values.encode(htmlURL, forKey: "html_url")
         try values.encode(nodeID, forKey: "node_id")

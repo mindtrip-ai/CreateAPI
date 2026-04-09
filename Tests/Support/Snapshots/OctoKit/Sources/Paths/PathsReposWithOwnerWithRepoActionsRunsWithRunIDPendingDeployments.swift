@@ -54,9 +54,17 @@ extension Paths.Repos.WithOwner.WithRepo.Actions.Runs.WithRunID {
             /// Whether to approve or reject deployment to the specified environments. Must be one of: `approved` or `rejected`
             ///
             /// Example: "approved"
-            public enum State: String, Codable, CaseIterable {
+            public enum State: String, Codable, CaseIterable, Sendable {
                 case approved
                 case rejected
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             public init(environmentIDs: [Int], state: State, comment: String) {

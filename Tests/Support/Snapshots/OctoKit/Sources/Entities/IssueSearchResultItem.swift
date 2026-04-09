@@ -19,17 +19,17 @@ public struct IssueSearchResultItem: Codable {
     public var activeLockReason: String?
     public var assignees: [SimpleUser]?
     /// Simple User
-    public var user: SimpleUser?
+    public var user: SimpleUser
     public var labels: [Label]
     public var state: String
     /// Simple User
-    public var assignee: SimpleUser?
+    public var assignee: SimpleUser
     /// A collection of related issues and pull requests.
-    public var milestone: Milestone?
+    public var milestone: Milestone
     public var comments: Int
     public var createdAt: Date
     public var updatedAt: Date
-    public var closedAt: Date?
+    public var closedAt: Date
     /// Search Result Text Matches
     public var textMatches: [SearchResultTextMatch]?
     public var pullRequest: PullRequest?
@@ -98,12 +98,12 @@ public struct IssueSearchResultItem: Codable {
 
     public struct PullRequest: Codable {
         public var mergedAt: Date?
-        public var diffURL: URL?
-        public var htmlURL: URL?
-        public var patchURL: URL?
-        public var url: URL?
+        public var diffURL: URL
+        public var htmlURL: URL
+        public var patchURL: URL
+        public var url: URL
 
-        public init(mergedAt: Date? = nil, diffURL: URL? = nil, htmlURL: URL? = nil, patchURL: URL? = nil, url: URL? = nil) {
+        public init(mergedAt: Date? = nil, diffURL: URL, htmlURL: URL, patchURL: URL, url: URL) {
             self.mergedAt = mergedAt
             self.diffURL = diffURL
             self.htmlURL = htmlURL
@@ -114,23 +114,23 @@ public struct IssueSearchResultItem: Codable {
         public init(from decoder: Decoder) throws {
             let values = try decoder.container(keyedBy: StringCodingKey.self)
             self.mergedAt = try values.decodeIfPresent(Date.self, forKey: "merged_at")
-            self.diffURL = try values.decodeIfPresent(URL.self, forKey: "diff_url")
-            self.htmlURL = try values.decodeIfPresent(URL.self, forKey: "html_url")
-            self.patchURL = try values.decodeIfPresent(URL.self, forKey: "patch_url")
-            self.url = try values.decodeIfPresent(URL.self, forKey: "url")
+            self.diffURL = try values.decode(URL.self, forKey: "diff_url")
+            self.htmlURL = try values.decode(URL.self, forKey: "html_url")
+            self.patchURL = try values.decode(URL.self, forKey: "patch_url")
+            self.url = try values.decode(URL.self, forKey: "url")
         }
 
         public func encode(to encoder: Encoder) throws {
             var values = encoder.container(keyedBy: StringCodingKey.self)
             try values.encodeIfPresent(mergedAt, forKey: "merged_at")
-            try values.encodeIfPresent(diffURL, forKey: "diff_url")
-            try values.encodeIfPresent(htmlURL, forKey: "html_url")
-            try values.encodeIfPresent(patchURL, forKey: "patch_url")
-            try values.encodeIfPresent(url, forKey: "url")
+            try values.encode(diffURL, forKey: "diff_url")
+            try values.encode(htmlURL, forKey: "html_url")
+            try values.encode(patchURL, forKey: "patch_url")
+            try values.encode(url, forKey: "url")
         }
     }
 
-    public init(url: URL, repositoryURL: URL, labelsURL: String, commentsURL: URL, eventsURL: URL, htmlURL: URL, id: Int, nodeID: String, number: Int, title: String, isLocked: Bool, activeLockReason: String? = nil, assignees: [SimpleUser]? = nil, user: SimpleUser? = nil, labels: [Label], state: String, assignee: SimpleUser? = nil, milestone: Milestone? = nil, comments: Int, createdAt: Date, updatedAt: Date, closedAt: Date? = nil, textMatches: [SearchResultTextMatch]? = nil, pullRequest: PullRequest? = nil, body: String? = nil, score: Double, authorAssociation: AuthorAssociation, isDraft: Bool? = nil, repository: Repository? = nil, bodyHTML: String? = nil, bodyText: String? = nil, timelineURL: URL? = nil, performedViaGithubApp: Integration? = nil, reactions: ReactionRollup? = nil) {
+    public init(url: URL, repositoryURL: URL, labelsURL: String, commentsURL: URL, eventsURL: URL, htmlURL: URL, id: Int, nodeID: String, number: Int, title: String, isLocked: Bool, activeLockReason: String? = nil, assignees: [SimpleUser]? = nil, user: SimpleUser, labels: [Label], state: String, assignee: SimpleUser, milestone: Milestone, comments: Int, createdAt: Date, updatedAt: Date, closedAt: Date, textMatches: [SearchResultTextMatch]? = nil, pullRequest: PullRequest? = nil, body: String? = nil, score: Double, authorAssociation: AuthorAssociation, isDraft: Bool? = nil, repository: Repository? = nil, bodyHTML: String? = nil, bodyText: String? = nil, timelineURL: URL? = nil, performedViaGithubApp: Integration? = nil, reactions: ReactionRollup? = nil) {
         self.url = url
         self.repositoryURL = repositoryURL
         self.labelsURL = labelsURL
@@ -182,15 +182,15 @@ public struct IssueSearchResultItem: Codable {
         self.isLocked = try values.decode(Bool.self, forKey: "locked")
         self.activeLockReason = try values.decodeIfPresent(String.self, forKey: "active_lock_reason")
         self.assignees = try values.decodeIfPresent([SimpleUser].self, forKey: "assignees")
-        self.user = try values.decodeIfPresent(SimpleUser.self, forKey: "user")
+        self.user = try values.decode(SimpleUser.self, forKey: "user")
         self.labels = try values.decode([Label].self, forKey: "labels")
         self.state = try values.decode(String.self, forKey: "state")
-        self.assignee = try values.decodeIfPresent(SimpleUser.self, forKey: "assignee")
-        self.milestone = try values.decodeIfPresent(Milestone.self, forKey: "milestone")
+        self.assignee = try values.decode(SimpleUser.self, forKey: "assignee")
+        self.milestone = try values.decode(Milestone.self, forKey: "milestone")
         self.comments = try values.decode(Int.self, forKey: "comments")
         self.createdAt = try values.decode(Date.self, forKey: "created_at")
         self.updatedAt = try values.decode(Date.self, forKey: "updated_at")
-        self.closedAt = try values.decodeIfPresent(Date.self, forKey: "closed_at")
+        self.closedAt = try values.decode(Date.self, forKey: "closed_at")
         self.textMatches = try values.decodeIfPresent([SearchResultTextMatch].self, forKey: "text_matches")
         self.pullRequest = try values.decodeIfPresent(PullRequest.self, forKey: "pull_request")
         self.body = try values.decodeIfPresent(String.self, forKey: "body")
@@ -220,15 +220,15 @@ public struct IssueSearchResultItem: Codable {
         try values.encode(isLocked, forKey: "locked")
         try values.encodeIfPresent(activeLockReason, forKey: "active_lock_reason")
         try values.encodeIfPresent(assignees, forKey: "assignees")
-        try values.encodeIfPresent(user, forKey: "user")
+        try values.encode(user, forKey: "user")
         try values.encode(labels, forKey: "labels")
         try values.encode(state, forKey: "state")
-        try values.encodeIfPresent(assignee, forKey: "assignee")
-        try values.encodeIfPresent(milestone, forKey: "milestone")
+        try values.encode(assignee, forKey: "assignee")
+        try values.encode(milestone, forKey: "milestone")
         try values.encode(comments, forKey: "comments")
         try values.encode(createdAt, forKey: "created_at")
         try values.encode(updatedAt, forKey: "updated_at")
-        try values.encodeIfPresent(closedAt, forKey: "closed_at")
+        try values.encode(closedAt, forKey: "closed_at")
         try values.encodeIfPresent(textMatches, forKey: "text_matches")
         try values.encodeIfPresent(pullRequest, forKey: "pull_request")
         try values.encodeIfPresent(body, forKey: "body")

@@ -13,9 +13,9 @@ public struct CodeOfConductSimple: Codable {
     /// Example: "Citizen Code of Conduct"
     public var name: String
     /// Example: "https://github.com/github/docs/blob/main/CODE_OF_CONDUCT.md"
-    public var htmlURL: URL?
+    public var htmlURL: URL
 
-    public init(url: URL, key: String, name: String, htmlURL: URL? = nil) {
+    public init(url: URL, key: String, name: String, htmlURL: URL) {
         self.url = url
         self.key = key
         self.name = name
@@ -27,7 +27,7 @@ public struct CodeOfConductSimple: Codable {
         self.url = try values.decode(URL.self, forKey: "url")
         self.key = try values.decode(String.self, forKey: "key")
         self.name = try values.decode(String.self, forKey: "name")
-        self.htmlURL = try values.decodeIfPresent(URL.self, forKey: "html_url")
+        self.htmlURL = try values.decode(URL.self, forKey: "html_url")
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -35,6 +35,6 @@ public struct CodeOfConductSimple: Codable {
         try values.encode(url, forKey: "url")
         try values.encode(key, forKey: "key")
         try values.encode(name, forKey: "name")
-        try values.encodeIfPresent(htmlURL, forKey: "html_url")
+        try values.encode(htmlURL, forKey: "html_url")
     }
 }

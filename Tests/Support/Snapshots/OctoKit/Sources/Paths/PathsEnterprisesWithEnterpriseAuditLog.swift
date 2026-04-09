@@ -33,15 +33,31 @@ extension Paths.Enterprises.WithEnterprise {
             public var page: Int?
             public var perPage: Int?
 
-            public enum Include: String, Codable, CaseIterable {
+            public enum Include: String, Codable, CaseIterable, Sendable {
                 case web
                 case git
                 case all
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
-            public enum Order: String, Codable, CaseIterable {
+            public enum Order: String, Codable, CaseIterable, Sendable {
                 case desc
                 case asc
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             public init(phrase: String? = nil, include: Include? = nil, after: String? = nil, before: String? = nil, order: Order? = nil, page: Int? = nil, perPage: Int? = nil) {

@@ -43,11 +43,19 @@ extension Paths.Repos.WithOwner.WithRepo.Statuses {
             public var context: String?
 
             /// The state of the status. Can be one of `error`, `failure`, `pending`, or `success`.
-            public enum State: String, Codable, CaseIterable {
+            public enum State: String, Codable, CaseIterable, Sendable {
                 case error
                 case failure
                 case pending
                 case success
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             public init(state: State, targetURL: String? = nil, description: String? = nil, context: String? = nil) {

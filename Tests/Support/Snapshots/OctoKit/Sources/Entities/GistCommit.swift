@@ -10,7 +10,7 @@ public struct GistCommit: Codable {
     /// Example: "57a7f021a713b1c5a6a199b54cc514735d2d462f"
     public var version: String
     /// Simple User
-    public var user: SimpleUser?
+    public var user: SimpleUser
     public var changeStatus: ChangeStatus
     /// Example: "2010-04-14T02:15:15Z"
     public var committedAt: Date
@@ -41,7 +41,7 @@ public struct GistCommit: Codable {
         }
     }
 
-    public init(url: URL, version: String, user: SimpleUser? = nil, changeStatus: ChangeStatus, committedAt: Date) {
+    public init(url: URL, version: String, user: SimpleUser, changeStatus: ChangeStatus, committedAt: Date) {
         self.url = url
         self.version = version
         self.user = user
@@ -53,7 +53,7 @@ public struct GistCommit: Codable {
         let values = try decoder.container(keyedBy: StringCodingKey.self)
         self.url = try values.decode(URL.self, forKey: "url")
         self.version = try values.decode(String.self, forKey: "version")
-        self.user = try values.decodeIfPresent(SimpleUser.self, forKey: "user")
+        self.user = try values.decode(SimpleUser.self, forKey: "user")
         self.changeStatus = try values.decode(ChangeStatus.self, forKey: "change_status")
         self.committedAt = try values.decode(Date.self, forKey: "committed_at")
     }
@@ -62,7 +62,7 @@ public struct GistCommit: Codable {
         var values = encoder.container(keyedBy: StringCodingKey.self)
         try values.encode(url, forKey: "url")
         try values.encode(version, forKey: "version")
-        try values.encodeIfPresent(user, forKey: "user")
+        try values.encode(user, forKey: "user")
         try values.encode(changeStatus, forKey: "change_status")
         try values.encode(committedAt, forKey: "committed_at")
     }

@@ -6,15 +6,19 @@ struct Output {
     let entities: GeneratorOutput?
     let package: (name: String, manifest: GeneratedFile)?
     let options: GenerateOptions
+    let writePackageManifest: Bool
 
     /// Writes the output into the given directory.
     func write(to outputURL: URL) throws {
         // Create the output writer and begin
         let rootWriter = try OutputWriter(outputURL: outputURL)
 
-        // Figure out the writer for source files
+        // Write the Package.swift manifest file, or figure out the writer for source files
         let sourcesWriter: OutputWriter
         if let package = package {
+            if writePackageManifest {
+                try rootWriter.write(package.manifest.contents, to: "\(package.manifest.name).swift")
+            }
             sourcesWriter = rootWriter.writer(in: "Sources")
         } else {
             sourcesWriter = rootWriter

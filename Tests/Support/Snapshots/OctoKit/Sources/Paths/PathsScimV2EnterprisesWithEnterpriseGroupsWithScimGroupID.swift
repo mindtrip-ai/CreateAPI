@@ -99,13 +99,21 @@ extension Paths.Scim.V2.Enterprises.WithEnterprise.Groups {
                 /// Can be any value - string, number, array or object.
                 public var value: AnyJSON?
 
-                public enum Op: String, Codable, CaseIterable {
+                public enum Op: String, Codable, CaseIterable, Sendable {
                     case add
                     case add2 = "Add"
                     case remove
                     case remove2 = "Remove"
                     case replace
                     case replace2 = "Replace"
+                    case unknown
+
+
+                    public init(from decoder: Decoder) throws {
+                        let container = try decoder.singleValueContainer()
+                        let rawValue = try container.decode(String.self)
+                        self = Self(rawValue: rawValue) ?? .unknown
+                    }
                 }
 
                 public init(op: Op, path: String? = nil, value: AnyJSON? = nil) {

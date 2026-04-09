@@ -13,18 +13,34 @@ struct ContainerA: Codable {
         var renameMe: String
         var child: Child
 
-        enum Enum: String, Codable, CaseIterable {
+        enum Enum: String, Codable, CaseIterable, Sendable {
             case a
             case b
+            case unknown
+
+
+            init(from decoder: Decoder) throws {
+                let container = try decoder.singleValueContainer()
+                let rawValue = try container.decode(String.self)
+                self = Self(rawValue: rawValue) ?? .unknown
+            }
         }
 
         struct Child: Codable {
             var `enum`: Enum
             var renameMe: String
 
-            enum Enum: String, Codable, CaseIterable {
+            enum Enum: String, Codable, CaseIterable, Sendable {
                 case a
                 case b
+                case unknown
+
+
+                init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             init(`enum`: Enum, renameMe: String) {

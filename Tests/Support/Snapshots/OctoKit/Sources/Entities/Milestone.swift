@@ -29,9 +29,9 @@ public struct Milestone: Codable {
     /// Example: "v1.0"
     public var title: String
     /// Example: "Tracking milestone for version 1.0"
-    public var description: String?
+    public var description: String
     /// Simple User
-    public var creator: SimpleUser?
+    public var creator: SimpleUser
     public var openIssues: Int
     public var closedIssues: Int
     /// Example: "2011-04-10T20:09:31Z"
@@ -39,19 +39,27 @@ public struct Milestone: Codable {
     /// Example: "2014-03-03T18:58:10Z"
     public var updatedAt: Date
     /// Example: "2013-02-12T13:22:01Z"
-    public var closedAt: Date?
+    public var closedAt: Date
     /// Example: "2012-10-09T23:39:01Z"
-    public var dueOn: Date?
+    public var dueOn: Date
 
     /// The state of the milestone.
     ///
     /// Example: "open"
-    public enum State: String, Codable, CaseIterable {
+    public enum State: String, Codable, CaseIterable, Sendable {
         case `open`
         case closed
+        case unknown
+
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let rawValue = try container.decode(String.self)
+            self = Self(rawValue: rawValue) ?? .unknown
+        }
     }
 
-    public init(url: URL, htmlURL: URL, labelsURL: URL, id: Int, nodeID: String, number: Int, state: State, title: String, description: String? = nil, creator: SimpleUser? = nil, openIssues: Int, closedIssues: Int, createdAt: Date, updatedAt: Date, closedAt: Date? = nil, dueOn: Date? = nil) {
+    public init(url: URL, htmlURL: URL, labelsURL: URL, id: Int, nodeID: String, number: Int, state: State, title: String, description: String, creator: SimpleUser, openIssues: Int, closedIssues: Int, createdAt: Date, updatedAt: Date, closedAt: Date, dueOn: Date) {
         self.url = url
         self.htmlURL = htmlURL
         self.labelsURL = labelsURL
@@ -80,14 +88,14 @@ public struct Milestone: Codable {
         self.number = try values.decode(Int.self, forKey: "number")
         self.state = try values.decode(State.self, forKey: "state")
         self.title = try values.decode(String.self, forKey: "title")
-        self.description = try values.decodeIfPresent(String.self, forKey: "description")
-        self.creator = try values.decodeIfPresent(SimpleUser.self, forKey: "creator")
+        self.description = try values.decode(String.self, forKey: "description")
+        self.creator = try values.decode(SimpleUser.self, forKey: "creator")
         self.openIssues = try values.decode(Int.self, forKey: "open_issues")
         self.closedIssues = try values.decode(Int.self, forKey: "closed_issues")
         self.createdAt = try values.decode(Date.self, forKey: "created_at")
         self.updatedAt = try values.decode(Date.self, forKey: "updated_at")
-        self.closedAt = try values.decodeIfPresent(Date.self, forKey: "closed_at")
-        self.dueOn = try values.decodeIfPresent(Date.self, forKey: "due_on")
+        self.closedAt = try values.decode(Date.self, forKey: "closed_at")
+        self.dueOn = try values.decode(Date.self, forKey: "due_on")
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -100,13 +108,13 @@ public struct Milestone: Codable {
         try values.encode(number, forKey: "number")
         try values.encode(state, forKey: "state")
         try values.encode(title, forKey: "title")
-        try values.encodeIfPresent(description, forKey: "description")
-        try values.encodeIfPresent(creator, forKey: "creator")
+        try values.encode(description, forKey: "description")
+        try values.encode(creator, forKey: "creator")
         try values.encode(openIssues, forKey: "open_issues")
         try values.encode(closedIssues, forKey: "closed_issues")
         try values.encode(createdAt, forKey: "created_at")
         try values.encode(updatedAt, forKey: "updated_at")
-        try values.encodeIfPresent(closedAt, forKey: "closed_at")
-        try values.encodeIfPresent(dueOn, forKey: "due_on")
+        try values.encode(closedAt, forKey: "closed_at")
+        try values.encode(dueOn, forKey: "due_on")
     }
 }

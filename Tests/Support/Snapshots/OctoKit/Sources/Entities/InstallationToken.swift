@@ -30,9 +30,17 @@ public struct InstallationToken: Codable {
     /// Example: ["config.yml", ".github/issue_TEMPLATE.md"]
     public var singleFilePaths: [String]?
 
-    public enum RepositorySelection: String, Codable, CaseIterable {
+    public enum RepositorySelection: String, Codable, CaseIterable, Sendable {
         case all
         case selected
+        case unknown
+
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let rawValue = try container.decode(String.self)
+            self = Self(rawValue: rawValue) ?? .unknown
+        }
     }
 
     public init(token: String, expiresAt: String, permissions: AppPermissions? = nil, repositorySelection: RepositorySelection? = nil, repositories: [Repository]? = nil, singleFile: String? = nil, hasMultipleSingleFiles: Bool? = nil, singleFilePaths: [String]? = nil) {

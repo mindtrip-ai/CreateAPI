@@ -34,21 +34,21 @@ public struct Issue: Codable {
     /// Example: "It looks like the new widget form is broken on Safari. When I try and create the widget, Safari crashes. This is reproducible on 10.8, but not 10.9. Maybe a browser bug?"
     public var body: String?
     /// Simple User
-    public var user: SimpleUser?
+    public var user: SimpleUser
     /// Labels to associate with this issue; pass one or more label names to replace the set of labels on this issue; send an empty array to clear all labels from the issue; note that the labels are silently dropped for users without push access to the repository
     ///
     /// Example: ["bug", "registration"]
     public var labels: [Label]
     /// Simple User
-    public var assignee: SimpleUser?
+    public var assignee: SimpleUser
     public var assignees: [SimpleUser]?
     /// A collection of related issues and pull requests.
-    public var milestone: Milestone?
+    public var milestone: Milestone
     public var isLocked: Bool
     public var activeLockReason: String?
     public var comments: Int
     public var pullRequest: PullRequest?
-    public var closedAt: Date?
+    public var closedAt: Date
     public var createdAt: Date
     public var updatedAt: Date
     public var isDraft: Bool?
@@ -72,9 +72,30 @@ public struct Issue: Codable {
     /// Reaction Rollup
     public var reactions: ReactionRollup?
 
-    public enum Label: Codable {
+    public enum Label: Codable, OneOfEnum {
         case string(String)
         case object(Object)
+
+        case unknown(UnknownLabel)
+
+        public struct UnknownLabel: Codable, UnknownOneOfCase {
+          public enum `Type`: String, Codable, CaseIterable, Sendable {
+            case unknown
+          }
+          public var type: `Type` = .unknown
+          public var discriminatorValue: String
+          public init(discriminatorValue: String) {
+            self.discriminatorValue = discriminatorValue
+          }
+        }
+
+        public var isUnknownCase: Bool {
+          if case .unknown = self {
+            true
+          } else {
+            false
+          }
+        }
 
         public struct Object: Codable {
             public var id: Int64?
@@ -137,18 +158,19 @@ public struct Issue: Codable {
             switch self {
             case .string(let value): try container.encode(value)
             case .object(let value): try container.encode(value)
+            case .unknown(let value): try container.encode(value)
             }
         }
     }
 
     public struct PullRequest: Codable {
         public var mergedAt: Date?
-        public var diffURL: URL?
-        public var htmlURL: URL?
-        public var patchURL: URL?
-        public var url: URL?
+        public var diffURL: URL
+        public var htmlURL: URL
+        public var patchURL: URL
+        public var url: URL
 
-        public init(mergedAt: Date? = nil, diffURL: URL? = nil, htmlURL: URL? = nil, patchURL: URL? = nil, url: URL? = nil) {
+        public init(mergedAt: Date? = nil, diffURL: URL, htmlURL: URL, patchURL: URL, url: URL) {
             self.mergedAt = mergedAt
             self.diffURL = diffURL
             self.htmlURL = htmlURL
@@ -159,23 +181,23 @@ public struct Issue: Codable {
         public init(from decoder: Decoder) throws {
             let values = try decoder.container(keyedBy: StringCodingKey.self)
             self.mergedAt = try values.decodeIfPresent(Date.self, forKey: "merged_at")
-            self.diffURL = try values.decodeIfPresent(URL.self, forKey: "diff_url")
-            self.htmlURL = try values.decodeIfPresent(URL.self, forKey: "html_url")
-            self.patchURL = try values.decodeIfPresent(URL.self, forKey: "patch_url")
-            self.url = try values.decodeIfPresent(URL.self, forKey: "url")
+            self.diffURL = try values.decode(URL.self, forKey: "diff_url")
+            self.htmlURL = try values.decode(URL.self, forKey: "html_url")
+            self.patchURL = try values.decode(URL.self, forKey: "patch_url")
+            self.url = try values.decode(URL.self, forKey: "url")
         }
 
         public func encode(to encoder: Encoder) throws {
             var values = encoder.container(keyedBy: StringCodingKey.self)
             try values.encodeIfPresent(mergedAt, forKey: "merged_at")
-            try values.encodeIfPresent(diffURL, forKey: "diff_url")
-            try values.encodeIfPresent(htmlURL, forKey: "html_url")
-            try values.encodeIfPresent(patchURL, forKey: "patch_url")
-            try values.encodeIfPresent(url, forKey: "url")
+            try values.encode(diffURL, forKey: "diff_url")
+            try values.encode(htmlURL, forKey: "html_url")
+            try values.encode(patchURL, forKey: "patch_url")
+            try values.encode(url, forKey: "url")
         }
     }
 
-    public init(id: Int, nodeID: String, url: URL, repositoryURL: URL, labelsURL: String, commentsURL: URL, eventsURL: URL, htmlURL: URL, number: Int, state: String, title: String, body: String? = nil, user: SimpleUser? = nil, labels: [Label], assignee: SimpleUser? = nil, assignees: [SimpleUser]? = nil, milestone: Milestone? = nil, isLocked: Bool, activeLockReason: String? = nil, comments: Int, pullRequest: PullRequest? = nil, closedAt: Date? = nil, createdAt: Date, updatedAt: Date, isDraft: Bool? = nil, closedBy: SimpleUser? = nil, bodyHTML: String? = nil, bodyText: String? = nil, timelineURL: URL? = nil, repository: Repository? = nil, performedViaGithubApp: Integration? = nil, authorAssociation: AuthorAssociation, reactions: ReactionRollup? = nil) {
+    public init(id: Int, nodeID: String, url: URL, repositoryURL: URL, labelsURL: String, commentsURL: URL, eventsURL: URL, htmlURL: URL, number: Int, state: String, title: String, body: String? = nil, user: SimpleUser, labels: [Label], assignee: SimpleUser, assignees: [SimpleUser]? = nil, milestone: Milestone, isLocked: Bool, activeLockReason: String? = nil, comments: Int, pullRequest: PullRequest? = nil, closedAt: Date, createdAt: Date, updatedAt: Date, isDraft: Bool? = nil, closedBy: SimpleUser? = nil, bodyHTML: String? = nil, bodyText: String? = nil, timelineURL: URL? = nil, repository: Repository? = nil, performedViaGithubApp: Integration? = nil, authorAssociation: AuthorAssociation, reactions: ReactionRollup? = nil) {
         self.id = id
         self.nodeID = nodeID
         self.url = url
@@ -225,16 +247,16 @@ public struct Issue: Codable {
         self.state = try values.decode(String.self, forKey: "state")
         self.title = try values.decode(String.self, forKey: "title")
         self.body = try values.decodeIfPresent(String.self, forKey: "body")
-        self.user = try values.decodeIfPresent(SimpleUser.self, forKey: "user")
+        self.user = try values.decode(SimpleUser.self, forKey: "user")
         self.labels = try values.decode([Label].self, forKey: "labels")
-        self.assignee = try values.decodeIfPresent(SimpleUser.self, forKey: "assignee")
+        self.assignee = try values.decode(SimpleUser.self, forKey: "assignee")
         self.assignees = try values.decodeIfPresent([SimpleUser].self, forKey: "assignees")
-        self.milestone = try values.decodeIfPresent(Milestone.self, forKey: "milestone")
+        self.milestone = try values.decode(Milestone.self, forKey: "milestone")
         self.isLocked = try values.decode(Bool.self, forKey: "locked")
         self.activeLockReason = try values.decodeIfPresent(String.self, forKey: "active_lock_reason")
         self.comments = try values.decode(Int.self, forKey: "comments")
         self.pullRequest = try values.decodeIfPresent(PullRequest.self, forKey: "pull_request")
-        self.closedAt = try values.decodeIfPresent(Date.self, forKey: "closed_at")
+        self.closedAt = try values.decode(Date.self, forKey: "closed_at")
         self.createdAt = try values.decode(Date.self, forKey: "created_at")
         self.updatedAt = try values.decode(Date.self, forKey: "updated_at")
         self.isDraft = try values.decodeIfPresent(Bool.self, forKey: "draft")
@@ -262,16 +284,16 @@ public struct Issue: Codable {
         try values.encode(state, forKey: "state")
         try values.encode(title, forKey: "title")
         try values.encodeIfPresent(body, forKey: "body")
-        try values.encodeIfPresent(user, forKey: "user")
+        try values.encode(user, forKey: "user")
         try values.encode(labels, forKey: "labels")
-        try values.encodeIfPresent(assignee, forKey: "assignee")
+        try values.encode(assignee, forKey: "assignee")
         try values.encodeIfPresent(assignees, forKey: "assignees")
-        try values.encodeIfPresent(milestone, forKey: "milestone")
+        try values.encode(milestone, forKey: "milestone")
         try values.encode(isLocked, forKey: "locked")
         try values.encodeIfPresent(activeLockReason, forKey: "active_lock_reason")
         try values.encode(comments, forKey: "comments")
         try values.encodeIfPresent(pullRequest, forKey: "pull_request")
-        try values.encodeIfPresent(closedAt, forKey: "closed_at")
+        try values.encode(closedAt, forKey: "closed_at")
         try values.encode(createdAt, forKey: "created_at")
         try values.encode(updatedAt, forKey: "updated_at")
         try values.encodeIfPresent(isDraft, forKey: "draft")

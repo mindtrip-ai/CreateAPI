@@ -16,7 +16,7 @@ public struct GistComment: Codable {
     /// Example: "Body of the attachment"
     public var body: String
     /// Simple User
-    public var user: SimpleUser?
+    public var user: SimpleUser
     /// Example: "2011-04-18T23:23:56Z"
     public var createdAt: Date
     /// Example: "2011-04-18T23:23:56Z"
@@ -28,7 +28,7 @@ public struct GistComment: Codable {
     /// Example: "OWNER"
     public var authorAssociation: AuthorAssociation
 
-    public init(id: Int, nodeID: String, url: URL, body: String, user: SimpleUser? = nil, createdAt: Date, updatedAt: Date, authorAssociation: AuthorAssociation) {
+    public init(id: Int, nodeID: String, url: URL, body: String, user: SimpleUser, createdAt: Date, updatedAt: Date, authorAssociation: AuthorAssociation) {
         self.id = id
         self.nodeID = nodeID
         self.url = url
@@ -45,7 +45,7 @@ public struct GistComment: Codable {
         self.nodeID = try values.decode(String.self, forKey: "node_id")
         self.url = try values.decode(URL.self, forKey: "url")
         self.body = try values.decode(String.self, forKey: "body")
-        self.user = try values.decodeIfPresent(SimpleUser.self, forKey: "user")
+        self.user = try values.decode(SimpleUser.self, forKey: "user")
         self.createdAt = try values.decode(Date.self, forKey: "created_at")
         self.updatedAt = try values.decode(Date.self, forKey: "updated_at")
         self.authorAssociation = try values.decode(AuthorAssociation.self, forKey: "author_association")
@@ -57,7 +57,7 @@ public struct GistComment: Codable {
         try values.encode(nodeID, forKey: "node_id")
         try values.encode(url, forKey: "url")
         try values.encode(body, forKey: "body")
-        try values.encodeIfPresent(user, forKey: "user")
+        try values.encode(user, forKey: "user")
         try values.encode(createdAt, forKey: "created_at")
         try values.encode(updatedAt, forKey: "updated_at")
         try values.encode(authorAssociation, forKey: "author_association")

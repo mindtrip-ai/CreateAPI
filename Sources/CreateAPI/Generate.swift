@@ -66,6 +66,9 @@ struct Generate: ParsableCommand {
     @Flag(help: "Disables parallelization")
     var singleThreaded = false
 
+    @Flag(help: "Write the Package.swift manifest file to the output directory")
+    var writePackageManifest = false
+
     @Flag(help: "Measure performance of individual operations and log timings")
     var measure = false
 
@@ -102,7 +105,7 @@ struct Generate: ParsableCommand {
         let package = generator.package(named: options.generate.contains(.package) ? options.module.rawValue : nil)
 
         let outputURL = URL(filePath: output)
-        let output = Output(paths: paths, entities: schemas, package: package, options: options)
+        let output = Output(paths: paths, entities: schemas, package: package, options: options, writePackageManifest: writePackageManifest)
 
         if clean { try? FileManager.default.removeItem(at: outputURL) }
 

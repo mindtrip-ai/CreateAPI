@@ -11,12 +11,12 @@ public struct LabelSearchResultItem: Codable {
     public var name: String
     public var color: String
     public var isDefault: Bool
-    public var description: String?
+    public var description: String
     public var score: Double
     /// Search Result Text Matches
     public var textMatches: [SearchResultTextMatch]?
 
-    public init(id: Int, nodeID: String, url: URL, name: String, color: String, isDefault: Bool, description: String? = nil, score: Double, textMatches: [SearchResultTextMatch]? = nil) {
+    public init(id: Int, nodeID: String, url: URL, name: String, color: String, isDefault: Bool, description: String, score: Double, textMatches: [SearchResultTextMatch]? = nil) {
         self.id = id
         self.nodeID = nodeID
         self.url = url
@@ -36,7 +36,7 @@ public struct LabelSearchResultItem: Codable {
         self.name = try values.decode(String.self, forKey: "name")
         self.color = try values.decode(String.self, forKey: "color")
         self.isDefault = try values.decode(Bool.self, forKey: "default")
-        self.description = try values.decodeIfPresent(String.self, forKey: "description")
+        self.description = try values.decode(String.self, forKey: "description")
         self.score = try values.decode(Double.self, forKey: "score")
         self.textMatches = try values.decodeIfPresent([SearchResultTextMatch].self, forKey: "text_matches")
     }
@@ -49,7 +49,7 @@ public struct LabelSearchResultItem: Codable {
         try values.encode(name, forKey: "name")
         try values.encode(color, forKey: "color")
         try values.encode(isDefault, forKey: "default")
-        try values.encodeIfPresent(description, forKey: "description")
+        try values.encode(description, forKey: "description")
         try values.encode(score, forKey: "score")
         try values.encodeIfPresent(textMatches, forKey: "text_matches")
     }

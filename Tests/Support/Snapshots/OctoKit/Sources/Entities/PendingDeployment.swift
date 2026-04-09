@@ -14,7 +14,7 @@ public struct PendingDeployment: Codable {
     /// The time that the wait timer began.
     ///
     /// Example: "2020-11-23T22:00:40Z"
-    public var waitTimerStartedAt: Date?
+    public var waitTimerStartedAt: Date
     /// Whether the currently authenticated user can approve the deployment
     ///
     /// Example: true
@@ -113,7 +113,7 @@ public struct PendingDeployment: Codable {
         }
     }
 
-    public init(environment: Environment, waitTimer: Int, waitTimerStartedAt: Date? = nil, currentUserCanApprove: Bool, reviewers: [Reviewer]) {
+    public init(environment: Environment, waitTimer: Int, waitTimerStartedAt: Date, currentUserCanApprove: Bool, reviewers: [Reviewer]) {
         self.environment = environment
         self.waitTimer = waitTimer
         self.waitTimerStartedAt = waitTimerStartedAt
@@ -125,7 +125,7 @@ public struct PendingDeployment: Codable {
         let values = try decoder.container(keyedBy: StringCodingKey.self)
         self.environment = try values.decode(Environment.self, forKey: "environment")
         self.waitTimer = try values.decode(Int.self, forKey: "wait_timer")
-        self.waitTimerStartedAt = try values.decodeIfPresent(Date.self, forKey: "wait_timer_started_at")
+        self.waitTimerStartedAt = try values.decode(Date.self, forKey: "wait_timer_started_at")
         self.currentUserCanApprove = try values.decode(Bool.self, forKey: "current_user_can_approve")
         self.reviewers = try values.decode([Reviewer].self, forKey: "reviewers")
     }
@@ -134,7 +134,7 @@ public struct PendingDeployment: Codable {
         var values = encoder.container(keyedBy: StringCodingKey.self)
         try values.encode(environment, forKey: "environment")
         try values.encode(waitTimer, forKey: "wait_timer")
-        try values.encodeIfPresent(waitTimerStartedAt, forKey: "wait_timer_started_at")
+        try values.encode(waitTimerStartedAt, forKey: "wait_timer_started_at")
         try values.encode(currentUserCanApprove, forKey: "current_user_can_approve")
         try values.encode(reviewers, forKey: "reviewers")
     }

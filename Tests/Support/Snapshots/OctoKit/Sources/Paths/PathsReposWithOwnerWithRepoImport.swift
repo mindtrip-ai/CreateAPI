@@ -83,11 +83,19 @@ extension Paths.Repos.WithOwner.WithRepo {
             public var tfvcProject: String?
 
             /// The originating VCS type. Can be one of `subversion`, `git`, `mercurial`, or `tfvc`. Please be aware that without this parameter, the import job will take additional time to detect the VCS type before beginning the import. This detection step will be reflected in the response.
-            public enum Vcs: String, Codable, CaseIterable {
+            public enum Vcs: String, Codable, CaseIterable, Sendable {
                 case subversion
                 case git
                 case mercurial
                 case tfvc
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             public init(vcsURL: String, vcs: Vcs? = nil, vcsUsername: String? = nil, vcsPassword: String? = nil, tfvcProject: String? = nil) {

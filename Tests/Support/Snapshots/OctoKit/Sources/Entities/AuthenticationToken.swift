@@ -28,9 +28,17 @@ public struct AuthenticationToken: Codable {
     public var repositorySelection: RepositorySelection?
 
     /// Describe whether all repositories have been selected or there's a selection involved
-    public enum RepositorySelection: String, Codable, CaseIterable {
+    public enum RepositorySelection: String, Codable, CaseIterable, Sendable {
         case all
         case selected
+        case unknown
+
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let rawValue = try container.decode(String.self)
+            self = Self(rawValue: rawValue) ?? .unknown
+        }
     }
 
     public init(token: String, expiresAt: Date, permissions: [String: AnyJSON]? = nil, repositories: [Repository]? = nil, singleFile: String? = nil, repositorySelection: RepositorySelection? = nil) {

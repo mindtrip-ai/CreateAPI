@@ -38,9 +38,17 @@ extension Paths.Orgs.WithOrg.SecretScanning {
             public var page: Int?
             public var perPage: Int?
 
-            public enum State: String, Codable, CaseIterable {
+            public enum State: String, Codable, CaseIterable, Sendable {
                 case `open`
                 case resolved
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             public init(state: State? = nil, secretType: String? = nil, resolution: String? = nil, page: Int? = nil, perPage: Int? = nil) {

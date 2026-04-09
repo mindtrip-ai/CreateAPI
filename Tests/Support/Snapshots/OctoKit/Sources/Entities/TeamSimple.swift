@@ -23,7 +23,7 @@ public struct TeamSimple: Codable {
     /// Description of the team
     ///
     /// Example: "A great team."
-    public var description: String?
+    public var description: String
     /// Permission that the team will have for its repositories
     ///
     /// Example: "admin"
@@ -43,7 +43,7 @@ public struct TeamSimple: Codable {
     /// Example: "uid=example,ou=users,dc=github,dc=com"
     public var ldapDn: String?
 
-    public init(id: Int, nodeID: String, url: URL, membersURL: String, name: String, description: String? = nil, permission: String, privacy: String? = nil, htmlURL: URL, repositoriesURL: URL, slug: String, ldapDn: String? = nil) {
+    public init(id: Int, nodeID: String, url: URL, membersURL: String, name: String, description: String, permission: String, privacy: String? = nil, htmlURL: URL, repositoriesURL: URL, slug: String, ldapDn: String? = nil) {
         self.id = id
         self.nodeID = nodeID
         self.url = url
@@ -65,7 +65,7 @@ public struct TeamSimple: Codable {
         self.url = try values.decode(URL.self, forKey: "url")
         self.membersURL = try values.decode(String.self, forKey: "members_url")
         self.name = try values.decode(String.self, forKey: "name")
-        self.description = try values.decodeIfPresent(String.self, forKey: "description")
+        self.description = try values.decode(String.self, forKey: "description")
         self.permission = try values.decode(String.self, forKey: "permission")
         self.privacy = try values.decodeIfPresent(String.self, forKey: "privacy")
         self.htmlURL = try values.decode(URL.self, forKey: "html_url")
@@ -81,7 +81,7 @@ public struct TeamSimple: Codable {
         try values.encode(url, forKey: "url")
         try values.encode(membersURL, forKey: "members_url")
         try values.encode(name, forKey: "name")
-        try values.encodeIfPresent(description, forKey: "description")
+        try values.encode(description, forKey: "description")
         try values.encode(permission, forKey: "permission")
         try values.encodeIfPresent(privacy, forKey: "privacy")
         try values.encode(htmlURL, forKey: "html_url")

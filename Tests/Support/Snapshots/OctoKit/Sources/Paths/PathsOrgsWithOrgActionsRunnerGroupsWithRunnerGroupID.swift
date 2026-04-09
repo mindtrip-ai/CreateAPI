@@ -50,10 +50,18 @@ extension Paths.Orgs.WithOrg.Actions.RunnerGroups {
             public var allowsPublicRepositories: Bool
 
             /// Visibility of a runner group. You can select all repositories, select individual repositories, or all private repositories. Can be one of: `all`, `selected`, or `private`.
-            public enum Visibility: String, Codable, CaseIterable {
+            public enum Visibility: String, Codable, CaseIterable, Sendable {
                 case selected
                 case all
                 case `private`
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             public init(name: String, visibility: Visibility? = nil, allowsPublicRepositories: Bool? = nil) {

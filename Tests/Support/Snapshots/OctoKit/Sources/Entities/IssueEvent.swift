@@ -11,13 +11,13 @@ public struct IssueEvent: Codable {
     /// Example: "https://api.github.com/repos/octocat/Hello-World/issues/events/1"
     public var url: URL
     /// Simple User
-    public var actor: SimpleUser?
+    public var actor: SimpleUser
     /// Example: "closed"
     public var event: String
     /// Example: "6dcb09b5b57875f334f61aebed695e2e4193db5e"
-    public var commitID: String?
+    public var commitID: String
     /// Example: "https://api.github.com/repos/octocat/Hello-World/commits/6dcb09b5b57875f334f61aebed695e2e4193db5e"
-    public var commitURL: String?
+    public var commitURL: String
     /// Example: "2011-04-14T16:00:49Z"
     public var createdAt: Date
     /// Issues are a great way to keep track of tasks, enhancements, and bugs for your projects.
@@ -56,7 +56,7 @@ public struct IssueEvent: Codable {
     /// GitHub apps are a new way to extend GitHub. They can be installed directly on organizations and user accounts and granted access to specific repositories. They come with granular permissions and built-in webhooks. GitHub apps are first class actors within GitHub.
     public var performedViaGithubApp: Integration?
 
-    public init(id: Int, nodeID: String, url: URL, actor: SimpleUser? = nil, event: String, commitID: String? = nil, commitURL: String? = nil, createdAt: Date, issue: Issue? = nil, label: IssueEventLabel? = nil, assignee: SimpleUser? = nil, assigner: SimpleUser? = nil, reviewRequester: SimpleUser? = nil, requestedReviewer: SimpleUser? = nil, requestedTeam: Team? = nil, dismissedReview: IssueEventDismissedReview? = nil, milestone: IssueEventMilestone? = nil, projectCard: IssueEventProjectCard? = nil, rename: IssueEventRename? = nil, authorAssociation: AuthorAssociation? = nil, lockReason: String? = nil, performedViaGithubApp: Integration? = nil) {
+    public init(id: Int, nodeID: String, url: URL, actor: SimpleUser, event: String, commitID: String, commitURL: String, createdAt: Date, issue: Issue? = nil, label: IssueEventLabel? = nil, assignee: SimpleUser? = nil, assigner: SimpleUser? = nil, reviewRequester: SimpleUser? = nil, requestedReviewer: SimpleUser? = nil, requestedTeam: Team? = nil, dismissedReview: IssueEventDismissedReview? = nil, milestone: IssueEventMilestone? = nil, projectCard: IssueEventProjectCard? = nil, rename: IssueEventRename? = nil, authorAssociation: AuthorAssociation? = nil, lockReason: String? = nil, performedViaGithubApp: Integration? = nil) {
         self.id = id
         self.nodeID = nodeID
         self.url = url
@@ -86,10 +86,10 @@ public struct IssueEvent: Codable {
         self.id = try values.decode(Int.self, forKey: "id")
         self.nodeID = try values.decode(String.self, forKey: "node_id")
         self.url = try values.decode(URL.self, forKey: "url")
-        self.actor = try values.decodeIfPresent(SimpleUser.self, forKey: "actor")
+        self.actor = try values.decode(SimpleUser.self, forKey: "actor")
         self.event = try values.decode(String.self, forKey: "event")
-        self.commitID = try values.decodeIfPresent(String.self, forKey: "commit_id")
-        self.commitURL = try values.decodeIfPresent(String.self, forKey: "commit_url")
+        self.commitID = try values.decode(String.self, forKey: "commit_id")
+        self.commitURL = try values.decode(String.self, forKey: "commit_url")
         self.createdAt = try values.decode(Date.self, forKey: "created_at")
         self.issue = try values.decodeIfPresent(Issue.self, forKey: "issue")
         self.label = try values.decodeIfPresent(IssueEventLabel.self, forKey: "label")
@@ -112,10 +112,10 @@ public struct IssueEvent: Codable {
         try values.encode(id, forKey: "id")
         try values.encode(nodeID, forKey: "node_id")
         try values.encode(url, forKey: "url")
-        try values.encodeIfPresent(actor, forKey: "actor")
+        try values.encode(actor, forKey: "actor")
         try values.encode(event, forKey: "event")
-        try values.encodeIfPresent(commitID, forKey: "commit_id")
-        try values.encodeIfPresent(commitURL, forKey: "commit_url")
+        try values.encode(commitID, forKey: "commit_id")
+        try values.encode(commitURL, forKey: "commit_url")
         try values.encode(createdAt, forKey: "created_at")
         try values.encodeIfPresent(issue, forKey: "issue")
         try values.encodeIfPresent(label, forKey: "label")

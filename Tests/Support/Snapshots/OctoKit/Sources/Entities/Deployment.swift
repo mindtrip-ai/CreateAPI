@@ -32,9 +32,9 @@ public struct Deployment: Codable {
     /// Example: "production"
     public var environment: String
     /// Example: "Deploy request from hubot"
-    public var description: String?
+    public var description: String
     /// Simple User
-    public var creator: SimpleUser?
+    public var creator: SimpleUser
     /// Example: "2012-07-20T01:19:13Z"
     public var createdAt: Date
     /// Example: "2012-07-20T01:19:13Z"
@@ -56,9 +56,30 @@ public struct Deployment: Codable {
     /// GitHub apps are a new way to extend GitHub. They can be installed directly on organizations and user accounts and granted access to specific repositories. They come with granular permissions and built-in webhooks. GitHub apps are first class actors within GitHub.
     public var performedViaGithubApp: Integration?
 
-    public enum Payload: Codable {
+    public enum Payload: Codable, OneOfEnum {
         case object([String: AnyJSON])
         case string(String)
+
+        case unknown(UnknownPayload)
+
+        public struct UnknownPayload: Codable, UnknownOneOfCase {
+          public enum `Type`: String, Codable, CaseIterable, Sendable {
+            case unknown
+          }
+          public var type: `Type` = .unknown
+          public var discriminatorValue: String
+          public init(discriminatorValue: String) {
+            self.discriminatorValue = discriminatorValue
+          }
+        }
+
+        public var isUnknownCase: Bool {
+          if case .unknown = self {
+            true
+          } else {
+            false
+          }
+        }
 
         public init(from decoder: Decoder) throws {
             let container = try decoder.singleValueContainer()
@@ -79,11 +100,12 @@ public struct Deployment: Codable {
             switch self {
             case .object(let value): try container.encode(value)
             case .string(let value): try container.encode(value)
+            case .unknown(let value): try container.encode(value)
             }
         }
     }
 
-    public init(url: URL, id: Int, nodeID: String, sha: String, ref: String, task: String, payload: Payload, originalEnvironment: String? = nil, environment: String, description: String? = nil, creator: SimpleUser? = nil, createdAt: Date, updatedAt: Date, statusesURL: URL, repositoryURL: URL, isTransientEnvironment: Bool? = nil, isProductionEnvironment: Bool? = nil, performedViaGithubApp: Integration? = nil) {
+    public init(url: URL, id: Int, nodeID: String, sha: String, ref: String, task: String, payload: Payload, originalEnvironment: String? = nil, environment: String, description: String, creator: SimpleUser, createdAt: Date, updatedAt: Date, statusesURL: URL, repositoryURL: URL, isTransientEnvironment: Bool? = nil, isProductionEnvironment: Bool? = nil, performedViaGithubApp: Integration? = nil) {
         self.url = url
         self.id = id
         self.nodeID = nodeID
@@ -115,8 +137,8 @@ public struct Deployment: Codable {
         self.payload = try values.decode(Payload.self, forKey: "payload")
         self.originalEnvironment = try values.decodeIfPresent(String.self, forKey: "original_environment")
         self.environment = try values.decode(String.self, forKey: "environment")
-        self.description = try values.decodeIfPresent(String.self, forKey: "description")
-        self.creator = try values.decodeIfPresent(SimpleUser.self, forKey: "creator")
+        self.description = try values.decode(String.self, forKey: "description")
+        self.creator = try values.decode(SimpleUser.self, forKey: "creator")
         self.createdAt = try values.decode(Date.self, forKey: "created_at")
         self.updatedAt = try values.decode(Date.self, forKey: "updated_at")
         self.statusesURL = try values.decode(URL.self, forKey: "statuses_url")
@@ -137,8 +159,8 @@ public struct Deployment: Codable {
         try values.encode(payload, forKey: "payload")
         try values.encodeIfPresent(originalEnvironment, forKey: "original_environment")
         try values.encode(environment, forKey: "environment")
-        try values.encodeIfPresent(description, forKey: "description")
-        try values.encodeIfPresent(creator, forKey: "creator")
+        try values.encode(description, forKey: "description")
+        try values.encode(creator, forKey: "creator")
         try values.encode(createdAt, forKey: "created_at")
         try values.encode(updatedAt, forKey: "updated_at")
         try values.encode(statusesURL, forKey: "statuses_url")

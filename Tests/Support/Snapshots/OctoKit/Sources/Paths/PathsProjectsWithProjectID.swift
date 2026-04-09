@@ -52,11 +52,19 @@ extension Paths.Projects {
             public var isPrivate: Bool?
 
             /// The baseline permission that all organization members have on this project
-            public enum OrganizationPermission: String, Codable, CaseIterable {
+            public enum OrganizationPermission: String, Codable, CaseIterable, Sendable {
                 case read
                 case write
                 case admin
                 case `none`
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             public init(name: String? = nil, body: String? = nil, state: String? = nil, organizationPermission: OrganizationPermission? = nil, isPrivate: Bool? = nil) {

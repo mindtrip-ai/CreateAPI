@@ -8,14 +8,30 @@ public struct EnumArrays: Codable {
   public var justSymbol: JustSymbol?
   public var arrayEnum: [ArrayEnumItem]?
 
-  public enum JustSymbol: String, Codable, CaseIterable {
+  public enum JustSymbol: String, Codable, CaseIterable, Sendable {
     case greaterThanOrEqualTo = ">="
     case dollar = "$"
+    case unknown
+
+
+    public init(from decoder: Decoder) throws {
+      let container = try decoder.singleValueContainer()
+      let rawValue = try container.decode(String.self)
+      self = Self(rawValue: rawValue) ?? .unknown
+    }
   }
 
-  public enum ArrayEnumItem: String, Codable, CaseIterable {
+  public enum ArrayEnumItem: String, Codable, CaseIterable, Sendable {
     case fish
     case crab
+    case unknown
+
+
+    public init(from decoder: Decoder) throws {
+      let container = try decoder.singleValueContainer()
+      let rawValue = try container.decode(String.self)
+      self = Self(rawValue: rawValue) ?? .unknown
+    }
   }
 
   public init(justSymbol: JustSymbol? = nil, arrayEnum: [ArrayEnumItem]? = nil) {

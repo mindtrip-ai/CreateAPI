@@ -34,9 +34,9 @@ public struct CredentialAuthorization: Codable {
     /// Date when the credential was last accessed. May be null if it was never accessed
     ///
     /// Example: "2011-01-26T19:06:43Z"
-    public var credentialAccessedAt: Date?
+    public var credentialAccessedAt: Date
     /// Example: 12345678
-    public var authorizedCredentialID: Int?
+    public var authorizedCredentialID: Int
     /// The title given to the ssh key. This will only be present when the credential is an ssh key.
     ///
     /// Example: "my ssh key"
@@ -48,7 +48,7 @@ public struct CredentialAuthorization: Codable {
     /// The expiry for the token. This will only be present when the credential is a token.
     public var authorizedCredentialExpiresAt: Date?
 
-    public init(login: String, credentialID: Int, credentialType: String, tokenLastEight: String? = nil, credentialAuthorizedAt: Date, scopes: [String]? = nil, fingerprint: String? = nil, credentialAccessedAt: Date? = nil, authorizedCredentialID: Int? = nil, authorizedCredentialTitle: String? = nil, authorizedCredentialNote: String? = nil, authorizedCredentialExpiresAt: Date? = nil) {
+    public init(login: String, credentialID: Int, credentialType: String, tokenLastEight: String? = nil, credentialAuthorizedAt: Date, scopes: [String]? = nil, fingerprint: String? = nil, credentialAccessedAt: Date, authorizedCredentialID: Int, authorizedCredentialTitle: String? = nil, authorizedCredentialNote: String? = nil, authorizedCredentialExpiresAt: Date? = nil) {
         self.login = login
         self.credentialID = credentialID
         self.credentialType = credentialType
@@ -72,8 +72,8 @@ public struct CredentialAuthorization: Codable {
         self.credentialAuthorizedAt = try values.decode(Date.self, forKey: "credential_authorized_at")
         self.scopes = try values.decodeIfPresent([String].self, forKey: "scopes")
         self.fingerprint = try values.decodeIfPresent(String.self, forKey: "fingerprint")
-        self.credentialAccessedAt = try values.decodeIfPresent(Date.self, forKey: "credential_accessed_at")
-        self.authorizedCredentialID = try values.decodeIfPresent(Int.self, forKey: "authorized_credential_id")
+        self.credentialAccessedAt = try values.decode(Date.self, forKey: "credential_accessed_at")
+        self.authorizedCredentialID = try values.decode(Int.self, forKey: "authorized_credential_id")
         self.authorizedCredentialTitle = try values.decodeIfPresent(String.self, forKey: "authorized_credential_title")
         self.authorizedCredentialNote = try values.decodeIfPresent(String.self, forKey: "authorized_credential_note")
         self.authorizedCredentialExpiresAt = try values.decodeIfPresent(Date.self, forKey: "authorized_credential_expires_at")
@@ -88,8 +88,8 @@ public struct CredentialAuthorization: Codable {
         try values.encode(credentialAuthorizedAt, forKey: "credential_authorized_at")
         try values.encodeIfPresent(scopes, forKey: "scopes")
         try values.encodeIfPresent(fingerprint, forKey: "fingerprint")
-        try values.encodeIfPresent(credentialAccessedAt, forKey: "credential_accessed_at")
-        try values.encodeIfPresent(authorizedCredentialID, forKey: "authorized_credential_id")
+        try values.encode(credentialAccessedAt, forKey: "credential_accessed_at")
+        try values.encode(authorizedCredentialID, forKey: "authorized_credential_id")
         try values.encodeIfPresent(authorizedCredentialTitle, forKey: "authorized_credential_title")
         try values.encodeIfPresent(authorizedCredentialNote, forKey: "authorized_credential_note")
         try values.encodeIfPresent(authorizedCredentialExpiresAt, forKey: "authorized_credential_expires_at")

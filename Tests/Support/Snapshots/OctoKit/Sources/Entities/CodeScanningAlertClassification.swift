@@ -5,9 +5,17 @@ import Foundation
 import NaiveDate
 
 /// A classification of the file. For example to identify it as generated.
-public enum CodeScanningAlertClassification: String, Codable, CaseIterable {
+public enum CodeScanningAlertClassification: String, Codable, CaseIterable, Sendable {
     case source
     case generated
     case test
     case library
+    case unknown
+
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let rawValue = try container.decode(String.self)
+        self = Self(rawValue: rawValue) ?? .unknown
+    }
 }

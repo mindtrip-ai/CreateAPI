@@ -14,7 +14,7 @@ public struct ReleaseAsset: Codable {
     ///
     /// Example: "Team Environment"
     public var name: String
-    public var label: String?
+    public var label: String
     /// State of the release asset.
     public var state: State
     public var contentType: String
@@ -23,15 +23,23 @@ public struct ReleaseAsset: Codable {
     public var createdAt: Date
     public var updatedAt: Date
     /// Simple User
-    public var uploader: SimpleUser?
+    public var uploader: SimpleUser
 
     /// State of the release asset.
-    public enum State: String, Codable, CaseIterable {
+    public enum State: String, Codable, CaseIterable, Sendable {
         case uploaded
         case `open`
+        case unknown
+
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let rawValue = try container.decode(String.self)
+            self = Self(rawValue: rawValue) ?? .unknown
+        }
     }
 
-    public init(url: URL, browserDownloadURL: URL, id: Int, nodeID: String, name: String, label: String? = nil, state: State, contentType: String, size: Int, downloadCount: Int, createdAt: Date, updatedAt: Date, uploader: SimpleUser? = nil) {
+    public init(url: URL, browserDownloadURL: URL, id: Int, nodeID: String, name: String, label: String, state: State, contentType: String, size: Int, downloadCount: Int, createdAt: Date, updatedAt: Date, uploader: SimpleUser) {
         self.url = url
         self.browserDownloadURL = browserDownloadURL
         self.id = id
@@ -54,14 +62,14 @@ public struct ReleaseAsset: Codable {
         self.id = try values.decode(Int.self, forKey: "id")
         self.nodeID = try values.decode(String.self, forKey: "node_id")
         self.name = try values.decode(String.self, forKey: "name")
-        self.label = try values.decodeIfPresent(String.self, forKey: "label")
+        self.label = try values.decode(String.self, forKey: "label")
         self.state = try values.decode(State.self, forKey: "state")
         self.contentType = try values.decode(String.self, forKey: "content_type")
         self.size = try values.decode(Int.self, forKey: "size")
         self.downloadCount = try values.decode(Int.self, forKey: "download_count")
         self.createdAt = try values.decode(Date.self, forKey: "created_at")
         self.updatedAt = try values.decode(Date.self, forKey: "updated_at")
-        self.uploader = try values.decodeIfPresent(SimpleUser.self, forKey: "uploader")
+        self.uploader = try values.decode(SimpleUser.self, forKey: "uploader")
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -71,13 +79,13 @@ public struct ReleaseAsset: Codable {
         try values.encode(id, forKey: "id")
         try values.encode(nodeID, forKey: "node_id")
         try values.encode(name, forKey: "name")
-        try values.encodeIfPresent(label, forKey: "label")
+        try values.encode(label, forKey: "label")
         try values.encode(state, forKey: "state")
         try values.encode(contentType, forKey: "content_type")
         try values.encode(size, forKey: "size")
         try values.encode(downloadCount, forKey: "download_count")
         try values.encode(createdAt, forKey: "created_at")
         try values.encode(updatedAt, forKey: "updated_at")
-        try values.encodeIfPresent(uploader, forKey: "uploader")
+        try values.encode(uploader, forKey: "uploader")
     }
 }

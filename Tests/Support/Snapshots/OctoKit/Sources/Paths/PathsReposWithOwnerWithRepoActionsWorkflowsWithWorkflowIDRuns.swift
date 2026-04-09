@@ -56,7 +56,7 @@ extension Paths.Repos.WithOwner.WithRepo.Actions.Workflows.WithWorkflowID {
             public var created: Date?
             public var excludePullRequests: Bool?
 
-            public enum Status: String, Codable, CaseIterable {
+            public enum Status: String, Codable, CaseIterable, Sendable {
                 case completed
                 case actionRequired = "action_required"
                 case cancelled
@@ -70,6 +70,14 @@ extension Paths.Repos.WithOwner.WithRepo.Actions.Workflows.WithWorkflowID {
                 case queued
                 case requested
                 case waiting
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             public init(actor: String? = nil, branch: String? = nil, event: String? = nil, status: Status? = nil, perPage: Int? = nil, page: Int? = nil, created: Date? = nil, excludePullRequests: Bool? = nil) {

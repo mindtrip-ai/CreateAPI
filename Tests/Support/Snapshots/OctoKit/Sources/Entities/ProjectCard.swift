@@ -15,9 +15,9 @@ public struct ProjectCard: Codable {
     /// Example: "MDExOlByb2plY3RDYXJkMTQ3OA=="
     public var nodeID: String
     /// Example: "Add payload for delete Project column"
-    public var note: String?
+    public var note: String
     /// Simple User
-    public var creator: SimpleUser?
+    public var creator: SimpleUser
     /// Example: "2016-09-05T14:21:06Z"
     public var createdAt: Date
     /// Example: "2016-09-05T14:20:22Z"
@@ -35,7 +35,7 @@ public struct ProjectCard: Codable {
     /// Example: "https://api.github.com/projects/120"
     public var projectURL: URL
 
-    public init(url: URL, id: Int, nodeID: String, note: String? = nil, creator: SimpleUser? = nil, createdAt: Date, updatedAt: Date, isArchived: Bool? = nil, columnName: String? = nil, projectID: String? = nil, columnURL: URL, contentURL: URL? = nil, projectURL: URL) {
+    public init(url: URL, id: Int, nodeID: String, note: String, creator: SimpleUser, createdAt: Date, updatedAt: Date, isArchived: Bool? = nil, columnName: String? = nil, projectID: String? = nil, columnURL: URL, contentURL: URL? = nil, projectURL: URL) {
         self.url = url
         self.id = id
         self.nodeID = nodeID
@@ -56,8 +56,8 @@ public struct ProjectCard: Codable {
         self.url = try values.decode(URL.self, forKey: "url")
         self.id = try values.decode(Int.self, forKey: "id")
         self.nodeID = try values.decode(String.self, forKey: "node_id")
-        self.note = try values.decodeIfPresent(String.self, forKey: "note")
-        self.creator = try values.decodeIfPresent(SimpleUser.self, forKey: "creator")
+        self.note = try values.decode(String.self, forKey: "note")
+        self.creator = try values.decode(SimpleUser.self, forKey: "creator")
         self.createdAt = try values.decode(Date.self, forKey: "created_at")
         self.updatedAt = try values.decode(Date.self, forKey: "updated_at")
         self.isArchived = try values.decodeIfPresent(Bool.self, forKey: "archived")
@@ -73,8 +73,8 @@ public struct ProjectCard: Codable {
         try values.encode(url, forKey: "url")
         try values.encode(id, forKey: "id")
         try values.encode(nodeID, forKey: "node_id")
-        try values.encodeIfPresent(note, forKey: "note")
-        try values.encodeIfPresent(creator, forKey: "creator")
+        try values.encode(note, forKey: "note")
+        try values.encode(creator, forKey: "creator")
         try values.encode(createdAt, forKey: "created_at")
         try values.encode(updatedAt, forKey: "updated_at")
         try values.encodeIfPresent(isArchived, forKey: "archived")

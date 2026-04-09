@@ -23,11 +23,11 @@ public struct Artifact: Codable {
     public var archiveDownloadURL: String
     /// Whether or not the artifact has expired.
     public var isExpired: Bool
-    public var createdAt: Date?
-    public var expiresAt: Date?
-    public var updatedAt: Date?
+    public var createdAt: Date
+    public var expiresAt: Date
+    public var updatedAt: Date
 
-    public init(id: Int, nodeID: String, name: String, sizeInBytes: Int, url: String, archiveDownloadURL: String, isExpired: Bool, createdAt: Date? = nil, expiresAt: Date? = nil, updatedAt: Date? = nil) {
+    public init(id: Int, nodeID: String, name: String, sizeInBytes: Int, url: String, archiveDownloadURL: String, isExpired: Bool, createdAt: Date, expiresAt: Date, updatedAt: Date) {
         self.id = id
         self.nodeID = nodeID
         self.name = name
@@ -49,9 +49,9 @@ public struct Artifact: Codable {
         self.url = try values.decode(String.self, forKey: "url")
         self.archiveDownloadURL = try values.decode(String.self, forKey: "archive_download_url")
         self.isExpired = try values.decode(Bool.self, forKey: "expired")
-        self.createdAt = try values.decodeIfPresent(Date.self, forKey: "created_at")
-        self.expiresAt = try values.decodeIfPresent(Date.self, forKey: "expires_at")
-        self.updatedAt = try values.decodeIfPresent(Date.self, forKey: "updated_at")
+        self.createdAt = try values.decode(Date.self, forKey: "created_at")
+        self.expiresAt = try values.decode(Date.self, forKey: "expires_at")
+        self.updatedAt = try values.decode(Date.self, forKey: "updated_at")
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -63,8 +63,8 @@ public struct Artifact: Codable {
         try values.encode(url, forKey: "url")
         try values.encode(archiveDownloadURL, forKey: "archive_download_url")
         try values.encode(isExpired, forKey: "expired")
-        try values.encodeIfPresent(createdAt, forKey: "created_at")
-        try values.encodeIfPresent(expiresAt, forKey: "expires_at")
-        try values.encodeIfPresent(updatedAt, forKey: "updated_at")
+        try values.encode(createdAt, forKey: "created_at")
+        try values.encode(expiresAt, forKey: "expires_at")
+        try values.encode(updatedAt, forKey: "updated_at")
     }
 }

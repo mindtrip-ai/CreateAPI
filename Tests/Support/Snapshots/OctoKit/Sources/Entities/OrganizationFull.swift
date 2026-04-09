@@ -27,7 +27,7 @@ public struct OrganizationFull: Codable {
     /// Example: "https://github.com/images/error/octocat_happy.gif"
     public var avatarURL: String
     /// Example: "A great organization"
-    public var description: String?
+    public var description: String
     /// Example: "github"
     public var name: String?
     /// Example: "GitHub"
@@ -126,7 +126,7 @@ public struct OrganizationFull: Codable {
         }
     }
 
-    public init(login: String, id: Int, nodeID: String, url: URL, reposURL: URL, eventsURL: URL, hooksURL: String, issuesURL: String, membersURL: String, publicMembersURL: String, avatarURL: String, description: String? = nil, name: String? = nil, company: String? = nil, blog: URL? = nil, location: String? = nil, email: String? = nil, twitterUsername: String? = nil, isVerified: Bool? = nil, hasOrganizationProjects: Bool, hasRepositoryProjects: Bool, publicRepos: Int, publicGists: Int, followers: Int, following: Int, htmlURL: URL, createdAt: Date, type: String, totalPrivateRepos: Int? = nil, ownedPrivateRepos: Int? = nil, privateGists: Int? = nil, diskUsage: Int? = nil, collaborators: Int? = nil, billingEmail: String? = nil, plan: Plan? = nil, defaultRepositoryPermission: String? = nil, membersCanCreateRepositories: Bool? = nil, isTwoFactorRequirementEnabled: Bool? = nil, membersAllowedRepositoryCreationType: String? = nil, membersCanCreatePublicRepositories: Bool? = nil, membersCanCreatePrivateRepositories: Bool? = nil, membersCanCreateInternalRepositories: Bool? = nil, membersCanCreatePages: Bool? = nil, membersCanCreatePublicPages: Bool? = nil, membersCanCreatePrivatePages: Bool? = nil, membersCanForkPrivateRepositories: Bool? = nil, updatedAt: Date) {
+    public init(login: String, id: Int, nodeID: String, url: URL, reposURL: URL, eventsURL: URL, hooksURL: String, issuesURL: String, membersURL: String, publicMembersURL: String, avatarURL: String, description: String, name: String? = nil, company: String? = nil, blog: URL? = nil, location: String? = nil, email: String? = nil, twitterUsername: String? = nil, isVerified: Bool? = nil, hasOrganizationProjects: Bool, hasRepositoryProjects: Bool, publicRepos: Int, publicGists: Int, followers: Int, following: Int, htmlURL: URL, createdAt: Date, type: String, totalPrivateRepos: Int? = nil, ownedPrivateRepos: Int? = nil, privateGists: Int? = nil, diskUsage: Int? = nil, collaborators: Int? = nil, billingEmail: String? = nil, plan: Plan? = nil, defaultRepositoryPermission: String? = nil, membersCanCreateRepositories: Bool? = nil, isTwoFactorRequirementEnabled: Bool? = nil, membersAllowedRepositoryCreationType: String? = nil, membersCanCreatePublicRepositories: Bool? = nil, membersCanCreatePrivateRepositories: Bool? = nil, membersCanCreateInternalRepositories: Bool? = nil, membersCanCreatePages: Bool? = nil, membersCanCreatePublicPages: Bool? = nil, membersCanCreatePrivatePages: Bool? = nil, membersCanForkPrivateRepositories: Bool? = nil, updatedAt: Date) {
         self.login = login
         self.id = id
         self.nodeID = nodeID
@@ -189,7 +189,7 @@ public struct OrganizationFull: Codable {
         self.membersURL = try values.decode(String.self, forKey: "members_url")
         self.publicMembersURL = try values.decode(String.self, forKey: "public_members_url")
         self.avatarURL = try values.decode(String.self, forKey: "avatar_url")
-        self.description = try values.decodeIfPresent(String.self, forKey: "description")
+        self.description = try values.decode(String.self, forKey: "description")
         self.name = try values.decodeIfPresent(String.self, forKey: "name")
         self.company = try values.decodeIfPresent(String.self, forKey: "company")
         self.blog = try values.decodeIfPresent(URL.self, forKey: "blog")
@@ -240,7 +240,7 @@ public struct OrganizationFull: Codable {
         try values.encode(membersURL, forKey: "members_url")
         try values.encode(publicMembersURL, forKey: "public_members_url")
         try values.encode(avatarURL, forKey: "avatar_url")
-        try values.encodeIfPresent(description, forKey: "description")
+        try values.encode(description, forKey: "description")
         try values.encodeIfPresent(name, forKey: "name")
         try values.encodeIfPresent(company, forKey: "company")
         try values.encodeIfPresent(blog, forKey: "blog")

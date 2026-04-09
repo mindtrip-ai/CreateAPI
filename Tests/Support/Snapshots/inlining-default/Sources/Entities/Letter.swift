@@ -8,9 +8,17 @@ public final class Letter: Codable {
     public let address: String
     public let size: Size
 
-    public enum Size: String, Codable, CaseIterable {
+    public enum Size: String, Codable, CaseIterable, Sendable {
         case a4 = "A4"
         case a5 = "A5"
+        case unknown
+
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let rawValue = try container.decode(String.self)
+            self = Self(rawValue: rawValue) ?? .unknown
+        }
     }
 
     public init(weight: Int, address: String, size: Size) {

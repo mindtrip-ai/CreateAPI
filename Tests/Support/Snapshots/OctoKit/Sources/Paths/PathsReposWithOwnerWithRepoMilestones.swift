@@ -33,20 +33,44 @@ extension Paths.Repos.WithOwner.WithRepo {
             public var perPage: Int?
             public var page: Int?
 
-            public enum State: String, Codable, CaseIterable {
+            public enum State: String, Codable, CaseIterable, Sendable {
                 case `open`
                 case closed
                 case all
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
-            public enum Sort: String, Codable, CaseIterable {
+            public enum Sort: String, Codable, CaseIterable, Sendable {
                 case dueOn = "due_on"
                 case completeness
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
-            public enum Direction: String, Codable, CaseIterable {
+            public enum Direction: String, Codable, CaseIterable, Sendable {
                 case asc
                 case desc
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             public init(state: State? = nil, sort: Sort? = nil, direction: Direction? = nil, perPage: Int? = nil, page: Int? = nil) {
@@ -90,9 +114,17 @@ extension Paths.Repos.WithOwner.WithRepo {
             public var dueOn: Date?
 
             /// The state of the milestone. Either `open` or `closed`.
-            public enum State: String, Codable, CaseIterable {
+            public enum State: String, Codable, CaseIterable, Sendable {
                 case `open`
                 case closed
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             public init(title: String, state: State? = nil, description: String? = nil, dueOn: Date? = nil) {

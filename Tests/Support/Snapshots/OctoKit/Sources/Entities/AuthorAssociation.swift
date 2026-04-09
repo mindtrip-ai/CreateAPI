@@ -9,7 +9,7 @@ import NaiveDate
 /// How the author is associated with the repository.
 ///
 /// Example: "OWNER"
-public enum AuthorAssociation: String, Codable, CaseIterable {
+public enum AuthorAssociation: String, Codable, CaseIterable, Sendable {
     case collaborator = "COLLABORATOR"
     case contributor = "CONTRIBUTOR"
     case firstTimer = "FIRST_TIMER"
@@ -18,4 +18,12 @@ public enum AuthorAssociation: String, Codable, CaseIterable {
     case member = "MEMBER"
     case `none` = "NONE"
     case owner = "OWNER"
+    case unknown
+
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let rawValue = try container.decode(String.self)
+        self = Self(rawValue: rawValue) ?? .unknown
+    }
 }

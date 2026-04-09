@@ -27,7 +27,7 @@ public struct DeploymentSimple: Codable {
     /// Example: "production"
     public var environment: String
     /// Example: "Deploy request from hubot"
-    public var description: String?
+    public var description: String
     /// Example: "2012-07-20T01:19:13Z"
     public var createdAt: Date
     /// Example: "2012-07-20T01:19:13Z"
@@ -49,7 +49,7 @@ public struct DeploymentSimple: Codable {
     /// GitHub apps are a new way to extend GitHub. They can be installed directly on organizations and user accounts and granted access to specific repositories. They come with granular permissions and built-in webhooks. GitHub apps are first class actors within GitHub.
     public var performedViaGithubApp: Integration?
 
-    public init(url: URL, id: Int, nodeID: String, task: String, originalEnvironment: String? = nil, environment: String, description: String? = nil, createdAt: Date, updatedAt: Date, statusesURL: URL, repositoryURL: URL, isTransientEnvironment: Bool? = nil, isProductionEnvironment: Bool? = nil, performedViaGithubApp: Integration? = nil) {
+    public init(url: URL, id: Int, nodeID: String, task: String, originalEnvironment: String? = nil, environment: String, description: String, createdAt: Date, updatedAt: Date, statusesURL: URL, repositoryURL: URL, isTransientEnvironment: Bool? = nil, isProductionEnvironment: Bool? = nil, performedViaGithubApp: Integration? = nil) {
         self.url = url
         self.id = id
         self.nodeID = nodeID
@@ -74,7 +74,7 @@ public struct DeploymentSimple: Codable {
         self.task = try values.decode(String.self, forKey: "task")
         self.originalEnvironment = try values.decodeIfPresent(String.self, forKey: "original_environment")
         self.environment = try values.decode(String.self, forKey: "environment")
-        self.description = try values.decodeIfPresent(String.self, forKey: "description")
+        self.description = try values.decode(String.self, forKey: "description")
         self.createdAt = try values.decode(Date.self, forKey: "created_at")
         self.updatedAt = try values.decode(Date.self, forKey: "updated_at")
         self.statusesURL = try values.decode(URL.self, forKey: "statuses_url")
@@ -92,7 +92,7 @@ public struct DeploymentSimple: Codable {
         try values.encode(task, forKey: "task")
         try values.encodeIfPresent(originalEnvironment, forKey: "original_environment")
         try values.encode(environment, forKey: "environment")
-        try values.encodeIfPresent(description, forKey: "description")
+        try values.encode(description, forKey: "description")
         try values.encode(createdAt, forKey: "created_at")
         try values.encode(updatedAt, forKey: "updated_at")
         try values.encode(statusesURL, forKey: "statuses_url")

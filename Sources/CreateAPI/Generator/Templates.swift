@@ -826,7 +826,7 @@ extension UnknownOneOfCase {
   }
 }
 
-extension Collection where Element: OneOfEnum {
+extension Swift.Collection where Element: OneOfEnum {
   public var excludingUnknown: [Element] {
     filter { !$0.isUnknownCase }
   }

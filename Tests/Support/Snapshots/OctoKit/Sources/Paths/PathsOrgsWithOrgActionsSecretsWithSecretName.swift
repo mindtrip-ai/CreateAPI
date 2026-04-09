@@ -124,10 +124,18 @@ extension Paths.Orgs.WithOrg.Actions.Secrets {
             /// \- `all` - All repositories in an organization can access the secret.  
             /// \- `private` - Private repositories in an organization can access the secret.  
             /// \- `selected` - Only specific repositories can access the secret.
-            public enum Visibility: String, Codable, CaseIterable {
+            public enum Visibility: String, Codable, CaseIterable, Sendable {
                 case all
                 case `private`
                 case selected
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             public init(encryptedValue: String? = nil, keyID: String? = nil, visibility: Visibility, selectedRepositoryIDs: [String]? = nil) {

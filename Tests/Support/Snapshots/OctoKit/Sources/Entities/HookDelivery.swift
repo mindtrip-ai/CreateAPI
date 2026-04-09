@@ -43,15 +43,15 @@ public struct HookDelivery: Codable {
     /// The type of activity for the event that triggered the delivery.
     ///
     /// Example: "opened"
-    public var action: String?
+    public var action: String
     /// The id of the GitHub App installation associated with this event.
     ///
     /// Example: 123
-    public var installationID: Int?
+    public var installationID: Int
     /// The id of the repository associated with this event.
     ///
     /// Example: 123
-    public var repositoryID: Int?
+    public var repositoryID: Int
     /// The URL target of the delivery.
     ///
     /// Example: "https://www.example.com"
@@ -61,53 +61,53 @@ public struct HookDelivery: Codable {
 
     public struct Request: Codable {
         /// The request headers sent with the webhook delivery.
-        public var headers: [String: AnyJSON]?
+        public var headers: [String: AnyJSON]
         /// The webhook payload.
-        public var payload: [String: AnyJSON]?
+        public var payload: [String: AnyJSON]
 
-        public init(headers: [String: AnyJSON]? = nil, payload: [String: AnyJSON]? = nil) {
+        public init(headers: [String: AnyJSON], payload: [String: AnyJSON]) {
             self.headers = headers
             self.payload = payload
         }
 
         public init(from decoder: Decoder) throws {
             let values = try decoder.container(keyedBy: StringCodingKey.self)
-            self.headers = try values.decodeIfPresent([String: AnyJSON].self, forKey: "headers")
-            self.payload = try values.decodeIfPresent([String: AnyJSON].self, forKey: "payload")
+            self.headers = try values.decode([String: AnyJSON].self, forKey: "headers")
+            self.payload = try values.decode([String: AnyJSON].self, forKey: "payload")
         }
 
         public func encode(to encoder: Encoder) throws {
             var values = encoder.container(keyedBy: StringCodingKey.self)
-            try values.encodeIfPresent(headers, forKey: "headers")
-            try values.encodeIfPresent(payload, forKey: "payload")
+            try values.encode(headers, forKey: "headers")
+            try values.encode(payload, forKey: "payload")
         }
     }
 
     public struct Response: Codable {
         /// The response headers received when the delivery was made.
-        public var headers: [String: AnyJSON]?
+        public var headers: [String: AnyJSON]
         /// The response payload received.
-        public var payload: String?
+        public var payload: String
 
-        public init(headers: [String: AnyJSON]? = nil, payload: String? = nil) {
+        public init(headers: [String: AnyJSON], payload: String) {
             self.headers = headers
             self.payload = payload
         }
 
         public init(from decoder: Decoder) throws {
             let values = try decoder.container(keyedBy: StringCodingKey.self)
-            self.headers = try values.decodeIfPresent([String: AnyJSON].self, forKey: "headers")
-            self.payload = try values.decodeIfPresent(String.self, forKey: "payload")
+            self.headers = try values.decode([String: AnyJSON].self, forKey: "headers")
+            self.payload = try values.decode(String.self, forKey: "payload")
         }
 
         public func encode(to encoder: Encoder) throws {
             var values = encoder.container(keyedBy: StringCodingKey.self)
-            try values.encodeIfPresent(headers, forKey: "headers")
-            try values.encodeIfPresent(payload, forKey: "payload")
+            try values.encode(headers, forKey: "headers")
+            try values.encode(payload, forKey: "payload")
         }
     }
 
-    public init(id: Int, guid: String, deliveredAt: Date, isRedelivery: Bool, duration: Double, status: String, statusCode: Int, event: String, action: String? = nil, installationID: Int? = nil, repositoryID: Int? = nil, url: String? = nil, request: Request, response: Response) {
+    public init(id: Int, guid: String, deliveredAt: Date, isRedelivery: Bool, duration: Double, status: String, statusCode: Int, event: String, action: String, installationID: Int, repositoryID: Int, url: String? = nil, request: Request, response: Response) {
         self.id = id
         self.guid = guid
         self.deliveredAt = deliveredAt
@@ -134,9 +134,9 @@ public struct HookDelivery: Codable {
         self.status = try values.decode(String.self, forKey: "status")
         self.statusCode = try values.decode(Int.self, forKey: "status_code")
         self.event = try values.decode(String.self, forKey: "event")
-        self.action = try values.decodeIfPresent(String.self, forKey: "action")
-        self.installationID = try values.decodeIfPresent(Int.self, forKey: "installation_id")
-        self.repositoryID = try values.decodeIfPresent(Int.self, forKey: "repository_id")
+        self.action = try values.decode(String.self, forKey: "action")
+        self.installationID = try values.decode(Int.self, forKey: "installation_id")
+        self.repositoryID = try values.decode(Int.self, forKey: "repository_id")
         self.url = try values.decodeIfPresent(String.self, forKey: "url")
         self.request = try values.decode(Request.self, forKey: "request")
         self.response = try values.decode(Response.self, forKey: "response")
@@ -152,9 +152,9 @@ public struct HookDelivery: Codable {
         try values.encode(status, forKey: "status")
         try values.encode(statusCode, forKey: "status_code")
         try values.encode(event, forKey: "event")
-        try values.encodeIfPresent(action, forKey: "action")
-        try values.encodeIfPresent(installationID, forKey: "installation_id")
-        try values.encodeIfPresent(repositoryID, forKey: "repository_id")
+        try values.encode(action, forKey: "action")
+        try values.encode(installationID, forKey: "installation_id")
+        try values.encode(repositoryID, forKey: "repository_id")
         try values.encodeIfPresent(url, forKey: "url")
         try values.encode(request, forKey: "request")
         try values.encode(response, forKey: "response")

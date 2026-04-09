@@ -129,15 +129,37 @@ extension Paths.Repos.WithOwner.WithRepo {
             /// Specifies if the given environment is one that end-users directly interact with. Default: `true` when `environment` is `production` and `false` otherwise.
             public var isProductionEnvironment: Bool?
 
-            public enum Payload: Encodable {
+            public enum Payload: Encodable, OneOfEnum {
                 case object([String: AnyJSON])
                 case string(String)
+
+                case unknown(UnknownPayload)
+
+                public struct UnknownPayload: Encodable, UnknownOneOfCase {
+                  public enum `Type`: String, Codable, CaseIterable, Sendable {
+                    case unknown
+                  }
+                  public var type: `Type` = .unknown
+                  public var discriminatorValue: String
+                  public init(discriminatorValue: String) {
+                    self.discriminatorValue = discriminatorValue
+                  }
+                }
+
+                public var isUnknownCase: Bool {
+                  if case .unknown = self {
+                    true
+                  } else {
+                    false
+                  }
+                }
 
                 public func encode(to encoder: Encoder) throws {
                     var container = encoder.singleValueContainer()
                     switch self {
                     case .object(let value): try container.encode(value)
                     case .string(let value): try container.encode(value)
+                    case .unknown(let value): try container.encode(value)
                     }
                 }
             }

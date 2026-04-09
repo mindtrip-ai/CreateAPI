@@ -19,7 +19,7 @@ public struct Recipe: Codable {
     /// A URL to the main image of the recipe, or null if one was not specified.
     ///
     /// Example: "https://img-global.cpcdn.com/recipes/65555efe64df98ce/m/photo.jpg"
-    public var imageURL: URL?
+    public var imageURL: URL
     /// The date that the recipe was published in ISO8601 format.
     ///
     /// Example: "2017-07-05T02:34:00+00:00"
@@ -32,7 +32,7 @@ public struct Recipe: Codable {
     /// An array of steps to follow within the recipe.
     public var steps: [Step]
 
-    public init(id: Int, title: String, story: String, imageURL: URL? = nil, publishedAt: Date, user: User, ingredients: [String], steps: [Step]) {
+    public init(id: Int, title: String, story: String, imageURL: URL, publishedAt: Date, user: User, ingredients: [String], steps: [Step]) {
         self.id = id
         self.title = title
         self.story = story
@@ -48,7 +48,7 @@ public struct Recipe: Codable {
         self.id = try values.decode(Int.self, forKey: "id")
         self.title = try values.decode(String.self, forKey: "title")
         self.story = try values.decode(String.self, forKey: "story")
-        self.imageURL = try values.decodeIfPresent(URL.self, forKey: "image_url")
+        self.imageURL = try values.decode(URL.self, forKey: "image_url")
         self.publishedAt = try values.decode(Date.self, forKey: "published_at")
         self.user = try values.decode(User.self, forKey: "user")
         self.ingredients = try values.decode([String].self, forKey: "ingredients")
@@ -60,7 +60,7 @@ public struct Recipe: Codable {
         try values.encode(id, forKey: "id")
         try values.encode(title, forKey: "title")
         try values.encode(story, forKey: "story")
-        try values.encodeIfPresent(imageURL, forKey: "image_url")
+        try values.encode(imageURL, forKey: "image_url")
         try values.encode(publishedAt, forKey: "published_at")
         try values.encode(user, forKey: "user")
         try values.encode(ingredients, forKey: "ingredients")

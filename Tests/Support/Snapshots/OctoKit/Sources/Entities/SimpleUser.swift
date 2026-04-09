@@ -15,7 +15,7 @@ public struct SimpleUser: Codable {
     /// Example: "https://github.com/images/error/octocat_happy.gif"
     public var avatarURL: URL
     /// Example: "41d064eb2195891e12d0413f63227ea7"
-    public var gravatarID: String?
+    public var gravatarID: String
     /// Example: "https://api.github.com/users/octocat"
     public var url: URL
     /// Example: "https://github.com/octocat"
@@ -44,7 +44,7 @@ public struct SimpleUser: Codable {
     /// Example: "2020-07-09T00:17:55Z"
     public var starredAt: String?
 
-    public init(name: String? = nil, email: String? = nil, login: String, id: Int, nodeID: String, avatarURL: URL, gravatarID: String? = nil, url: URL, htmlURL: URL, followersURL: URL, followingURL: String, gistsURL: String, starredURL: String, subscriptionsURL: URL, organizationsURL: URL, reposURL: URL, eventsURL: String, receivedEventsURL: URL, type: String, isSiteAdmin: Bool, starredAt: String? = nil) {
+    public init(name: String? = nil, email: String? = nil, login: String, id: Int, nodeID: String, avatarURL: URL, gravatarID: String, url: URL, htmlURL: URL, followersURL: URL, followingURL: String, gistsURL: String, starredURL: String, subscriptionsURL: URL, organizationsURL: URL, reposURL: URL, eventsURL: String, receivedEventsURL: URL, type: String, isSiteAdmin: Bool, starredAt: String? = nil) {
         self.name = name
         self.email = email
         self.login = login
@@ -76,7 +76,7 @@ public struct SimpleUser: Codable {
         self.id = try values.decode(Int.self, forKey: "id")
         self.nodeID = try values.decode(String.self, forKey: "node_id")
         self.avatarURL = try values.decode(URL.self, forKey: "avatar_url")
-        self.gravatarID = try values.decodeIfPresent(String.self, forKey: "gravatar_id")
+        self.gravatarID = try values.decode(String.self, forKey: "gravatar_id")
         self.url = try values.decode(URL.self, forKey: "url")
         self.htmlURL = try values.decode(URL.self, forKey: "html_url")
         self.followersURL = try values.decode(URL.self, forKey: "followers_url")
@@ -101,7 +101,7 @@ public struct SimpleUser: Codable {
         try values.encode(id, forKey: "id")
         try values.encode(nodeID, forKey: "node_id")
         try values.encode(avatarURL, forKey: "avatar_url")
-        try values.encodeIfPresent(gravatarID, forKey: "gravatar_id")
+        try values.encode(gravatarID, forKey: "gravatar_id")
         try values.encode(url, forKey: "url")
         try values.encode(htmlURL, forKey: "html_url")
         try values.encode(followersURL, forKey: "followers_url")

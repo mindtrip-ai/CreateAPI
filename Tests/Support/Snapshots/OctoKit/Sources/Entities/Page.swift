@@ -15,11 +15,11 @@ public struct Page: Codable {
     /// The status of the most recent build of the Page.
     ///
     /// Example: "built"
-    public var status: Status?
+    public var status: Status
     /// The Pages site's custom domain
     ///
     /// Example: "example.com"
-    public var cname: String?
+    public var cname: String
     /// The state if the domain is verified
     ///
     /// Example: "pending"
@@ -50,22 +50,38 @@ public struct Page: Codable {
     /// The status of the most recent build of the Page.
     ///
     /// Example: "built"
-    public enum Status: String, Codable, CaseIterable {
+    public enum Status: String, Codable, CaseIterable, Sendable {
         case built
         case building
         case errored
+        case unknown
+
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let rawValue = try container.decode(String.self)
+            self = Self(rawValue: rawValue) ?? .unknown
+        }
     }
 
     /// The state if the domain is verified
     ///
     /// Example: "pending"
-    public enum ProtectedDomainState: String, Codable, CaseIterable {
+    public enum ProtectedDomainState: String, Codable, CaseIterable, Sendable {
         case pending
         case verified
         case unverified
+        case unknown
+
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let rawValue = try container.decode(String.self)
+            self = Self(rawValue: rawValue) ?? .unknown
+        }
     }
 
-    public init(url: URL, status: Status? = nil, cname: String? = nil, protectedDomainState: ProtectedDomainState? = nil, pendingDomainUnverifiedAt: Date? = nil, isCustom404: Bool, htmlURL: URL? = nil, source: PagesSourceHash? = nil, isPublic: Bool, httpsCertificate: PagesHTTPSCertificate? = nil, isHTTPSEnforced: Bool? = nil) {
+    public init(url: URL, status: Status, cname: String, protectedDomainState: ProtectedDomainState? = nil, pendingDomainUnverifiedAt: Date? = nil, isCustom404: Bool, htmlURL: URL? = nil, source: PagesSourceHash? = nil, isPublic: Bool, httpsCertificate: PagesHTTPSCertificate? = nil, isHTTPSEnforced: Bool? = nil) {
         self.url = url
         self.status = status
         self.cname = cname
@@ -82,8 +98,8 @@ public struct Page: Codable {
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: StringCodingKey.self)
         self.url = try values.decode(URL.self, forKey: "url")
-        self.status = try values.decodeIfPresent(Status.self, forKey: "status")
-        self.cname = try values.decodeIfPresent(String.self, forKey: "cname")
+        self.status = try values.decode(Status.self, forKey: "status")
+        self.cname = try values.decode(String.self, forKey: "cname")
         self.protectedDomainState = try values.decodeIfPresent(ProtectedDomainState.self, forKey: "protected_domain_state")
         self.pendingDomainUnverifiedAt = try values.decodeIfPresent(Date.self, forKey: "pending_domain_unverified_at")
         self.isCustom404 = try values.decode(Bool.self, forKey: "custom_404")
@@ -97,8 +113,8 @@ public struct Page: Codable {
     public func encode(to encoder: Encoder) throws {
         var values = encoder.container(keyedBy: StringCodingKey.self)
         try values.encode(url, forKey: "url")
-        try values.encodeIfPresent(status, forKey: "status")
-        try values.encodeIfPresent(cname, forKey: "cname")
+        try values.encode(status, forKey: "status")
+        try values.encode(cname, forKey: "cname")
         try values.encodeIfPresent(protectedDomainState, forKey: "protected_domain_state")
         try values.encodeIfPresent(pendingDomainUnverifiedAt, forKey: "pending_domain_unverified_at")
         try values.encode(isCustom404, forKey: "custom_404")

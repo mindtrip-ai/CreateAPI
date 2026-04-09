@@ -8,9 +8,17 @@ struct MapTest: Codable {
     var mapMapOfString: [String: [String: String]]?
     var mapOfEnumString: [String: MapOfEnumStringItem]?
 
-    enum MapOfEnumStringItem: String, Codable, CaseIterable {
+    enum MapOfEnumStringItem: String, Codable, CaseIterable, Sendable {
         case upper = "UPPER"
         case lower
+        case unknown
+
+
+        init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let rawValue = try container.decode(String.self)
+            self = Self(rawValue: rawValue) ?? .unknown
+        }
     }
 
     init(mapMapOfString: [String: [String: String]]? = nil, mapOfEnumString: [String: MapOfEnumStringItem]? = nil) {

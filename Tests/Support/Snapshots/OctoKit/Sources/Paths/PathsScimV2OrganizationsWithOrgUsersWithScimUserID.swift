@@ -184,16 +184,45 @@ extension Paths.Scim.V2.Organizations.WithOrg.Users {
                 public var path: String?
                 public var value: Value?
 
-                public enum Op: String, Codable, CaseIterable {
+                public enum Op: String, Codable, CaseIterable, Sendable {
                     case add
                     case remove
                     case replace
+                    case unknown
+
+
+                    public init(from decoder: Decoder) throws {
+                        let container = try decoder.singleValueContainer()
+                        let rawValue = try container.decode(String.self)
+                        self = Self(rawValue: rawValue) ?? .unknown
+                    }
                 }
 
-                public enum Value: Encodable {
+                public enum Value: Encodable, OneOfEnum {
                     case object(Object)
                     case placeholderItems([PlaceholderItem])
                     case string(String)
+
+                    case unknown(UnknownValue)
+
+                    public struct UnknownValue: Encodable, UnknownOneOfCase {
+                      public enum `Type`: String, Codable, CaseIterable, Sendable {
+                        case unknown
+                      }
+                      public var type: `Type` = .unknown
+                      public var discriminatorValue: String
+                      public init(discriminatorValue: String) {
+                        self.discriminatorValue = discriminatorValue
+                      }
+                    }
+
+                    public var isUnknownCase: Bool {
+                      if case .unknown = self {
+                        true
+                      } else {
+                        false
+                      }
+                    }
 
                     public struct Object: Encodable {
                         public var isActive: Bool?
@@ -242,6 +271,7 @@ extension Paths.Scim.V2.Organizations.WithOrg.Users {
                         case .object(let value): try container.encode(value)
                         case .placeholderItems(let value): try container.encode(value)
                         case .string(let value): try container.encode(value)
+                        case .unknown(let value): try container.encode(value)
                         }
                     }
                 }

@@ -31,11 +31,19 @@ extension Paths.Repos.WithOwner.WithRepo {
             public var perPage: Int?
             public var page: Int?
 
-            public enum Sort: String, Codable, CaseIterable {
+            public enum Sort: String, Codable, CaseIterable, Sendable {
                 case newest
                 case oldest
                 case stargazers
                 case watchers
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             public init(sort: Sort? = nil, perPage: Int? = nil, page: Int? = nil) {

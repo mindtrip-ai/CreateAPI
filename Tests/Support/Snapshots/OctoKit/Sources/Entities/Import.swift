@@ -6,7 +6,7 @@ import NaiveDate
 
 /// A repository import from an external source.
 public struct Import: Codable {
-    public var vcs: String?
+    public var vcs: String
     public var useLfs: Bool?
     /// The URL of the originating repository.
     public var vcsURL: String
@@ -31,7 +31,7 @@ public struct Import: Codable {
     public var repositoryURL: URL
     public var svnRoot: String?
 
-    public enum Status: String, Codable, CaseIterable {
+    public enum Status: String, Codable, CaseIterable, Sendable {
         case auth
         case error
         case `none`
@@ -76,7 +76,7 @@ public struct Import: Codable {
         }
     }
 
-    public init(vcs: String? = nil, useLfs: Bool? = nil, vcsURL: String, svcRoot: String? = nil, tfvcProject: String? = nil, status: Status, statusText: String? = nil, failedStep: String? = nil, errorMessage: String? = nil, importPercent: Int? = nil, commitCount: Int? = nil, pushPercent: Int? = nil, hasLargeFiles: Bool? = nil, largeFilesSize: Int? = nil, largeFilesCount: Int? = nil, projectChoices: [ProjectChoice]? = nil, message: String? = nil, authorsCount: Int? = nil, url: URL, htmlURL: URL, authorsURL: URL, repositoryURL: URL, svnRoot: String? = nil) {
+    public init(vcs: String, useLfs: Bool? = nil, vcsURL: String, svcRoot: String? = nil, tfvcProject: String? = nil, status: Status, statusText: String? = nil, failedStep: String? = nil, errorMessage: String? = nil, importPercent: Int? = nil, commitCount: Int? = nil, pushPercent: Int? = nil, hasLargeFiles: Bool? = nil, largeFilesSize: Int? = nil, largeFilesCount: Int? = nil, projectChoices: [ProjectChoice]? = nil, message: String? = nil, authorsCount: Int? = nil, url: URL, htmlURL: URL, authorsURL: URL, repositoryURL: URL, svnRoot: String? = nil) {
         self.vcs = vcs
         self.useLfs = useLfs
         self.vcsURL = vcsURL
@@ -104,7 +104,7 @@ public struct Import: Codable {
 
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: StringCodingKey.self)
-        self.vcs = try values.decodeIfPresent(String.self, forKey: "vcs")
+        self.vcs = try values.decode(String.self, forKey: "vcs")
         self.useLfs = try values.decodeIfPresent(Bool.self, forKey: "use_lfs")
         self.vcsURL = try values.decode(String.self, forKey: "vcs_url")
         self.svcRoot = try values.decodeIfPresent(String.self, forKey: "svc_root")
@@ -131,7 +131,7 @@ public struct Import: Codable {
 
     public func encode(to encoder: Encoder) throws {
         var values = encoder.container(keyedBy: StringCodingKey.self)
-        try values.encodeIfPresent(vcs, forKey: "vcs")
+        try values.encode(vcs, forKey: "vcs")
         try values.encodeIfPresent(useLfs, forKey: "use_lfs")
         try values.encode(vcsURL, forKey: "vcs_url")
         try values.encodeIfPresent(svcRoot, forKey: "svc_root")

@@ -6,11 +6,11 @@ import NaiveDate
 
 public struct TopicSearchResultItem: Codable {
     public var name: String
-    public var displayName: String?
-    public var shortDescription: String?
-    public var description: String?
-    public var createdBy: String?
-    public var released: String?
+    public var displayName: String
+    public var shortDescription: String
+    public var description: String
+    public var createdBy: String
+    public var released: String
     public var createdAt: Date
     public var updatedAt: Date
     public var isFeatured: Bool
@@ -119,7 +119,7 @@ public struct TopicSearchResultItem: Codable {
         }
     }
 
-    public init(name: String, displayName: String? = nil, shortDescription: String? = nil, description: String? = nil, createdBy: String? = nil, released: String? = nil, createdAt: Date, updatedAt: Date, isFeatured: Bool, isCurated: Bool, score: Double, repositoryCount: Int? = nil, logoURL: URL? = nil, textMatches: [SearchResultTextMatch]? = nil, related: [RelatedItem]? = nil, aliases: [Alias]? = nil) {
+    public init(name: String, displayName: String, shortDescription: String, description: String, createdBy: String, released: String, createdAt: Date, updatedAt: Date, isFeatured: Bool, isCurated: Bool, score: Double, repositoryCount: Int? = nil, logoURL: URL? = nil, textMatches: [SearchResultTextMatch]? = nil, related: [RelatedItem]? = nil, aliases: [Alias]? = nil) {
         self.name = name
         self.displayName = displayName
         self.shortDescription = shortDescription
@@ -141,11 +141,11 @@ public struct TopicSearchResultItem: Codable {
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: StringCodingKey.self)
         self.name = try values.decode(String.self, forKey: "name")
-        self.displayName = try values.decodeIfPresent(String.self, forKey: "display_name")
-        self.shortDescription = try values.decodeIfPresent(String.self, forKey: "short_description")
-        self.description = try values.decodeIfPresent(String.self, forKey: "description")
-        self.createdBy = try values.decodeIfPresent(String.self, forKey: "created_by")
-        self.released = try values.decodeIfPresent(String.self, forKey: "released")
+        self.displayName = try values.decode(String.self, forKey: "display_name")
+        self.shortDescription = try values.decode(String.self, forKey: "short_description")
+        self.description = try values.decode(String.self, forKey: "description")
+        self.createdBy = try values.decode(String.self, forKey: "created_by")
+        self.released = try values.decode(String.self, forKey: "released")
         self.createdAt = try values.decode(Date.self, forKey: "created_at")
         self.updatedAt = try values.decode(Date.self, forKey: "updated_at")
         self.isFeatured = try values.decode(Bool.self, forKey: "featured")
@@ -161,11 +161,11 @@ public struct TopicSearchResultItem: Codable {
     public func encode(to encoder: Encoder) throws {
         var values = encoder.container(keyedBy: StringCodingKey.self)
         try values.encode(name, forKey: "name")
-        try values.encodeIfPresent(displayName, forKey: "display_name")
-        try values.encodeIfPresent(shortDescription, forKey: "short_description")
-        try values.encodeIfPresent(description, forKey: "description")
-        try values.encodeIfPresent(createdBy, forKey: "created_by")
-        try values.encodeIfPresent(released, forKey: "released")
+        try values.encode(displayName, forKey: "display_name")
+        try values.encode(shortDescription, forKey: "short_description")
+        try values.encode(description, forKey: "description")
+        try values.encode(createdBy, forKey: "created_by")
+        try values.encode(released, forKey: "released")
         try values.encode(createdAt, forKey: "created_at")
         try values.encode(updatedAt, forKey: "updated_at")
         try values.encode(isFeatured, forKey: "featured")

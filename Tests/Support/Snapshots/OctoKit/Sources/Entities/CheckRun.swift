@@ -17,33 +17,33 @@ public struct CheckRun: Codable {
     /// Example: "MDg6Q2hlY2tSdW40"
     public var nodeID: String
     /// Example: "42"
-    public var externalID: String?
+    public var externalID: String
     /// Example: "https://api.github.com/repos/github/hello-world/check-runs/4"
     public var url: String
     /// Example: "https://github.com/github/hello-world/runs/4"
-    public var htmlURL: String?
+    public var htmlURL: String
     /// Example: "https://example.com"
-    public var detailsURL: String?
+    public var detailsURL: String
     /// The phase of the lifecycle that the check is currently in.
     ///
     /// Example: "queued"
     public var status: Status
     /// Example: "neutral"
-    public var conclusion: Conclusion?
+    public var conclusion: Conclusion
     /// Example: "2018-05-04T01:14:52Z"
-    public var startedAt: Date?
+    public var startedAt: Date
     /// Example: "2018-05-04T01:14:52Z"
-    public var completedAt: Date?
+    public var completedAt: Date
     public var output: Output
     /// The name of the check.
     ///
     /// Example: "test-coverage"
     public var name: String
-    public var checkSuite: CheckSuite?
+    public var checkSuite: CheckSuite
     /// GitHub app
     ///
     /// GitHub apps are a new way to extend GitHub. They can be installed directly on organizations and user accounts and granted access to specific repositories. They come with granular permissions and built-in webhooks. GitHub apps are first class actors within GitHub.
-    public var app: Integration?
+    public var app: Integration
     public var pullRequests: [PullRequestMinimal]
     /// A deployment created as the result of an Actions check run from a workflow that references an environment
     public var deployment: DeploymentSimple?
@@ -51,14 +51,22 @@ public struct CheckRun: Codable {
     /// The phase of the lifecycle that the check is currently in.
     ///
     /// Example: "queued"
-    public enum Status: String, Codable, CaseIterable {
+    public enum Status: String, Codable, CaseIterable, Sendable {
         case queued
         case inProgress = "in_progress"
         case completed
+        case unknown
+
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let rawValue = try container.decode(String.self)
+            self = Self(rawValue: rawValue) ?? .unknown
+        }
     }
 
     /// Example: "neutral"
-    public enum Conclusion: String, Codable, CaseIterable {
+    public enum Conclusion: String, Codable, CaseIterable, Sendable {
         case success
         case failure
         case neutral
@@ -66,16 +74,24 @@ public struct CheckRun: Codable {
         case skipped
         case timedOut = "timed_out"
         case actionRequired = "action_required"
+        case unknown
+
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let rawValue = try container.decode(String.self)
+            self = Self(rawValue: rawValue) ?? .unknown
+        }
     }
 
     public struct Output: Codable {
-        public var title: String?
-        public var summary: String?
-        public var text: String?
+        public var title: String
+        public var summary: String
+        public var text: String
         public var annotationsCount: Int
         public var annotationsURL: URL
 
-        public init(title: String? = nil, summary: String? = nil, text: String? = nil, annotationsCount: Int, annotationsURL: URL) {
+        public init(title: String, summary: String, text: String, annotationsCount: Int, annotationsURL: URL) {
             self.title = title
             self.summary = summary
             self.text = text
@@ -85,18 +101,18 @@ public struct CheckRun: Codable {
 
         public init(from decoder: Decoder) throws {
             let values = try decoder.container(keyedBy: StringCodingKey.self)
-            self.title = try values.decodeIfPresent(String.self, forKey: "title")
-            self.summary = try values.decodeIfPresent(String.self, forKey: "summary")
-            self.text = try values.decodeIfPresent(String.self, forKey: "text")
+            self.title = try values.decode(String.self, forKey: "title")
+            self.summary = try values.decode(String.self, forKey: "summary")
+            self.text = try values.decode(String.self, forKey: "text")
             self.annotationsCount = try values.decode(Int.self, forKey: "annotations_count")
             self.annotationsURL = try values.decode(URL.self, forKey: "annotations_url")
         }
 
         public func encode(to encoder: Encoder) throws {
             var values = encoder.container(keyedBy: StringCodingKey.self)
-            try values.encodeIfPresent(title, forKey: "title")
-            try values.encodeIfPresent(summary, forKey: "summary")
-            try values.encodeIfPresent(text, forKey: "text")
+            try values.encode(title, forKey: "title")
+            try values.encode(summary, forKey: "summary")
+            try values.encode(text, forKey: "text")
             try values.encode(annotationsCount, forKey: "annotations_count")
             try values.encode(annotationsURL, forKey: "annotations_url")
         }
@@ -120,7 +136,7 @@ public struct CheckRun: Codable {
         }
     }
 
-    public init(id: Int, headSha: String, nodeID: String, externalID: String? = nil, url: String, htmlURL: String? = nil, detailsURL: String? = nil, status: Status, conclusion: Conclusion? = nil, startedAt: Date? = nil, completedAt: Date? = nil, output: Output, name: String, checkSuite: CheckSuite? = nil, app: Integration? = nil, pullRequests: [PullRequestMinimal], deployment: DeploymentSimple? = nil) {
+    public init(id: Int, headSha: String, nodeID: String, externalID: String, url: String, htmlURL: String, detailsURL: String, status: Status, conclusion: Conclusion, startedAt: Date, completedAt: Date, output: Output, name: String, checkSuite: CheckSuite, app: Integration, pullRequests: [PullRequestMinimal], deployment: DeploymentSimple? = nil) {
         self.id = id
         self.headSha = headSha
         self.nodeID = nodeID
@@ -145,18 +161,18 @@ public struct CheckRun: Codable {
         self.id = try values.decode(Int.self, forKey: "id")
         self.headSha = try values.decode(String.self, forKey: "head_sha")
         self.nodeID = try values.decode(String.self, forKey: "node_id")
-        self.externalID = try values.decodeIfPresent(String.self, forKey: "external_id")
+        self.externalID = try values.decode(String.self, forKey: "external_id")
         self.url = try values.decode(String.self, forKey: "url")
-        self.htmlURL = try values.decodeIfPresent(String.self, forKey: "html_url")
-        self.detailsURL = try values.decodeIfPresent(String.self, forKey: "details_url")
+        self.htmlURL = try values.decode(String.self, forKey: "html_url")
+        self.detailsURL = try values.decode(String.self, forKey: "details_url")
         self.status = try values.decode(Status.self, forKey: "status")
-        self.conclusion = try values.decodeIfPresent(Conclusion.self, forKey: "conclusion")
-        self.startedAt = try values.decodeIfPresent(Date.self, forKey: "started_at")
-        self.completedAt = try values.decodeIfPresent(Date.self, forKey: "completed_at")
+        self.conclusion = try values.decode(Conclusion.self, forKey: "conclusion")
+        self.startedAt = try values.decode(Date.self, forKey: "started_at")
+        self.completedAt = try values.decode(Date.self, forKey: "completed_at")
         self.output = try values.decode(Output.self, forKey: "output")
         self.name = try values.decode(String.self, forKey: "name")
-        self.checkSuite = try values.decodeIfPresent(CheckSuite.self, forKey: "check_suite")
-        self.app = try values.decodeIfPresent(Integration.self, forKey: "app")
+        self.checkSuite = try values.decode(CheckSuite.self, forKey: "check_suite")
+        self.app = try values.decode(Integration.self, forKey: "app")
         self.pullRequests = try values.decode([PullRequestMinimal].self, forKey: "pull_requests")
         self.deployment = try values.decodeIfPresent(DeploymentSimple.self, forKey: "deployment")
     }
@@ -166,18 +182,18 @@ public struct CheckRun: Codable {
         try values.encode(id, forKey: "id")
         try values.encode(headSha, forKey: "head_sha")
         try values.encode(nodeID, forKey: "node_id")
-        try values.encodeIfPresent(externalID, forKey: "external_id")
+        try values.encode(externalID, forKey: "external_id")
         try values.encode(url, forKey: "url")
-        try values.encodeIfPresent(htmlURL, forKey: "html_url")
-        try values.encodeIfPresent(detailsURL, forKey: "details_url")
+        try values.encode(htmlURL, forKey: "html_url")
+        try values.encode(detailsURL, forKey: "details_url")
         try values.encode(status, forKey: "status")
-        try values.encodeIfPresent(conclusion, forKey: "conclusion")
-        try values.encodeIfPresent(startedAt, forKey: "started_at")
-        try values.encodeIfPresent(completedAt, forKey: "completed_at")
+        try values.encode(conclusion, forKey: "conclusion")
+        try values.encode(startedAt, forKey: "started_at")
+        try values.encode(completedAt, forKey: "completed_at")
         try values.encode(output, forKey: "output")
         try values.encode(name, forKey: "name")
-        try values.encodeIfPresent(checkSuite, forKey: "check_suite")
-        try values.encodeIfPresent(app, forKey: "app")
+        try values.encode(checkSuite, forKey: "check_suite")
+        try values.encode(app, forKey: "app")
         try values.encode(pullRequests, forKey: "pull_requests")
         try values.encodeIfPresent(deployment, forKey: "deployment")
     }

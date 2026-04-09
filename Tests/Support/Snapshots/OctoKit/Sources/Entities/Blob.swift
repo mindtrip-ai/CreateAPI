@@ -9,11 +9,11 @@ public struct Blob: Codable {
     public var encoding: String
     public var url: URL
     public var sha: String
-    public var size: Int?
+    public var size: Int
     public var nodeID: String
     public var highlightedContent: String?
 
-    public init(content: String, encoding: String, url: URL, sha: String, size: Int? = nil, nodeID: String, highlightedContent: String? = nil) {
+    public init(content: String, encoding: String, url: URL, sha: String, size: Int, nodeID: String, highlightedContent: String? = nil) {
         self.content = content
         self.encoding = encoding
         self.url = url
@@ -29,7 +29,7 @@ public struct Blob: Codable {
         self.encoding = try values.decode(String.self, forKey: "encoding")
         self.url = try values.decode(URL.self, forKey: "url")
         self.sha = try values.decode(String.self, forKey: "sha")
-        self.size = try values.decodeIfPresent(Int.self, forKey: "size")
+        self.size = try values.decode(Int.self, forKey: "size")
         self.nodeID = try values.decode(String.self, forKey: "node_id")
         self.highlightedContent = try values.decodeIfPresent(String.self, forKey: "highlighted_content")
     }
@@ -40,7 +40,7 @@ public struct Blob: Codable {
         try values.encode(encoding, forKey: "encoding")
         try values.encode(url, forKey: "url")
         try values.encode(sha, forKey: "sha")
-        try values.encodeIfPresent(size, forKey: "size")
+        try values.encode(size, forKey: "size")
         try values.encode(nodeID, forKey: "node_id")
         try values.encodeIfPresent(highlightedContent, forKey: "highlighted_content")
     }

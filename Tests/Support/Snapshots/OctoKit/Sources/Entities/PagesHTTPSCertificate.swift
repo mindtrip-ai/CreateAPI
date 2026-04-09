@@ -16,7 +16,7 @@ public struct PagesHTTPSCertificate: Codable {
     public var expiresAt: NaiveDate?
 
     /// Example: "approved"
-    public enum State: String, Codable, CaseIterable {
+    public enum State: String, Codable, CaseIterable, Sendable {
         case new
         case authorizationCreated = "authorization_created"
         case authorizationPending = "authorization_pending"
@@ -29,6 +29,14 @@ public struct PagesHTTPSCertificate: Codable {
         case badAuthz = "bad_authz"
         case destroyPending = "destroy_pending"
         case dnsChanged = "dns_changed"
+        case unknown
+
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let rawValue = try container.decode(String.self)
+            self = Self(rawValue: rawValue) ?? .unknown
+        }
     }
 
     public init(state: State, description: String, domains: [String], expiresAt: NaiveDate? = nil) {

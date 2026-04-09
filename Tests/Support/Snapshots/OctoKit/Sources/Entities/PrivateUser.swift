@@ -13,7 +13,7 @@ public struct PrivateUser: Codable {
     /// Example: "https://github.com/images/error/octocat_happy.gif"
     public var avatarURL: URL
     /// Example: "41d064eb2195891e12d0413f63227ea7"
-    public var gravatarID: String?
+    public var gravatarID: String
     /// Example: "https://api.github.com/users/octocat"
     public var url: URL
     /// Example: "https://github.com/octocat"
@@ -40,18 +40,18 @@ public struct PrivateUser: Codable {
     public var type: String
     public var isSiteAdmin: Bool
     /// Example: "monalisa octocat"
-    public var name: String?
+    public var name: String
     /// Example: "GitHub"
-    public var company: String?
+    public var company: String
     /// Example: "https://github.com/blog"
-    public var blog: String?
+    public var blog: String
     /// Example: "San Francisco"
-    public var location: String?
+    public var location: String
     /// Example: "octocat@github.com"
-    public var email: String?
-    public var isHireable: Bool?
+    public var email: String
+    public var isHireable: Bool
     /// Example: "There once was..."
-    public var bio: String?
+    public var bio: String
     /// Example: "monalisa"
     public var twitterUsername: String?
     public var publicRepos: Int
@@ -109,7 +109,7 @@ public struct PrivateUser: Codable {
         }
     }
 
-    public init(login: String, id: Int, nodeID: String, avatarURL: URL, gravatarID: String? = nil, url: URL, htmlURL: URL, followersURL: URL, followingURL: String, gistsURL: String, starredURL: String, subscriptionsURL: URL, organizationsURL: URL, reposURL: URL, eventsURL: String, receivedEventsURL: URL, type: String, isSiteAdmin: Bool, name: String? = nil, company: String? = nil, blog: String? = nil, location: String? = nil, email: String? = nil, isHireable: Bool? = nil, bio: String? = nil, twitterUsername: String? = nil, publicRepos: Int, publicGists: Int, followers: Int, following: Int, createdAt: Date, updatedAt: Date, privateGists: Int, totalPrivateRepos: Int, ownedPrivateRepos: Int, diskUsage: Int, collaborators: Int, isTwoFactorAuthentication: Bool, plan: Plan? = nil, suspendedAt: Date? = nil, isBusinessPlus: Bool? = nil, ldapDn: String? = nil) {
+    public init(login: String, id: Int, nodeID: String, avatarURL: URL, gravatarID: String, url: URL, htmlURL: URL, followersURL: URL, followingURL: String, gistsURL: String, starredURL: String, subscriptionsURL: URL, organizationsURL: URL, reposURL: URL, eventsURL: String, receivedEventsURL: URL, type: String, isSiteAdmin: Bool, name: String, company: String, blog: String, location: String, email: String, isHireable: Bool, bio: String, twitterUsername: String? = nil, publicRepos: Int, publicGists: Int, followers: Int, following: Int, createdAt: Date, updatedAt: Date, privateGists: Int, totalPrivateRepos: Int, ownedPrivateRepos: Int, diskUsage: Int, collaborators: Int, isTwoFactorAuthentication: Bool, plan: Plan? = nil, suspendedAt: Date? = nil, isBusinessPlus: Bool? = nil, ldapDn: String? = nil) {
         self.login = login
         self.id = id
         self.nodeID = nodeID
@@ -160,7 +160,7 @@ public struct PrivateUser: Codable {
         self.id = try values.decode(Int.self, forKey: "id")
         self.nodeID = try values.decode(String.self, forKey: "node_id")
         self.avatarURL = try values.decode(URL.self, forKey: "avatar_url")
-        self.gravatarID = try values.decodeIfPresent(String.self, forKey: "gravatar_id")
+        self.gravatarID = try values.decode(String.self, forKey: "gravatar_id")
         self.url = try values.decode(URL.self, forKey: "url")
         self.htmlURL = try values.decode(URL.self, forKey: "html_url")
         self.followersURL = try values.decode(URL.self, forKey: "followers_url")
@@ -174,13 +174,13 @@ public struct PrivateUser: Codable {
         self.receivedEventsURL = try values.decode(URL.self, forKey: "received_events_url")
         self.type = try values.decode(String.self, forKey: "type")
         self.isSiteAdmin = try values.decode(Bool.self, forKey: "site_admin")
-        self.name = try values.decodeIfPresent(String.self, forKey: "name")
-        self.company = try values.decodeIfPresent(String.self, forKey: "company")
-        self.blog = try values.decodeIfPresent(String.self, forKey: "blog")
-        self.location = try values.decodeIfPresent(String.self, forKey: "location")
-        self.email = try values.decodeIfPresent(String.self, forKey: "email")
-        self.isHireable = try values.decodeIfPresent(Bool.self, forKey: "hireable")
-        self.bio = try values.decodeIfPresent(String.self, forKey: "bio")
+        self.name = try values.decode(String.self, forKey: "name")
+        self.company = try values.decode(String.self, forKey: "company")
+        self.blog = try values.decode(String.self, forKey: "blog")
+        self.location = try values.decode(String.self, forKey: "location")
+        self.email = try values.decode(String.self, forKey: "email")
+        self.isHireable = try values.decode(Bool.self, forKey: "hireable")
+        self.bio = try values.decode(String.self, forKey: "bio")
         self.twitterUsername = try values.decodeIfPresent(String.self, forKey: "twitter_username")
         self.publicRepos = try values.decode(Int.self, forKey: "public_repos")
         self.publicGists = try values.decode(Int.self, forKey: "public_gists")
@@ -206,7 +206,7 @@ public struct PrivateUser: Codable {
         try values.encode(id, forKey: "id")
         try values.encode(nodeID, forKey: "node_id")
         try values.encode(avatarURL, forKey: "avatar_url")
-        try values.encodeIfPresent(gravatarID, forKey: "gravatar_id")
+        try values.encode(gravatarID, forKey: "gravatar_id")
         try values.encode(url, forKey: "url")
         try values.encode(htmlURL, forKey: "html_url")
         try values.encode(followersURL, forKey: "followers_url")
@@ -220,13 +220,13 @@ public struct PrivateUser: Codable {
         try values.encode(receivedEventsURL, forKey: "received_events_url")
         try values.encode(type, forKey: "type")
         try values.encode(isSiteAdmin, forKey: "site_admin")
-        try values.encodeIfPresent(name, forKey: "name")
-        try values.encodeIfPresent(company, forKey: "company")
-        try values.encodeIfPresent(blog, forKey: "blog")
-        try values.encodeIfPresent(location, forKey: "location")
-        try values.encodeIfPresent(email, forKey: "email")
-        try values.encodeIfPresent(isHireable, forKey: "hireable")
-        try values.encodeIfPresent(bio, forKey: "bio")
+        try values.encode(name, forKey: "name")
+        try values.encode(company, forKey: "company")
+        try values.encode(blog, forKey: "blog")
+        try values.encode(location, forKey: "location")
+        try values.encode(email, forKey: "email")
+        try values.encode(isHireable, forKey: "hireable")
+        try values.encode(bio, forKey: "bio")
         try values.encodeIfPresent(twitterUsername, forKey: "twitter_username")
         try values.encode(publicRepos, forKey: "public_repos")
         try values.encode(publicGists, forKey: "public_gists")

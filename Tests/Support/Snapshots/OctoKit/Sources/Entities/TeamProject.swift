@@ -13,7 +13,7 @@ public struct TeamProject: Codable {
     public var id: Int
     public var nodeID: String
     public var name: String
-    public var body: String?
+    public var body: String
     public var number: Int
     public var state: String
     /// Simple User
@@ -52,7 +52,7 @@ public struct TeamProject: Codable {
         }
     }
 
-    public init(ownerURL: String, url: String, htmlURL: String, columnsURL: String, id: Int, nodeID: String, name: String, body: String? = nil, number: Int, state: String, creator: SimpleUser, createdAt: String, updatedAt: String, organizationPermission: String? = nil, isPrivate: Bool? = nil, permissions: Permissions) {
+    public init(ownerURL: String, url: String, htmlURL: String, columnsURL: String, id: Int, nodeID: String, name: String, body: String, number: Int, state: String, creator: SimpleUser, createdAt: String, updatedAt: String, organizationPermission: String? = nil, isPrivate: Bool? = nil, permissions: Permissions) {
         self.ownerURL = ownerURL
         self.url = url
         self.htmlURL = htmlURL
@@ -80,7 +80,7 @@ public struct TeamProject: Codable {
         self.id = try values.decode(Int.self, forKey: "id")
         self.nodeID = try values.decode(String.self, forKey: "node_id")
         self.name = try values.decode(String.self, forKey: "name")
-        self.body = try values.decodeIfPresent(String.self, forKey: "body")
+        self.body = try values.decode(String.self, forKey: "body")
         self.number = try values.decode(Int.self, forKey: "number")
         self.state = try values.decode(String.self, forKey: "state")
         self.creator = try values.decode(SimpleUser.self, forKey: "creator")
@@ -100,7 +100,7 @@ public struct TeamProject: Codable {
         try values.encode(id, forKey: "id")
         try values.encode(nodeID, forKey: "node_id")
         try values.encode(name, forKey: "name")
-        try values.encodeIfPresent(body, forKey: "body")
+        try values.encode(body, forKey: "body")
         try values.encode(number, forKey: "number")
         try values.encode(state, forKey: "state")
         try values.encode(creator, forKey: "creator")

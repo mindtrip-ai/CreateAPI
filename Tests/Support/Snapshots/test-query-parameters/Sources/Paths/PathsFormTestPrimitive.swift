@@ -55,9 +55,17 @@ extension Paths.Form {
             return encoder.items
         }
 
-        public enum `Type`: String, Codable, CaseIterable {
+        public enum `Type`: String, Codable, CaseIterable, Sendable {
             case cat
             case dog
+            case unknown
+
+
+            public init(from decoder: Decoder) throws {
+                let container = try decoder.singleValueContainer()
+                let rawValue = try container.decode(String.self)
+                self = Self(rawValue: rawValue) ?? .unknown
+            }
         }
     }
 }

@@ -43,17 +43,17 @@ public struct HookDeliveryItem: Codable {
     /// The type of activity for the event that triggered the delivery.
     ///
     /// Example: "opened"
-    public var action: String?
+    public var action: String
     /// The id of the GitHub App installation associated with this event.
     ///
     /// Example: 123
-    public var installationID: Int?
+    public var installationID: Int
     /// The id of the repository associated with this event.
     ///
     /// Example: 123
-    public var repositoryID: Int?
+    public var repositoryID: Int
 
-    public init(id: Int, guid: String, deliveredAt: Date, isRedelivery: Bool, duration: Double, status: String, statusCode: Int, event: String, action: String? = nil, installationID: Int? = nil, repositoryID: Int? = nil) {
+    public init(id: Int, guid: String, deliveredAt: Date, isRedelivery: Bool, duration: Double, status: String, statusCode: Int, event: String, action: String, installationID: Int, repositoryID: Int) {
         self.id = id
         self.guid = guid
         self.deliveredAt = deliveredAt
@@ -77,9 +77,9 @@ public struct HookDeliveryItem: Codable {
         self.status = try values.decode(String.self, forKey: "status")
         self.statusCode = try values.decode(Int.self, forKey: "status_code")
         self.event = try values.decode(String.self, forKey: "event")
-        self.action = try values.decodeIfPresent(String.self, forKey: "action")
-        self.installationID = try values.decodeIfPresent(Int.self, forKey: "installation_id")
-        self.repositoryID = try values.decodeIfPresent(Int.self, forKey: "repository_id")
+        self.action = try values.decode(String.self, forKey: "action")
+        self.installationID = try values.decode(Int.self, forKey: "installation_id")
+        self.repositoryID = try values.decode(Int.self, forKey: "repository_id")
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -92,8 +92,8 @@ public struct HookDeliveryItem: Codable {
         try values.encode(status, forKey: "status")
         try values.encode(statusCode, forKey: "status_code")
         try values.encode(event, forKey: "event")
-        try values.encodeIfPresent(action, forKey: "action")
-        try values.encodeIfPresent(installationID, forKey: "installation_id")
-        try values.encodeIfPresent(repositoryID, forKey: "repository_id")
+        try values.encode(action, forKey: "action")
+        try values.encode(installationID, forKey: "installation_id")
+        try values.encode(repositoryID, forKey: "repository_id")
     }
 }

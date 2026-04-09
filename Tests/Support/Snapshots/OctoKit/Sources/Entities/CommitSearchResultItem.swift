@@ -11,11 +11,11 @@ public struct CommitSearchResultItem: Codable {
     public var commentsURL: URL
     public var commit: Commit
     /// Simple User
-    public var author: SimpleUser?
+    public var author: SimpleUser
     /// Git User
     ///
     /// Metaproperties for Git author/committer information.
-    public var committer: GitUser?
+    public var committer: GitUser
     public var parents: [Parent]
     /// Minimal Repository
     public var repository: MinimalRepository
@@ -29,7 +29,7 @@ public struct CommitSearchResultItem: Codable {
         /// Git User
         ///
         /// Metaproperties for Git author/committer information.
-        public var committer: GitUser?
+        public var committer: GitUser
         public var commentCount: Int
         public var message: String
         public var tree: Tree
@@ -84,7 +84,7 @@ public struct CommitSearchResultItem: Codable {
             }
         }
 
-        public init(author: Author, committer: GitUser? = nil, commentCount: Int, message: String, tree: Tree, url: URL, verification: Verification? = nil) {
+        public init(author: Author, committer: GitUser, commentCount: Int, message: String, tree: Tree, url: URL, verification: Verification? = nil) {
             self.author = author
             self.committer = committer
             self.commentCount = commentCount
@@ -97,7 +97,7 @@ public struct CommitSearchResultItem: Codable {
         public init(from decoder: Decoder) throws {
             let values = try decoder.container(keyedBy: StringCodingKey.self)
             self.author = try values.decode(Author.self, forKey: "author")
-            self.committer = try values.decodeIfPresent(GitUser.self, forKey: "committer")
+            self.committer = try values.decode(GitUser.self, forKey: "committer")
             self.commentCount = try values.decode(Int.self, forKey: "comment_count")
             self.message = try values.decode(String.self, forKey: "message")
             self.tree = try values.decode(Tree.self, forKey: "tree")
@@ -108,7 +108,7 @@ public struct CommitSearchResultItem: Codable {
         public func encode(to encoder: Encoder) throws {
             var values = encoder.container(keyedBy: StringCodingKey.self)
             try values.encode(author, forKey: "author")
-            try values.encodeIfPresent(committer, forKey: "committer")
+            try values.encode(committer, forKey: "committer")
             try values.encode(commentCount, forKey: "comment_count")
             try values.encode(message, forKey: "message")
             try values.encode(tree, forKey: "tree")
@@ -143,7 +143,7 @@ public struct CommitSearchResultItem: Codable {
         }
     }
 
-    public init(url: URL, sha: String, htmlURL: URL, commentsURL: URL, commit: Commit, author: SimpleUser? = nil, committer: GitUser? = nil, parents: [Parent], repository: MinimalRepository, score: Double, nodeID: String, textMatches: [SearchResultTextMatch]? = nil) {
+    public init(url: URL, sha: String, htmlURL: URL, commentsURL: URL, commit: Commit, author: SimpleUser, committer: GitUser, parents: [Parent], repository: MinimalRepository, score: Double, nodeID: String, textMatches: [SearchResultTextMatch]? = nil) {
         self.url = url
         self.sha = sha
         self.htmlURL = htmlURL
@@ -165,8 +165,8 @@ public struct CommitSearchResultItem: Codable {
         self.htmlURL = try values.decode(URL.self, forKey: "html_url")
         self.commentsURL = try values.decode(URL.self, forKey: "comments_url")
         self.commit = try values.decode(Commit.self, forKey: "commit")
-        self.author = try values.decodeIfPresent(SimpleUser.self, forKey: "author")
-        self.committer = try values.decodeIfPresent(GitUser.self, forKey: "committer")
+        self.author = try values.decode(SimpleUser.self, forKey: "author")
+        self.committer = try values.decode(GitUser.self, forKey: "committer")
         self.parents = try values.decode([Parent].self, forKey: "parents")
         self.repository = try values.decode(MinimalRepository.self, forKey: "repository")
         self.score = try values.decode(Double.self, forKey: "score")
@@ -181,8 +181,8 @@ public struct CommitSearchResultItem: Codable {
         try values.encode(htmlURL, forKey: "html_url")
         try values.encode(commentsURL, forKey: "comments_url")
         try values.encode(commit, forKey: "commit")
-        try values.encodeIfPresent(author, forKey: "author")
-        try values.encodeIfPresent(committer, forKey: "committer")
+        try values.encode(author, forKey: "author")
+        try values.encode(committer, forKey: "committer")
         try values.encode(parents, forKey: "parents")
         try values.encode(repository, forKey: "repository")
         try values.encode(score, forKey: "score")

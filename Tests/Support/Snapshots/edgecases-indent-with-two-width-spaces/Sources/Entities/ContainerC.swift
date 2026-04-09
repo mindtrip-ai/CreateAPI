@@ -11,9 +11,17 @@ public struct ContainerC: Codable {
     public var `enum`: Enum
     public var renameMe: String
 
-    public enum Enum: String, Codable, CaseIterable {
+    public enum Enum: String, Codable, CaseIterable, Sendable {
       case a
       case b
+      case unknown
+
+
+      public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let rawValue = try container.decode(String.self)
+        self = Self(rawValue: rawValue) ?? .unknown
+      }
     }
 
     public init(`enum`: Enum, renameMe: String) {

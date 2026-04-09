@@ -7,7 +7,15 @@ import NaiveDate
 /// The type of reviewer. Must be one of: `User` or `Team`
 ///
 /// Example: "User"
-public enum DeploymentReviewerType: String, Codable, CaseIterable {
+public enum DeploymentReviewerType: String, Codable, CaseIterable, Sendable {
     case user = "User"
     case team = "Team"
+    case unknown
+
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let rawValue = try container.decode(String.self)
+        self = Self(rawValue: rawValue) ?? .unknown
+    }
 }

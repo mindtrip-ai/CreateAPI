@@ -80,19 +80,35 @@ extension Paths.Orgs.WithOrg {
             /// **For a parent or child team:**  
             /// \* `closed` - visible to all members of this organization.  
             /// Default for child team: `closed`
-            public enum Privacy: String, Codable, CaseIterable {
+            public enum Privacy: String, Codable, CaseIterable, Sendable {
                 case secret
                 case closed
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             /// **Deprecated**. The permission that new repositories will be added to the team with when none is specified. Can be one of:  
             /// \* `pull` - team members can pull, but not push to or administer newly-added repositories.  
             /// \* `push` - team members can pull and push, but not administer newly-added repositories.  
             /// \* `admin` - team members can pull, push and administer newly-added repositories.
-            public enum Permission: String, Codable, CaseIterable {
+            public enum Permission: String, Codable, CaseIterable, Sendable {
                 case pull
                 case push
                 case admin
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             public init(name: String, description: String? = nil, maintainers: [String]? = nil, repoNames: [String]? = nil, privacy: Privacy? = nil, permission: Permission? = nil, parentTeamID: Int? = nil) {

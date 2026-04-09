@@ -30,19 +30,35 @@ public struct Package: Codable {
     public var updatedAt: Date
 
     /// Example: "docker"
-    public enum PackageType: String, Codable, CaseIterable {
+    public enum PackageType: String, Codable, CaseIterable, Sendable {
         case npm
         case maven
         case rubygems
         case docker
         case nuget
         case container
+        case unknown
+
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let rawValue = try container.decode(String.self)
+            self = Self(rawValue: rawValue) ?? .unknown
+        }
     }
 
     /// Example: "private"
-    public enum Visibility: String, Codable, CaseIterable {
+    public enum Visibility: String, Codable, CaseIterable, Sendable {
         case `private`
         case `public`
+        case unknown
+
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let rawValue = try container.decode(String.self)
+            self = Self(rawValue: rawValue) ?? .unknown
+        }
     }
 
     public init(id: Int, name: String, packageType: PackageType, url: String, htmlURL: String, versionCount: Int, visibility: Visibility, owner: SimpleUser? = nil, repository: MinimalRepository? = nil, createdAt: Date, updatedAt: Date) {

@@ -10,10 +10,18 @@ public struct EnumTest: Codable {
     public var enumNumber: Double?
     public var outerEnum: OuterEnum?
 
-    public enum EnumString: String, Codable, CaseIterable {
+    public enum EnumString: String, Codable, CaseIterable, Sendable {
         case upper = "UPPER"
         case lower
         case empty = ""
+        case unknown
+
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let rawValue = try container.decode(String.self)
+            self = Self(rawValue: rawValue) ?? .unknown
+        }
     }
 
     public init(enumString: EnumString? = nil, enumInteger: Double? = nil, enumNumber: Double? = nil, outerEnum: OuterEnum? = nil) {

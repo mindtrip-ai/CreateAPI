@@ -29,12 +29,20 @@ public struct Workflow: Codable {
     public var deletedAt: Date?
 
     /// Example: "active"
-    public enum State: String, Codable, CaseIterable {
+    public enum State: String, Codable, CaseIterable, Sendable {
         case active
         case deleted
         case disabledFork = "disabled_fork"
         case disabledInactivity = "disabled_inactivity"
         case disabledManually = "disabled_manually"
+        case unknown
+
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let rawValue = try container.decode(String.self)
+            self = Self(rawValue: rawValue) ?? .unknown
+        }
     }
 
     public init(id: Int, nodeID: String, name: String, path: String, state: State, createdAt: Date, updatedAt: Date, url: String, htmlURL: String, badgeURL: String, deletedAt: Date? = nil) {

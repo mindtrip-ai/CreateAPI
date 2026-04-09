@@ -32,9 +32,17 @@ extension Paths.Orgs.WithOrg.Packages.WithPackageType.WithPackageName {
             public var perPage: Int?
             public var state: State?
 
-            public enum State: String, Codable, CaseIterable {
+            public enum State: String, Codable, CaseIterable, Sendable {
                 case active
                 case deleted
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             public init(page: Int? = nil, perPage: Int? = nil, state: State? = nil) {

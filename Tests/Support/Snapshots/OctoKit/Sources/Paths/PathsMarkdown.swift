@@ -41,9 +41,17 @@ extension Paths {
             /// The rendering mode. Can be either `markdown` or `gfm`.
             ///
             /// Example: "markdown"
-            public enum Mode: String, Codable, CaseIterable {
+            public enum Mode: String, Codable, CaseIterable, Sendable {
                 case markdown
                 case gfm
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             public init(text: String, mode: Mode? = nil, context: String? = nil) {

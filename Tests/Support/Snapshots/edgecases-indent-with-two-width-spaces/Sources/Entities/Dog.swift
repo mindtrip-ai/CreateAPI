@@ -10,10 +10,18 @@ public struct Dog: Codable {
   public var breed: Breed?
   public var image: Image?
 
-  public enum Breed: String, Codable, CaseIterable {
+  public enum Breed: String, Codable, CaseIterable, Sendable {
     case large = "Large"
     case medium = "Medium"
     case small = "Small"
+    case unknown
+
+
+    public init(from decoder: Decoder) throws {
+      let container = try decoder.singleValueContainer()
+      let rawValue = try container.decode(String.self)
+      self = Self(rawValue: rawValue) ?? .unknown
+    }
   }
 
   public init(className: String, color: String? = nil, breed: Breed? = nil, image: Image? = nil) {

@@ -12,9 +12,9 @@ public struct Email: Codable {
     /// Example: true
     public var isVerified: Bool
     /// Example: "public"
-    public var visibility: String?
+    public var visibility: String
 
-    public init(email: String, isPrimary: Bool, isVerified: Bool, visibility: String? = nil) {
+    public init(email: String, isPrimary: Bool, isVerified: Bool, visibility: String) {
         self.email = email
         self.isPrimary = isPrimary
         self.isVerified = isVerified
@@ -26,7 +26,7 @@ public struct Email: Codable {
         self.email = try values.decode(String.self, forKey: "email")
         self.isPrimary = try values.decode(Bool.self, forKey: "primary")
         self.isVerified = try values.decode(Bool.self, forKey: "verified")
-        self.visibility = try values.decodeIfPresent(String.self, forKey: "visibility")
+        self.visibility = try values.decode(String.self, forKey: "visibility")
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -34,6 +34,6 @@ public struct Email: Codable {
         try values.encode(email, forKey: "email")
         try values.encode(isPrimary, forKey: "primary")
         try values.encode(isVerified, forKey: "verified")
-        try values.encodeIfPresent(visibility, forKey: "visibility")
+        try values.encode(visibility, forKey: "visibility")
     }
 }

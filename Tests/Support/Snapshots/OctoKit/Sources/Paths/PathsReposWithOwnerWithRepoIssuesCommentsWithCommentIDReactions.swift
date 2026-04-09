@@ -33,7 +33,7 @@ extension Paths.Repos.WithOwner.WithRepo.Issues.Comments.WithCommentID {
             public var perPage: Int?
             public var page: Int?
 
-            public enum Content: String, Codable, CaseIterable {
+            public enum Content: String, Codable, CaseIterable, Sendable {
                 case plus1 = "+1"
                 case minus1 = "-1"
                 case laugh
@@ -42,6 +42,14 @@ extension Paths.Repos.WithOwner.WithRepo.Issues.Comments.WithCommentID {
                 case hooray
                 case rocket
                 case eyes
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             public init(content: Content? = nil, perPage: Int? = nil, page: Int? = nil) {
@@ -73,7 +81,7 @@ extension Paths.Repos.WithOwner.WithRepo.Issues.Comments.WithCommentID {
             public var content: Content
 
             /// The [reaction type](https://docs.github.com/rest/reference/reactions#reaction-types) to add to the issue comment.
-            public enum Content: String, Codable, CaseIterable {
+            public enum Content: String, Codable, CaseIterable, Sendable {
                 case plus1 = "+1"
                 case minus1 = "-1"
                 case laugh
@@ -82,6 +90,14 @@ extension Paths.Repos.WithOwner.WithRepo.Issues.Comments.WithCommentID {
                 case hooray
                 case rocket
                 case eyes
+                case unknown
+
+
+                public init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    let rawValue = try container.decode(String.self)
+                    self = Self(rawValue: rawValue) ?? .unknown
+                }
             }
 
             public init(content: Content) {
