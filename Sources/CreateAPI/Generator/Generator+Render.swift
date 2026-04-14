@@ -29,9 +29,15 @@ extension Generator {
     }
 
     private func shouldGenerateUnknownCase(for decl: EntityDeclaration) -> Bool {
-        !options.entities.excludeUnknownCase.contains {
-            $0.name == decl.name.rawValue
+        let name = decl.name.rawValue
+        if options.entities.excludeUnknownCase.contains(where: { $0.name == name }) {
+            return false
         }
+        // Enums auto-renamed by generateProtocolFromAbstract never get an unknown case
+        if additionalEntityRenames.values.contains(name) {
+            return false
+        }
+        return true
     }
 
     private func render(_ decl: EntityDeclaration) throws -> String {

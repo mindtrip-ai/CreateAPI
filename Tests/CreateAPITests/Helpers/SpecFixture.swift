@@ -4,6 +4,7 @@ struct SpecFixture {
     let name: String
     let ext: String
 
+    static let abstractProtocol = SpecFixture(name: "abstract-protocol", ext: "yaml")
     static let cookpad = SpecFixture(name: "cookpad", ext: "json")
     static let discriminator = SpecFixture(name: "discriminator", ext: "yaml")
     static let edgecases = SpecFixture(name: "edgecases", ext: "yaml")

@@ -1,0 +1,93 @@
+openapi: "3.1.0"
+info:
+  version: 1.0.0
+  title: Abstract Protocol
+
+paths:
+  /messages:
+    get:
+      operationId: getMessages
+      responses:
+        "200":
+          description: "A list of messages"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/message"
+
+components:
+  schemas:
+    abstract_message:
+      type: object
+      required:
+        - body
+        - timestamp
+      properties:
+        body:
+          type: string
+        timestamp:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+
+    bot_message:
+      allOf:
+        - $ref: "#/components/schemas/abstract_message"
+        - type: object
+          required:
+            - type
+            - id
+          properties:
+            type:
+              type: string
+              enum: ["bot"]
+            id:
+              type: integer
+            intent:
+              type: string
+
+    user_message:
+      allOf:
+        - $ref: "#/components/schemas/abstract_message"
+        - type: object
+          required:
+            - type
+            - id
+          properties:
+            type:
+              type: string
+              enum: ["user"]
+            id:
+              type: integer
+            user_name:
+              type: string
+
+    system_message:
+      allOf:
+        - $ref: "#/components/schemas/abstract_message"
+        - type: object
+          required:
+            - type
+          properties:
+            type:
+              type: string
+              enum: ["system"]
+            level:
+              type: string
+              enum: ["info", "warning", "error"]
+
+    message:
+      oneOf:
+        - $ref: "#/components/schemas/bot_message"
+        - $ref: "#/components/schemas/user_message"
+        - $ref: "#/components/schemas/system_message"
+      discriminator:
+        propertyName: type
+        mapping:
+          bot: "#/components/schemas/bot_message"
+          user: "#/components/schemas/user_message"
+          system: "#/components/schemas/system_message"

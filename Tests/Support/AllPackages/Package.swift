@@ -14,6 +14,7 @@ let package = Package(
         .library(name: "AllPackages", targets: ["AllPackages"])
     ],
     dependencies: [
+        .package(path: "../Snapshots/abstract-protocol"),
         .package(path: "../Snapshots/cookpad"),
         .package(path: "../Snapshots/discriminator"),
         .package(path: "../Snapshots/edgecases-change-access-control"),
@@ -59,6 +60,7 @@ let package = Package(
         .target(
             name: "AllPackages",
             dependencies: [
+                "abstract-protocol",
                 "cookpad",
                 "discriminator",
                 "edgecases-change-access-control",

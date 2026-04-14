@@ -545,6 +545,18 @@ public struct ConfigOptions: ParsableConfiguration {
         /// Strips the parent name of enum cases within objects that are `oneOf` / `allOf` / `anyOf` of nested references
         @Option public var stripParentNameInNestedObjects: Bool = false
 
+        // sourcery: skip
+        /// Generates a Swift protocol from an abstract base schema and wires up conformance
+        /// for the concrete types in a discriminated oneOf enum.
+        ///
+        /// Provide the generated name of each abstract base type (e.g. `AbstractMessage`).
+        /// The "Abstract" prefix is stripped to derive names:
+        /// - Protocol: `Message` (the stripped name)
+        /// - Enum: `AnyMessage` (the stripped name prefixed with "Any")
+        ///
+        /// The oneOf enum must already be named `Any{Name}` (via `rename.entities` if needed).
+        @Option public var generateProtocolFromAbstract: [String] = []
+
         /// When set to a non-empty value, entities and entity properties with the given names will be ignored during generation.
         /// Cannot be used in conjunction with [`include`](#entitiesinclude).
         ///

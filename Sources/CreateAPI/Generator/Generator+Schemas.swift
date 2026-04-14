@@ -23,6 +23,9 @@ extension Generator {
     }
 
     private func _schemas() throws -> GeneratorOutput {
+        // Auto-rename oneOf enums that wrap variants of abstract schemas
+        computeAbstractProtocolRenames()
+
         let jobs = try makeJobs()
         var declarations = [Result<Declaration, Error>?](repeating: nil, count: jobs.count)
         topLevelTypes = Set(jobs.map(\.name))
@@ -50,10 +53,13 @@ extension Generator {
         try preprocess(declarations: declarations.compactMap { $0 })
 
         // Render entities as a final phase
-        let files: [GeneratedFile] = try zip(jobs, declarations).map { job, result in
+        var files: [GeneratedFile] = try zip(jobs, declarations).map { job, result in
             guard let entity = try result?.get() else { return nil }
             return GeneratedFile(name: job.name.rawValue, contents: try render(entity))
         }.compactMap { $0 }
+
+        // Generate protocol files from abstract schemas
+        files += makeProtocolsFromAbstract()
 
         return GeneratorOutput(
             header: makeHeader(imports: options.entities.imports),
@@ -119,6 +125,138 @@ extension Generator {
         return extensions
     }
 
+    private func makeProtocolsFromAbstract() -> [GeneratedFile] {
+        options.entities.generateProtocolFromAbstract.compactMap { schemaName in
+            // Derive names: AbstractMessage -> protocol "Message", enum "AnyMessage"
+            let baseName: String
+            if schemaName.hasPrefix("Abstract") {
+                baseName = String(schemaName.dropFirst("Abstract".count))
+            } else {
+                baseName = schemaName
+            }
+            let protocolName = baseName
+            let enumName = "Any\(baseName)"
+
+            let schemaTypeName = TypeName(schemaName)
+            let enumTypeName = TypeName(enumName)
+
+            guard let abstractEntity = generatedSchemas[schemaTypeName] else {
+                print("WARNING: generateProtocolFromAbstract: schema '\(schemaName)' not found in generated schemas")
+                return nil
+            }
+            guard let enumEntity = generatedSchemas[enumTypeName], enumEntity.type == .oneOf else {
+                print("WARNING: generateProtocolFromAbstract: enum '\(enumName)' not found or is not a oneOf type")
+                return nil
+            }
+
+            let properties = abstractEntity.properties
+            let cases: [(caseName: String, typeName: String)] = enumEntity.properties.map {
+                (caseName: $0.name.rawValue, typeName: $0.type.name.rawValue)
+            }
+            let hasUnknownCase = !options.entities.excludeUnknownCase.contains {
+                $0.name == enumName
+            } && !additionalEntityRenames.values.contains(enumName)
+
+            // 1. Protocol declaration
+            let protocolDecl = templates.protocolDeclaration(
+                name: protocolName,
+                properties: properties
+            )
+
+            // 2. Conformance extensions for each concrete type
+            let conformances = cases.map { casePair in
+                templates.protocolConformanceExtension(
+                    typeName: casePair.typeName,
+                    protocolName: protocolName
+                )
+            }
+
+            // 3. Enum initializers from each concrete type
+            let enumInits = templates.protocolEnumInits(
+                enumName: enumName,
+                cases: cases
+            )
+
+            // 4. Enum conformance (delegation)
+            let enumConformance = templates.protocolEnumConformance(
+                enumName: enumName,
+                protocolName: protocolName,
+                properties: properties,
+                cases: cases,
+                hasUnknownCase: hasUnknownCase
+            )
+
+            let allSections = [protocolDecl] + conformances + [enumInits, enumConformance]
+            let contents = allSections.joined(separator: "\n\n")
+
+            return GeneratedFile(name: protocolName, contents: contents)
+        }
+    }
+
+    /// Scans the spec to find oneOf schemas whose variants extend a configured abstract base,
+    /// then auto-renames the oneOf to `Any{BaseName}` and adds it to `excludeUnknownCase`.
+    private func computeAbstractProtocolRenames() {
+        let abstractSchemaNames = options.entities.generateProtocolFromAbstract
+        guard !abstractSchemaNames.isEmpty else { return }
+
+        // Build a set of raw schema keys for the abstract bases (before renaming)
+        // e.g. "AbstractMessage" -> we need to find the raw key "abstract_message"
+        var abstractRawKeys = Set<String>()
+        for (key, _) in spec.components.schemas {
+            let typeName = makeTypeName(key.rawValue)
+            if abstractSchemaNames.contains(typeName.rawValue) {
+                abstractRawKeys.insert(key.rawValue)
+            }
+        }
+
+        // For each oneOf schema, check if its variants allOf-reference any abstract base
+        for (key, schema) in spec.components.schemas {
+            guard case .one(let variants, _) = schema.value, variants.count > 1 else { continue }
+
+            // Check if any variant's allOf references one of our abstract bases
+            var matchedAbstractRawKey: String?
+            for variant in variants {
+                guard case .reference(let ref, _) = variant.value, let refName = ref.name else { continue }
+                // Look up the referenced schema to see if it's an allOf containing the abstract base
+                guard let refKey = OpenAPI.ComponentKey(rawValue: refName),
+                      let refSchema = spec.components.schemas[refKey] else { continue }
+                if case .all(let allOfSchemas, _) = refSchema.value {
+                    for allOfSchema in allOfSchemas {
+                        if case .reference(let allOfRef, _) = allOfSchema.value,
+                           let allOfRefName = allOfRef.name,
+                           abstractRawKeys.contains(allOfRefName) {
+                            matchedAbstractRawKey = allOfRefName
+                            break
+                        }
+                    }
+                }
+                if matchedAbstractRawKey != nil { break }
+            }
+
+            guard let abstractKey = matchedAbstractRawKey else { continue }
+
+            // Derive the target name: AbstractMessage -> AnyMessage
+            let abstractTypeName = makeTypeName(abstractKey)
+            let baseName: String
+            if abstractTypeName.rawValue.hasPrefix("Abstract") {
+                baseName = String(abstractTypeName.rawValue.dropFirst("Abstract".count))
+            } else {
+                baseName = abstractTypeName.rawValue
+            }
+            let anyName = "Any\(baseName)"
+
+            // Get the current generated name for this oneOf schema (applying existing renames)
+            let currentName = makeTypeName(key.rawValue)
+            let existingRename = options.rename.entities[currentName.rawValue]
+            let effectiveName = existingRename ?? currentName.rawValue
+
+            // Only inject a rename if it's not already correctly named
+            if effectiveName != anyName {
+                additionalEntityRenames[effectiveName] = anyName
+            }
+        }
+    }
+
     /// Return `nil` to skip generation.
     private func getTypeName(for key: OpenAPI.ComponentKey) -> TypeName? {
         var name: String? {
@@ -137,13 +275,16 @@ extension Generator {
                     }
                 }
             }
-            if !options.rename.entities.isEmpty {
-                let name = makeTypeName(key.rawValue)
-                if let mapped = options.rename.entities[name.rawValue] {
-                    return mapped
-                }
+            var name = key.rawValue
+            let typeName = makeTypeName(name)
+            if !options.rename.entities.isEmpty, let mapped = options.rename.entities[typeName.rawValue] {
+                name = mapped
             }
-            return key.rawValue
+            let effectiveName = (name == key.rawValue) ? typeName.rawValue : name
+            if let mapped = additionalEntityRenames[effectiveName] {
+                name = mapped
+            }
+            return name
         }
         if let name = name {
             return makeTypeName(Template(options.entities.nameTemplate).substitute(name))

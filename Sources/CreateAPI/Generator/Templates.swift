@@ -694,6 +694,81 @@ final class Templates {
         """
     }
 
+    // MARK: Protocol from Abstract
+
+    /// Generates a protocol declaration from abstract schema properties.
+    func protocolDeclaration(name: String, properties: [Property]) -> String {
+        let requirements = properties.map { property -> String in
+            let isOptional = property.isOptional && property.defaultValue == nil
+            return "var \(property.name): \(property.type)\(isOptional ? "?" : "") { get }"
+        }
+        return """
+        \(access)protocol \(name) {
+        \(requirements.joined(separator: "\n").indented)
+        }
+        """
+    }
+
+    /// Generates an empty conformance extension for a concrete type to the protocol.
+    func protocolConformanceExtension(
+        typeName: String,
+        protocolName: String
+    ) -> String {
+        "extension \(typeName): \(protocolName) {}"
+    }
+
+    /// Generates convenience initializers on the enum for each concrete type.
+    func protocolEnumInits(
+        enumName: String,
+        cases: [(caseName: String, typeName: String)]
+    ) -> String {
+        let inits = cases.map { casePair in
+            "\(access)init(_ value: \(casePair.typeName)) { self = .\(casePair.caseName)(value) }"
+        }
+        return """
+        extension \(enumName) {
+        \(inits.joined(separator: "\n").indented)
+        }
+        """
+    }
+
+    /// Generates the enum's conformance to the protocol by delegating through a _wrapped property.
+    func protocolEnumConformance(
+        enumName: String,
+        protocolName: String,
+        properties: [Property],
+        cases: [(caseName: String, typeName: String)],
+        hasUnknownCase: Bool
+    ) -> String {
+        var switchLines = cases.map { "case .\($0.caseName)(let v): v" }
+        if hasUnknownCase {
+            switchLines.append("case .unknown(let v): v.fatalUnknownAccess()")
+        }
+        let wrappedProperty = """
+        private var _wrapped: any \(protocolName) {
+            switch self {
+        \(switchLines.joined(separator: "\n").indented)
+            }
+        }
+        """
+
+        let delegatedProperties = properties.map { property -> String in
+            let isOptional = property.isOptional && property.defaultValue == nil
+            return "\(access)var \(property.name): \(property.type)\(isOptional ? "?" : "") { _wrapped.\(property.name) }"
+        }
+
+        let allMembers = [
+            wrappedProperty,
+            "",
+        ] + delegatedProperties
+
+        return """
+        extension \(enumName): \(protocolName) {
+        \(allMembers.joined(separator: "\n").indented)
+        }
+        """
+    }
+
     // MARK: Misc
 
     func namespace(_ name: String) -> String {

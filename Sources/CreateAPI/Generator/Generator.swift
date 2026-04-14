@@ -19,6 +19,7 @@ final class Generator {
     var needsEncodable = Set<TypeName>()
     var topLevelTypes = Set<TypeName>()
     var generatedSchemas: [TypeName: EntityDeclaration] = [:]
+    var additionalEntityRenames: [String: String] = [:]
     var pathsContainingRequestType: [String] = []
     let lock = NSLock()
 

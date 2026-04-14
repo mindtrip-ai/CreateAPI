@@ -34,6 +34,18 @@ final class GenerateTests: GenerateTestCase {
             spec: .discriminator,
             name: "discriminator"
         )
+    }
+
+    func testAbstractProtocol() throws {
+        try snapshot(
+            spec: .abstractProtocol,
+            name: "abstract-protocol",
+            configuration: """
+            entities:
+              generateProtocolFromAbstract:
+                - AbstractMessage
+            """
+        )
     }    
     
     func testGitHub() throws {
