@@ -412,7 +412,11 @@ extension Generator {
             }
         }
         name = Template(options.entities.nameTemplate).substitute(name)
-        return .userDefined(name: makeTypeName(name).namespace(context.namespace))
+        let typeName = makeTypeName(name)
+        if let mapped = additionalEntityRenames[typeName.rawValue] {
+            return .userDefined(name: makeTypeName(mapped).namespace(context.namespace))
+        }
+        return .userDefined(name: typeName.namespace(context.namespace))
     }
 
     // MARK: - Object
