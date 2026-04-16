@@ -44,7 +44,8 @@ class Snapshotter {
         snapshotDirectory.appendingPathComponent(name)
     }
 
-    /// Deletes the contents of the snapshot directory if it was already there in preparation to re-record all outputs
+    /// Resets the snapshot directory only when recording all tests (no filter active).
+    /// Individual snapshots are always reset via `resetDirectory(at: snapshotURL)` in `processSnapshot`.
     private func resetAllSnapshotsIfNeeded() throws {
         guard shouldResetAllSnapshots else { return }
         try resetDirectory(at: snapshotDirectory)
@@ -52,7 +53,12 @@ class Snapshotter {
 
     private var shouldResetAllSnapshots: Bool {
         guard recordedSnapshots.isEmpty else { return false }
-        return true // TODO: Don't reset snapshot directory when only running a subset of tests
+        // Don't wipe unrelated snapshots when running a filtered subset of tests.
+        // swift test --filter passes -XCTest arguments to the test runner.
+        if ProcessInfo.processInfo.arguments.contains(where: { $0 == "-XCTest" }) {
+            return false
+        }
+        return true
     }
 
     /// The URL to the snapshot storage directory

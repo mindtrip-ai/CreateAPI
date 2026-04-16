@@ -697,10 +697,14 @@ final class Templates {
     // MARK: Protocol from Abstract
 
     /// Generates a protocol declaration from abstract schema properties.
-    func protocolDeclaration(name: String, properties: [Property]) -> String {
-        let requirements = properties.map { property -> String in
+    /// Adds a `toAnyFoo: AnyFoo { get }` requirement for each enum.
+    func protocolDeclaration(name: String, enumNames: [String], properties: [Property]) -> String {
+        var requirements = properties.map { property -> String in
             let isOptional = property.isOptional && property.defaultValue == nil
             return "var \(property.name): \(property.type)\(isOptional ? "?" : "") { get }"
+        }
+        for enumName in enumNames {
+            requirements.append("var to\(enumName): \(enumName) { get }")
         }
         return """
         \(access)protocol \(name) {
@@ -709,33 +713,70 @@ final class Templates {
         """
     }
 
-    /// Generates an empty conformance extension for a concrete type to the protocol.
+    /// Generates a conformance extension for a concrete type to the protocol.
     func protocolConformanceExtension(
         typeName: String,
-        protocolName: String
+        protocolName: String,
+        enumNames: [String],
+        declareConformance: Bool
     ) -> String {
-        "extension \(typeName): \(protocolName) {}"
-    }
-
-    /// Generates convenience initializers on the enum for each concrete type.
-    func protocolEnumInits(
-        enumName: String,
-        cases: [(caseName: String, typeName: String)]
-    ) -> String {
-        let inits = cases.map { casePair in
-            "\(access)init(_ value: \(casePair.typeName)) { self = .\(casePair.caseName)(value) }"
+        let header = declareConformance
+            ? "extension \(typeName): \(protocolName)"
+            : "extension \(typeName)"
+        let properties = enumNames.map { enumName in
+            "\(access)var to\(enumName): \(enumName) { \(enumName)(self) }"
         }
         return """
+        \(header) {
+        \(properties.joined(separator: "\n").indented)
+        }
+        """
+    }
+
+    /// Generates convenience initializers on the enum for each concrete type and the protocol.
+    /// When `protocolHasToAny` is true, the protocol init delegates via `value.toAnyX`.
+    /// When false (enum has a subset of conformers), it uses `as?` downcasting.
+    func protocolEnumInits(
+        enumName: String,
+        protocolName: String,
+        cases: [(caseName: String, typeName: String)],
+        protocolHasToAny: Bool
+    ) -> String {
+        let concreteInits = cases.map { casePair in
+            "\(access)init(_ value: \(casePair.typeName)) { self = .\(casePair.caseName)(value) }"
+        }
+
+        let protocolInit: String
+        if protocolHasToAny {
+            protocolInit = "\(access)init(_ value: any \(protocolName)) { self = value.to\(enumName) }"
+        } else {
+            var castBranches = ["if let v = value as? \(enumName) { self = v }"]
+            castBranches += cases.map { casePair in
+                "else if let v = value as? \(casePair.typeName) { self = .\(casePair.caseName)(v) }"
+            }
+            let castChain = castBranches.joined(separator: " ")
+                + " else { fatalError(\"Unknown \\(\(protocolName).self) conformer: \\(type(of: value))\") }"
+            protocolInit = """
+            \(access)init(_ value: any \(protocolName)) {
+                \(castChain)
+            }
+            """
+        }
+
+        let allInits = concreteInits + [protocolInit]
+        return """
         extension \(enumName) {
-        \(inits.joined(separator: "\n").indented)
+        \(allInits.joined(separator: "\n").indented)
         }
         """
     }
 
     /// Generates the enum's conformance to the protocol by delegating through a _wrapped property.
+    /// `otherEnumNames` lists the other enums sharing this protocol (for their `toAny*` properties).
     func protocolEnumConformance(
         enumName: String,
         protocolName: String,
+        otherEnumNames: [String],
         properties: [Property],
         cases: [(caseName: String, typeName: String)],
         hasUnknownCase: Bool
@@ -744,8 +785,9 @@ final class Templates {
         if hasUnknownCase {
             switchLines.append("case .unknown(let v): v.fatalUnknownAccess()")
         }
+        let wrappedName = "wrapped\(protocolName)"
         let wrappedProperty = """
-        private var _wrapped: any \(protocolName) {
+        \(access)var \(wrappedName): any \(protocolName) {
             switch self {
         \(switchLines.joined(separator: "\n").indented)
             }
@@ -754,11 +796,18 @@ final class Templates {
 
         let delegatedProperties = properties.map { property -> String in
             let isOptional = property.isOptional && property.defaultValue == nil
-            return "\(access)var \(property.name): \(property.type)\(isOptional ? "?" : "") { _wrapped.\(property.name) }"
+            return "\(access)var \(property.name): \(property.type)\(isOptional ? "?" : "") { \(wrappedName).\(property.name) }"
         }
+
+        var toEnumProperties = otherEnumNames.map { other in
+            "\(access)var to\(other): \(other) { \(other)(self) }"
+        }
+        toEnumProperties.append("\(access)var to\(enumName): \(enumName) { self }")
 
         let allMembers = [
             wrappedProperty,
+            "",
+        ] + toEnumProperties + [
             "",
         ] + delegatedProperties
 

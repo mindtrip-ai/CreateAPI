@@ -44,6 +44,61 @@ final class GenerateTests: GenerateTestCase {
             entities:
               generateProtocolFromAbstract:
                 - AbstractMessage
+                - BaseTransitPoint
+            """
+        )
+    }
+
+    /// Tests that rename.entities correctly propagates to type references
+    /// (e.g. GetMessageResponse.message should use the renamed type).
+    func testAbstractProtocolRenameOnly() throws {
+        try snapshot(
+            spec: .abstractProtocol,
+            name: "abstract-protocol-rename-only",
+            configuration: """
+            rename:
+              entities:
+                Message: AnyMessage
+            """
+        )
+    }
+
+    /// Tests that a single user rename (Message -> ServerMessage) produces AnyServerMessage,
+    /// since no other oneOf claims the "Message" name via rename.
+    func testAbstractProtocolRenameWithProtocol() throws {
+        try snapshot(
+            spec: .abstractProtocol,
+            name: "abstract-protocol-rename-with-protocol",
+            configuration: """
+            rename:
+              entities:
+                Message: ServerMessage
+            entities:
+              generateProtocolFromAbstract:
+                - AbstractMessage
+                - BaseTransitPoint
+            """
+        )
+    }
+
+    /// Tests the rename-swap scenario: UiMessage -> Message, Message -> ServerMessage,
+    /// ServerMessage excluded. The UiMessage oneOf should become AnyMessage (its post-rename
+    /// name "Message" matches baseName), not AnyUiMessage.
+    func testAbstractProtocolRenameSwap() throws {
+        try snapshot(
+            spec: .abstractProtocol,
+            name: "abstract-protocol-rename-swap",
+            configuration: """
+            rename:
+              entities:
+                Message: ServerMessage
+                UiMessage: Message
+            entities:
+              exclude:
+                - ServerMessage
+              generateProtocolFromAbstract:
+                - AbstractMessage
+                - BaseTransitPoint
             """
         )
     }    

@@ -13,7 +13,7 @@ extension Paths {
         /// Path: `/messages`
         public let path: String
 
-        public var get: Request<[abstract_protocol.Message]> {
+        public var get: Request<[abstract_protocol.AnyMessage]> {
             Request(path: path, method: "GET", id: "getMessages")
         }
     }

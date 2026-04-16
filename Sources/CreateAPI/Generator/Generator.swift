@@ -20,6 +20,7 @@ final class Generator {
     var topLevelTypes = Set<TypeName>()
     var generatedSchemas: [TypeName: EntityDeclaration] = [:]
     var additionalEntityRenames: [String: String] = [:]
+    var abstractToEnumNames: [String: [String]] = [:]
     var pathsContainingRequestType: [String] = []
     let lock = NSLock()
 
@@ -28,6 +29,7 @@ final class Generator {
         self.options = options
         self.arguments = arguments
         self.templates = Templates(options: options)
+        computeAbstractProtocolRenames()
     }
 
     // MARK: Misc

@@ -91,3 +91,84 @@ components:
           bot: "#/components/schemas/bot_message"
           user: "#/components/schemas/user_message"
           system: "#/components/schemas/system_message"
+
+    ui_message:
+      oneOf:
+        - $ref: "#/components/schemas/bot_message"
+        - $ref: "#/components/schemas/user_message"
+        - $ref: "#/components/schemas/system_message"
+      discriminator:
+        propertyName: type
+        mapping:
+          bot: "#/components/schemas/bot_message"
+          user: "#/components/schemas/user_message"
+          system: "#/components/schemas/system_message"
+
+    priority_message:
+      oneOf:
+        - $ref: "#/components/schemas/bot_message"
+        - $ref: "#/components/schemas/system_message"
+      discriminator:
+        propertyName: type
+        mapping:
+          bot: "#/components/schemas/bot_message"
+          system: "#/components/schemas/system_message"
+
+    base_transit_point:
+      type: object
+      required:
+        - name
+        - latitude
+        - longitude
+      properties:
+        name:
+          type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
+
+    airport_transit_point:
+      allOf:
+        - $ref: "#/components/schemas/base_transit_point"
+        - type: object
+          required:
+            - type
+            - code
+          properties:
+            type:
+              type: string
+              enum:
+                - airport
+            code:
+              type: string
+
+    geo_transit_point:
+      allOf:
+        - $ref: "#/components/schemas/base_transit_point"
+        - type: object
+          required:
+            - type
+          properties:
+            type:
+              type: string
+              enum:
+                - geo
+            category:
+              type: string
+
+    get_message_response:
+      type: object
+      properties:
+        message:
+          $ref: "#/components/schemas/message"
+
+    transit_point:
+      oneOf:
+        - $ref: "#/components/schemas/airport_transit_point"
+        - $ref: "#/components/schemas/geo_transit_point"
+      discriminator:
+        propertyName: type
+        mapping:
+          airport: "#/components/schemas/airport_transit_point"
+          geo: "#/components/schemas/geo_transit_point"

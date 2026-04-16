@@ -27,8 +27,10 @@ final class PackageCompiler: NSObject {
     }
 
     /// Generates the Package.swift file and writes it to **Tests/Support/AllPackages/**
+    /// Skips when running a filtered subset of tests to avoid clobbering the full manifest.
     private func writeManifestIfNeeded() {
         guard shouldUpdateAllPackages, !dependencies.isEmpty else { return }
+        if ProcessInfo.processInfo.arguments.contains(where: { $0 == "-XCTest" }) { return }
 
         do {
             let manifest = PackageManifest(dependencies: dependencies)

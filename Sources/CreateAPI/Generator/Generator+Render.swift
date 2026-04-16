@@ -33,10 +33,6 @@ extension Generator {
         if options.entities.excludeUnknownCase.contains(where: { $0.name == name }) {
             return false
         }
-        // Enums auto-renamed by generateProtocolFromAbstract never get an unknown case
-        if additionalEntityRenames.values.contains(name) {
-            return false
-        }
         return true
     }
 

@@ -15,6 +15,9 @@ let package = Package(
     ],
     dependencies: [
         .package(path: "../Snapshots/abstract-protocol"),
+        .package(path: "../Snapshots/abstract-protocol-rename-only"),
+        .package(path: "../Snapshots/abstract-protocol-rename-swap"),
+        .package(path: "../Snapshots/abstract-protocol-rename-with-protocol"),
         .package(path: "../Snapshots/cookpad"),
         .package(path: "../Snapshots/discriminator"),
         .package(path: "../Snapshots/edgecases-change-access-control"),
@@ -61,6 +64,9 @@ let package = Package(
             name: "AllPackages",
             dependencies: [
                 "abstract-protocol",
+                "abstract-protocol-rename-only",
+                "abstract-protocol-rename-swap",
+                "abstract-protocol-rename-with-protocol",
                 "cookpad",
                 "discriminator",
                 "edgecases-change-access-control",
