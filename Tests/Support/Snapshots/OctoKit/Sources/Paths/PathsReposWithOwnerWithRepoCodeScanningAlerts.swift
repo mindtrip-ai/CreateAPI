@@ -46,7 +46,7 @@ extension Paths.Repos.WithOwner.WithRepo.CodeScanning {
             public var direction: Direction?
             public var sort: Sort?
             /// State of a code scanning alert.
-            public var state: State?
+            public var state: CodeScanningAlertState?
 
             public enum Direction: String, Codable, CaseIterable, Sendable {
                 case asc
@@ -75,23 +75,7 @@ extension Paths.Repos.WithOwner.WithRepo.CodeScanning {
                 }
             }
 
-            /// State of a code scanning alert.
-            public enum State: String, Codable, CaseIterable, Sendable {
-                case `open`
-                case closed
-                case dismissed
-                case fixed
-                case unknown
-
-
-                public init(from decoder: Decoder) throws {
-                    let container = try decoder.singleValueContainer()
-                    let rawValue = try container.decode(String.self)
-                    self = Self(rawValue: rawValue) ?? .unknown
-                }
-            }
-
-            public init(toolName: String? = nil, toolGuid: String? = nil, page: Int? = nil, perPage: Int? = nil, ref: String? = nil, direction: Direction? = nil, sort: Sort? = nil, state: State? = nil) {
+            public init(toolName: String? = nil, toolGuid: String? = nil, page: Int? = nil, perPage: Int? = nil, ref: String? = nil, direction: Direction? = nil, sort: Sort? = nil, state: CodeScanningAlertState? = nil) {
                 self.toolName = toolName
                 self.toolGuid = toolGuid
                 self.page = page

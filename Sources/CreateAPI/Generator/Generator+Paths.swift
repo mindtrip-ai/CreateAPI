@@ -527,6 +527,19 @@ extension Generator {
             }
         }
 
+        // If the parameter schema is a $ref, resolve to the top-level type
+        // directly instead of unwrapping and losing the reference.
+        func getRefQueryItemType() throws -> QueryItemType? {
+            guard case .a(let ref) = schemaContext.schema,
+                  let refName = ref.name.map(makeTypeName) else {
+                return nil
+            }
+            if let type = try getTypeIdentifier(for: refName, schema: schema, context: context) {
+                return type.isVoid ? nil : QueryItemType(type: type)
+            }
+            return QueryItemType(type: .userDefined(name: refName))
+        }
+
         func getQueryItemType(for schema: JSONSchema, isTopLevel: Bool) throws -> QueryItemType? {
             switch schema.value {
             case .boolean: return QueryItemType("Bool")
@@ -540,7 +553,7 @@ extension Generator {
                     let nested = try makeStringEnum(name: enumTypeName, info: info)
                     return QueryItemType(type: .userDefined(name: enumTypeName), nested: nested)
                 }
-                
+
                 return QueryItemType(type: stringType(for: info.format))
             case .object, .all, .one, .any:
                 let type = makeTypeName(parameter.name)
@@ -574,7 +587,7 @@ extension Generator {
             }
         }
 
-        guard let type = try getQueryItemType(for: schema, isTopLevel: true) else {
+        guard let type = try getRefQueryItemType() ?? getQueryItemType(for: schema, isTopLevel: true) else {
             return nil
         }
 
