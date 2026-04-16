@@ -24,18 +24,18 @@ extension AnyTransitPoint {
     public init(_ value: any TransitPoint) { self = value.toAnyTransitPoint }
 }
 
-extension AnyTransitPoint: TransitPoint {
-    public var wrappedTransitPoint: any TransitPoint {
+extension AnyTransitPoint {
+    public var wrappedTransitPoint: (any TransitPoint)? {
         switch self {
         case .airportTransitPoint(let v): v
         case .geoTransitPoint(let v): v
-        case .unknown(let v): v.fatalUnknownAccess()
+        case .unknown: nil
         }
     }
 
     public var toAnyTransitPoint: AnyTransitPoint { self }
 
-    public var name: String { wrappedTransitPoint.name }
-    public var latitude: Double { wrappedTransitPoint.latitude }
-    public var longitude: Double { wrappedTransitPoint.longitude }
+    public var name: String? { wrappedTransitPoint?.name }
+    public var latitude: Double? { wrappedTransitPoint?.latitude }
+    public var longitude: Double? { wrappedTransitPoint?.longitude }
 }

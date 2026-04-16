@@ -35,23 +35,21 @@ extension AnyMessage {
     public init(_ value: any Message) { self = value.toAnyMessage }
 }
 
-extension AnyMessage: Message {
-    public var wrappedMessage: any Message {
+extension AnyMessage {
+    public var wrappedMessage: (any Message)? {
         switch self {
         case .botMessage(let v): v
         case .userMessage(let v): v
         case .systemMessage(let v): v
-        case .unknown(let v): v.fatalUnknownAccess()
+        case .unknown: nil
         }
     }
 
-    public var toAnyUiMessage: AnyUiMessage { AnyUiMessage(self) }
-    public var toAnyPriorityMessage: AnyPriorityMessage { AnyPriorityMessage(self) }
     public var toAnyMessage: AnyMessage { self }
 
-    public var body: String { wrappedMessage.body }
-    public var timestamp: String { wrappedMessage.timestamp }
-    public var tags: [String]? { wrappedMessage.tags }
+    public var body: String? { wrappedMessage?.body }
+    public var timestamp: String? { wrappedMessage?.timestamp }
+    public var tags: [String]? { wrappedMessage?.tags }
 }
 
 extension AnyUiMessage {
@@ -61,23 +59,21 @@ extension AnyUiMessage {
     public init(_ value: any Message) { self = value.toAnyUiMessage }
 }
 
-extension AnyUiMessage: Message {
-    public var wrappedMessage: any Message {
+extension AnyUiMessage {
+    public var wrappedMessage: (any Message)? {
         switch self {
         case .botMessage(let v): v
         case .userMessage(let v): v
         case .systemMessage(let v): v
-        case .unknown(let v): v.fatalUnknownAccess()
+        case .unknown: nil
         }
     }
 
-    public var toAnyMessage: AnyMessage { AnyMessage(self) }
-    public var toAnyPriorityMessage: AnyPriorityMessage { AnyPriorityMessage(self) }
     public var toAnyUiMessage: AnyUiMessage { self }
 
-    public var body: String { wrappedMessage.body }
-    public var timestamp: String { wrappedMessage.timestamp }
-    public var tags: [String]? { wrappedMessage.tags }
+    public var body: String? { wrappedMessage?.body }
+    public var timestamp: String? { wrappedMessage?.timestamp }
+    public var tags: [String]? { wrappedMessage?.tags }
 }
 
 extension AnyPriorityMessage {
@@ -88,20 +84,18 @@ extension AnyPriorityMessage {
     }
 }
 
-extension AnyPriorityMessage: Message {
-    public var wrappedMessage: any Message {
+extension AnyPriorityMessage {
+    public var wrappedMessage: (any Message)? {
         switch self {
         case .botMessage(let v): v
         case .systemMessage(let v): v
-        case .unknown(let v): v.fatalUnknownAccess()
+        case .unknown: nil
         }
     }
 
-    public var toAnyMessage: AnyMessage { AnyMessage(self) }
-    public var toAnyUiMessage: AnyUiMessage { AnyUiMessage(self) }
     public var toAnyPriorityMessage: AnyPriorityMessage { self }
 
-    public var body: String { wrappedMessage.body }
-    public var timestamp: String { wrappedMessage.timestamp }
-    public var tags: [String]? { wrappedMessage.tags }
+    public var body: String? { wrappedMessage?.body }
+    public var timestamp: String? { wrappedMessage?.timestamp }
+    public var tags: [String]? { wrappedMessage?.tags }
 }

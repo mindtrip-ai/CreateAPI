@@ -771,7 +771,9 @@ final class Templates {
         """
     }
 
-    /// Generates the enum's conformance to the protocol by delegating through a _wrapped property.
+    /// Generates the enum's conformance to the protocol by delegating through a wrapped property.
+    /// When `hasUnknownCase` is true, the enum does NOT conform to the protocol; wrapped is optional
+    /// and all delegated properties become optional to avoid crashes on unknown cases.
     /// `otherEnumNames` lists the other enums sharing this protocol (for their `toAny*` properties).
     func protocolEnumConformance(
         enumName: String,
@@ -781,41 +783,78 @@ final class Templates {
         cases: [(caseName: String, typeName: String)],
         hasUnknownCase: Bool
     ) -> String {
-        var switchLines = cases.map { "case .\($0.caseName)(let v): v" }
-        if hasUnknownCase {
-            switchLines.append("case .unknown(let v): v.fatalUnknownAccess()")
-        }
         let wrappedName = "wrapped\(protocolName)"
-        let wrappedProperty = """
-        \(access)var \(wrappedName): any \(protocolName) {
-            switch self {
-        \(switchLines.joined(separator: "\n").indented)
+
+        if hasUnknownCase {
+            // Enum does NOT conform — wrapped is optional, properties are optional
+            var switchLines = cases.map { "case .\($0.caseName)(let v): v" }
+            switchLines.append("case .unknown: nil")
+            let wrappedProperty = """
+            \(access)var \(wrappedName): (any \(protocolName))? {
+                switch self {
+            \(switchLines.joined(separator: "\n").indented)
+                }
             }
-        }
-        """
+            """
 
-        let delegatedProperties = properties.map { property -> String in
-            let isOptional = property.isOptional && property.defaultValue == nil
-            return "\(access)var \(property.name): \(property.type)\(isOptional ? "?" : "") { \(wrappedName).\(property.name) }"
-        }
+            let delegatedProperties = properties.map { property -> String in
+                let type = property.type
+                let isAlreadyOptional = property.isOptional && property.defaultValue == nil
+                if isAlreadyOptional {
+                    return "\(access)var \(property.name): \(type)? { \(wrappedName)?.\(property.name) }"
+                } else {
+                    return "\(access)var \(property.name): \(type)? { \(wrappedName)?.\(property.name) }"
+                }
+            }
 
-        var toEnumProperties = otherEnumNames.map { other in
-            "\(access)var to\(other): \(other) { \(other)(self) }"
-        }
-        toEnumProperties.append("\(access)var to\(enumName): \(enumName) { self }")
+            var toEnumProperties = ["\(access)var to\(enumName): \(enumName) { self }"]
 
-        let allMembers = [
-            wrappedProperty,
-            "",
-        ] + toEnumProperties + [
-            "",
-        ] + delegatedProperties
+            let allMembers = [
+                wrappedProperty,
+                "",
+            ] + toEnumProperties + [
+                "",
+            ] + delegatedProperties
 
-        return """
-        extension \(enumName): \(protocolName) {
-        \(allMembers.joined(separator: "\n").indented)
+            return """
+            extension \(enumName) {
+            \(allMembers.joined(separator: "\n").indented)
+            }
+            """
+        } else {
+            // Enum conforms to protocol — non-optional wrapped, direct delegation
+            let switchLines = cases.map { "case .\($0.caseName)(let v): v" }
+            let wrappedProperty = """
+            \(access)var \(wrappedName): any \(protocolName) {
+                switch self {
+            \(switchLines.joined(separator: "\n").indented)
+                }
+            }
+            """
+
+            let delegatedProperties = properties.map { property -> String in
+                let isOptional = property.isOptional && property.defaultValue == nil
+                return "\(access)var \(property.name): \(property.type)\(isOptional ? "?" : "") { \(wrappedName).\(property.name) }"
+            }
+
+            var toEnumProperties = otherEnumNames.map { other in
+                "\(access)var to\(other): \(other) { \(other)(self) }"
+            }
+            toEnumProperties.append("\(access)var to\(enumName): \(enumName) { self }")
+
+            let allMembers = [
+                wrappedProperty,
+                "",
+            ] + toEnumProperties + [
+                "",
+            ] + delegatedProperties
+
+            return """
+            extension \(enumName): \(protocolName) {
+            \(allMembers.joined(separator: "\n").indented)
+            }
+            """
         }
-        """
     }
 
     // MARK: Misc
