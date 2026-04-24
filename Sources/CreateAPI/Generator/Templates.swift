@@ -774,11 +774,12 @@ final class Templates {
     /// Generates the enum's conformance to the protocol by delegating through a wrapped property.
     /// When `hasUnknownCase` is true, the enum does NOT conform to the protocol; wrapped is optional
     /// and all delegated properties become optional to avoid crashes on unknown cases.
-    /// `otherEnumNames` lists the other enums sharing this protocol (for their `toAny*` properties).
+    /// `otherEnums` lists the other enums sharing this protocol (with their cases, so we can emit
+    /// total, non-recursive `toOther` conversions only when `self`'s cases are a subset of `other`'s).
     func protocolEnumConformance(
         enumName: String,
         protocolName: String,
-        otherEnumNames: [String],
+        otherEnums: [(name: String, cases: [(caseName: String, typeName: String)])],
         properties: [Property],
         cases: [(caseName: String, typeName: String)],
         hasUnknownCase: Bool
@@ -837,8 +838,33 @@ final class Templates {
                 return "\(access)var \(property.name): \(property.type)\(isOptional ? "?" : "") { \(wrappedName).\(property.name) }"
             }
 
-            var toEnumProperties = otherEnumNames.map { other in
-                "\(access)var to\(other): \(other) { \(other)(self) }"
+            // Emit `toOther` only when self's cases are a subset of other's cases.
+            // Subset -> superset is total and non-recursive (direct switch).
+            // Superset -> subset is partial; omit to avoid the old recursive/fatalError emission.
+            let selfTypes = Set(cases.map(\.typeName))
+            var toEnumProperties: [String] = []
+            for other in otherEnums {
+                let otherTypes = Set(other.cases.map(\.typeName))
+                guard selfTypes.isSubset(of: otherTypes) else { continue }
+                // Match cases by typeName so renamed case labels still convert correctly.
+                let otherCaseByType = Dictionary(uniqueKeysWithValues: other.cases.map { ($0.typeName, $0.caseName) })
+                // Manually prefix each switch case line with 4 spaces so that, once wrapped
+                // inside `switch self { ... }` below (itself 4 spaces in the template body),
+                // cases land at the correct 8-space depth within the multi-line string.
+                // Avoids `.indented` chains, whose underlying `lines` trims leading whitespace
+                // off the joined string and corrupts the first case's indentation.
+                let switchBody = cases.map { selfCase -> String in
+                    let otherCaseName = otherCaseByType[selfCase.typeName] ?? selfCase.caseName
+                    return "    case .\(selfCase.caseName)(let v): .\(otherCaseName)(v)"
+                }.joined(separator: "\n")
+                let body = """
+                \(access)var to\(other.name): \(other.name) {
+                    switch self {
+                \(switchBody)
+                    }
+                }
+                """
+                toEnumProperties.append(body)
             }
             toEnumProperties.append("\(access)var to\(enumName): \(enumName) { self }")
 

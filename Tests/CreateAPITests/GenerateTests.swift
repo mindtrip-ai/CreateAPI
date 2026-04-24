@@ -101,7 +101,29 @@ final class GenerateTests: GenerateTestCase {
                 - BaseTransitPoint
             """
         )
-    }    
+    }
+
+    /// Regression: when overlapping oneOf enums all conform to the shared protocol
+    /// (via excludeUnknownCase), their generated `toAny*` conversions must not recurse.
+    /// Subset -> superset uses a direct switch; superset -> subset is omitted.
+    func testAbstractProtocolOverlappingEnums() throws {
+        try snapshot(
+            spec: .abstractProtocol,
+            name: "abstract-protocol-overlapping-enums",
+            configuration: """
+            entities:
+              generateProtocolFromAbstract:
+                - AbstractMessage
+                - BaseTransitPoint
+              excludeUnknownCase:
+                - AnyMessage
+                - AnyUiMessage
+                - AnyPriorityMessage
+                - AnyTransitPoint
+            """
+        )
+    }
+
     
     func testGitHub() throws {
         try snapshot(

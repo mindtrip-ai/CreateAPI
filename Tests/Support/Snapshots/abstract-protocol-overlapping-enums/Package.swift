@@ -1,0 +1,20 @@
+// swift-tools-version:5.5
+// The swift-tools-version declares the minimum version of Swift required to build this package.
+
+import PackageDescription
+
+let package = Package(
+    name: "abstract-protocol-overlapping-enums",
+    platforms: [.iOS(.v13), .macCatalyst(.v13), .macOS(.v10_15), .watchOS(.v6), .tvOS(.v13)],
+    products: [
+        .library(name: "abstract-protocol-overlapping-enums", targets: ["abstract-protocol-overlapping-enums"]),
+    ],
+    dependencies: [
+        .package(url: "https://github.com/kean/Get", from: "2.1.0")
+    ],
+    targets: [
+        .target(name: "abstract-protocol-overlapping-enums", dependencies: [
+            .product(name: "Get", package: "Get")
+        ], path: "Sources")
+    ]
+)

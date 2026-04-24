@@ -226,10 +226,14 @@ extension Generator {
                     protocolHasToAny: isUniversal
                 )
 
+                let otherEnums = enumInfos
+                    .filter { $0.enumName != info.enumName }
+                    .map { (name: $0.enumName, cases: $0.cases) }
+
                 let enumConformance = templates.protocolEnumConformance(
                     enumName: info.enumName,
                     protocolName: protocolName,
-                    otherEnumNames: allEnumNames.filter { $0 != info.enumName },
+                    otherEnums: otherEnums,
                     properties: properties,
                     cases: info.cases,
                     hasUnknownCase: info.hasUnknownCase

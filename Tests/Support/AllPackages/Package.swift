@@ -15,6 +15,7 @@ let package = Package(
     ],
     dependencies: [
         .package(path: "../Snapshots/abstract-protocol"),
+        .package(path: "../Snapshots/abstract-protocol-overlapping-enums"),
         .package(path: "../Snapshots/abstract-protocol-rename-only"),
         .package(path: "../Snapshots/abstract-protocol-rename-swap"),
         .package(path: "../Snapshots/abstract-protocol-rename-with-protocol"),
@@ -64,6 +65,7 @@ let package = Package(
             name: "AllPackages",
             dependencies: [
                 "abstract-protocol",
+                "abstract-protocol-overlapping-enums",
                 "abstract-protocol-rename-only",
                 "abstract-protocol-rename-swap",
                 "abstract-protocol-rename-with-protocol",
