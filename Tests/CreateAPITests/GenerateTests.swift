@@ -29,6 +29,16 @@ final class GenerateTests: GenerateTestCase {
         )
     }
 
+    /// Regression: an `anyOf`/`oneOf` of a single `$ref` plus `{type: null}` is a
+    /// nullable reference and must generate as an optional of the inner type, not
+    /// throw `null` is not supported.
+    func testNullableComposition() throws {
+        try snapshot(
+            spec: .nullableComposition,
+            name: "nullable-composition"
+        )
+    }
+
     func testDiscriminator() throws {
         try snapshot(
             spec: .discriminator,

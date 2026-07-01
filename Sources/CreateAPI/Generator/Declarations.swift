@@ -154,6 +154,12 @@ struct Property {
     var nested: Declaration?
     // If the schema is inlined by `allOf`. This is currently used only for the generation of decoders.
     var isInlined: Bool?
+
+    func makingOptional() -> Property {
+        var copy = self
+        copy.isOptional = true
+        return copy
+    }
 }
 
 protocol Declaration {

@@ -1,0 +1,58 @@
+openapi: 3.1.0
+info:
+  title: nullable-composition
+  version: "1.0"
+paths:
+  /status:
+    get:
+      tags: [status]
+      operationId: getStatus
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/connection_status"
+components:
+  schemas:
+    sync_session:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+        state:
+          type: string
+      required:
+        - id
+        - state
+    connection_status:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: integer
+        # nullable scalar via type array — already worked, kept as a control
+        error_message:
+          type: ["string", "null"]
+        # nullable $ref via anyOf — the shape that previously threw `null` is not supported
+        required_session:
+          anyOf:
+            - "$ref": "#/components/schemas/sync_session"
+            - type: "null"
+        # same shape, but the property is also not required
+        optional_session:
+          anyOf:
+            - "$ref": "#/components/schemas/sync_session"
+            - type: "null"
+        # nullable $ref expressed via oneOf instead of anyOf
+        one_of_session:
+          oneOf:
+            - "$ref": "#/components/schemas/sync_session"
+            - type: "null"
+      required:
+        - id
+        - error_message
+        - required_session
+        - one_of_session

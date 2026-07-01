@@ -977,10 +977,38 @@ extension Generator {
             return property(type: type, info: info, nested: nil)
         }
 
+        // `anyOf`/`oneOf` of a single non-null schema plus one or more `{type: null}`
+        // members is just a nullable version of that schema (e.g. a nullable `$ref`,
+        // which can't be expressed via a `type: [..., "null"]` array). Collapse it to
+        // an optional of the sole non-null member so it generates as `T?` rather than
+        // hitting the unsupported `.null` case.
+        if let nullableInner = nullableCompositionInnerSchema(schema) {
+            let property = try makeProperty(key: key, schema: nullableInner, isRequired: false, in: context, isInlined: isInlined)
+            return property.makingOptional()
+        }
+
         switch schema.value {
         case .reference(let ref, let details): return try makeReference(reference: ref, details: details)
         default: return try makeSimpleProperty()
         }
+    }
+
+    /// If `schema` is an `anyOf`/`oneOf` composed of exactly one non-null member and
+    /// one or more `{type: null}` members, returns that single non-null member. This is
+    /// the OpenAPI 3.1 way to express a nullable `$ref` (a `type: [..., "null"]` array
+    /// can't hold a reference), and it should generate as an optional of the inner type.
+    private func nullableCompositionInnerSchema(_ schema: JSONSchema) -> JSONSchema? {
+        let schemas: [JSONSchema]
+        switch schema.value {
+        case .any(let of, _), .one(let of, _):
+            schemas = of
+        default:
+            return nil
+        }
+        guard schemas.contains(where: { $0.isNull }) else { return nil }
+        let nonNull = schemas.filter { !$0.isNull }
+        guard nonNull.count == 1 else { return nil }
+        return nonNull[0]
     }
 
     private func getSchema(for reference: JSONReference<JSONSchema>) -> JSONSchema? {
