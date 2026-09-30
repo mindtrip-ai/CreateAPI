@@ -71,6 +71,53 @@ extension Generator {
             let entity = try result.get()
             generatedSchemas[entity.name] = entity as? EntityDeclaration
         }
+        // A deprecated type referenced by a non-deprecated one isn't annotated either,
+        // so its own references count too. Repeat until the set stops growing.
+        let declarations = try declarations.map { try $0.get() }
+        var referenced = Set<TypeName>()
+        while true {
+            var next = Set<TypeName>()
+            for decl in declarations {
+                collectTypeReferences(from: decl, annotatedAsNotDeprecated: referenced, into: &next)
+            }
+            if next == referenced { break }
+            referenced = next
+        }
+        typesReferencedByNonDeprecatedEntities = referenced
+    }
+
+    private func collectTypeReferences(from decl: Declaration, annotatedAsNotDeprecated: Set<TypeName>, into names: inout Set<TypeName>) {
+        switch decl {
+        case let entity as EntityDeclaration:
+            guard !entity.metadata.isDeprecated || annotatedAsNotDeprecated.contains(entity.name) else { return }
+            for property in entity.properties {
+                collectTypeNames(from: property.type, into: &names)
+                if let nested = property.nested {
+                    collectTypeReferences(from: nested, annotatedAsNotDeprecated: annotatedAsNotDeprecated, into: &names)
+                }
+            }
+        case let alias as TypealiasDeclaration:
+            collectTypeNames(from: alias.type, into: &names)
+            if let nested = alias.nested {
+                collectTypeReferences(from: nested, annotatedAsNotDeprecated: annotatedAsNotDeprecated, into: &names)
+            }
+        default:
+            break
+        }
+    }
+
+    private func collectTypeNames(from type: TypeIdentifier, into names: inout Set<TypeName>) {
+        switch type {
+        case .builtin:
+            break
+        case .userDefined(let name):
+            names.insert(name)
+        case .array(let element):
+            collectTypeNames(from: element, into: &names)
+        case .dictionary(let key, let value):
+            collectTypeNames(from: key, into: &names)
+            collectTypeNames(from: value, into: &names)
+        }
     }
 
     private func makeJobs() throws -> [Job] {

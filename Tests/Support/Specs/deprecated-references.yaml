@@ -1,0 +1,63 @@
+openapi: 3.1.0
+info:
+  title: deprecated-references
+  version: "1.0"
+paths:
+  /completion:
+    get:
+      tags: [completion]
+      operationId: getCompletion
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/completion"
+components:
+  schemas:
+    completion:
+      oneOf:
+        - "$ref": "#/components/schemas/setup_completion"
+        - "$ref": "#/components/schemas/legacy_completion"
+      discriminator:
+        propertyName: flow
+        mapping:
+          setup: "#/components/schemas/setup_completion"
+          legacy: "#/components/schemas/legacy_completion"
+    setup_completion:
+      type: object
+      additionalProperties: false
+      properties:
+        flow:
+          type: string
+          enum: [setup]
+      required: [flow]
+    legacy_completion:
+      deprecated: true
+      description: Referenced by the non-deprecated oneOf, so it can't carry the attribute.
+      type: object
+      additionalProperties: false
+      properties:
+        flow:
+          type: string
+          enum: [legacy]
+        detail:
+          "$ref": "#/components/schemas/legacy_detail"
+      required: [flow]
+    legacy_detail:
+      deprecated: true
+      description: Referenced only by a deprecated type, which itself loses the attribute, so this one does too.
+      type: object
+      additionalProperties: false
+      properties:
+        note:
+          type: string
+    unused_legacy:
+      deprecated: true
+      description: Referenced by nothing, so it keeps the attribute.
+      type: object
+      additionalProperties: false
+      properties:
+        note:
+          type: string

@@ -19,6 +19,9 @@ final class Generator {
     var needsEncodable = Set<TypeName>()
     var topLevelTypes = Set<TypeName>()
     var generatedSchemas: [TypeName: EntityDeclaration] = [:]
+    /// Types referenced by an entity that isn't annotated as deprecated. A deprecated type in this
+    /// set can't carry `@available(*, deprecated)` without the referencing entity emitting warnings.
+    var typesReferencedByNonDeprecatedEntities = Set<TypeName>()
     var additionalEntityRenames: [String: String] = [:]
     var abstractToEnumNames: [String: [String]] = [:]
     var pathsContainingRequestType: [String] = []

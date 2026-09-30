@@ -504,7 +504,7 @@ final class Templates {
     // MARK: Comments
 
     /// Generates inline comments for a declaration containing a title, description, and examples.
-    func comments(for metadata: DeclarationMetadata, name: String, isProperty: Bool = false) -> String {
+    func comments(for metadata: DeclarationMetadata, name: String, isProperty: Bool = false, isReferencedByNonDeprecatedType: Bool = false) -> String {
         guard options.commentsEnabled else { return "" }
         let options = options.commentOptions
         var output = ""
@@ -574,8 +574,9 @@ final class Templates {
         }
         if self.options.annotateDeprecations, metadata.isDeprecated {
             // We can't mark properties deprecated because then initialier and
-            // encoder will start throwing warnings.
-            if isProperty {
+            // encoder will start throwing warnings. The same goes for types used
+            // by a non-deprecated type.
+            if isProperty || isReferencedByNonDeprecatedType {
                 if !output.isEmpty {
                     output += "///\n"
                 }

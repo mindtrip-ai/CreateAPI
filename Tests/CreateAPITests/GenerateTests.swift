@@ -39,6 +39,16 @@ final class GenerateTests: GenerateTestCase {
         )
     }
 
+    /// Regression: a deprecated type used by a non-deprecated type (here, a `oneOf`
+    /// member) must not get `@available(*, deprecated)`, or the referencing type
+    /// emits deprecation warnings from its own declaration, decoder, and encoder.
+    func testDeprecatedReferences() throws {
+        try snapshot(
+            spec: .deprecatedReferences,
+            name: "deprecated-references"
+        )
+    }
+
     func testDiscriminator() throws {
         try snapshot(
             spec: .discriminator,

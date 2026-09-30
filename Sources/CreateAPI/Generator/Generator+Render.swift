@@ -14,7 +14,7 @@ extension Generator {
     }
 
     private func render(_ decl: EnumOfStringsDeclaration) -> String {
-        let comments = templates.comments(for: decl.metadata, name: decl.name.rawValue)
+        let comments = templates.comments(for: decl.metadata, name: decl.name.rawValue, isReferencedByNonDeprecatedType: typesReferencedByNonDeprecatedEntities.contains(decl.name))
         var cases = decl.cases.map {
             templates.case(name: $0.name, value: $0.key)
         }
@@ -153,7 +153,7 @@ extension Generator {
             entity = templates.class(name: decl.name, isFinal: isFinal, contents: contents, protocols: decl.protocols)
         }
 
-        return templates.comments(for: decl.metadata, name: decl.name.rawValue) + entity
+        return templates.comments(for: decl.metadata, name: decl.name.rawValue, isReferencedByNonDeprecatedType: typesReferencedByNonDeprecatedEntities.contains(decl.name)) + entity
     }
 
     private func render(_ value: TypealiasDeclaration) throws -> String {
